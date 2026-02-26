@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Oniria Weddings | Photography &amp; Planning</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#000000",
+                        "background-light": "#ffffff",
+                        "background-dark": "#000000",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .brutalist-text {
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+        .hero-bg-overlay {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-primary transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Navigation Bar -->
+<header class="fixed top-0 z-50 w-full bg-white dark:bg-black border-b border-black dark:border-white/20 h-20 flex items-center justify-between px-6 md:px-12">
+<div class="flex items-center gap-3">
+<div class="size-6 bg-black dark:bg-white flex items-center justify-center">
+<span class="material-symbols-outlined text-white dark:text-black text-sm">camera_outdoor</span>
+</div>
+<h2 class="text-black dark:text-white text-xl font-bold brutalist-text tracking-tighter">ONIRIA WEDDINGS</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-black dark:text-white text-xs font-bold uppercase tracking-widest hover:opacity-60 transition-opacity" href="#">Inicio</a>
+<a class="text-black dark:text-white text-xs font-bold uppercase tracking-widest hover:opacity-60 transition-opacity" href="#">Portafolio</a>
+<a class="text-black dark:text-white text-xs font-bold uppercase tracking-widest hover:opacity-60 transition-opacity" href="#">Blog</a>
+<a class="text-black dark:text-white text-xs font-bold uppercase tracking-widest hover:opacity-60 transition-opacity" href="#">Contacto</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="md:hidden text-black dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<button class="hidden md:block border-2 border-black dark:border-white px-6 py-2 text-xs font-bold uppercase tracking-tighter hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                    Reserva
+                </button>
+</div>
+</header>
+<!-- Hero Section -->
+<main class="relative flex flex-col pt-20">
+<div class="relative h-[calc(100vh-80px)] w-full overflow-hidden bg-zinc-900">
+<!-- Background Image Container -->
+<div class="absolute inset-0 grayscale contrast-125 brightness-75">
+<img alt="Editorial black and white wedding photograph" class="h-full w-full object-cover" data-alt="Editorial black and white wedding couple portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8sCzflPCAXPSqGrCjeQf_n4ZjaepGOVjj6iJv5C4zOK7TKlSYGZiCItGXMJ8-CLttFThNi47p_t34IbpQyt87KIwEF4uGETg_JQ2k8h0Zk5451-Q16lZJJrtgvql4c6lxnYgxl6tTaC_id49V5CdF5nCp9d_MGRwp8irJJMhC1XavBKCmHZvpWhYCMQTKbximOWnRtwjBCmNYxMA1XGkhw4feKWz_P7XYC6gmGwEkxbDVvFyBRuNhnjXDvl4AMNvDyLmC2DKdlSg"/>
+</div>
+<div class="absolute inset-0 hero-bg-overlay"></div>
+<!-- Hero Content -->
+<div class="relative h-full flex flex-col items-center justify-center px-4 text-center">
+<div class="max-w-5xl">
+<h1 class="text-white text-5xl md:text-8xl font-bold leading-[0.9] brutalist-text mb-8">
+<span class="block">Donde los</span>
+<span class="font-serif italic font-normal lowercase md:text-9xl">sueños</span>
+<span class="block">se hacen realidad</span>
+</h1>
+<p class="text-white/80 text-lg md:text-xl font-medium tracking-wide max-w-2xl mx-auto mb-12 uppercase border-l-4 border-white pl-6 py-2">
+                            Fotografía y planificación de bodas que capturan cada momento único bajo una mirada editorial y vanguardista.
+                        </p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-6">
+<button class="w-full md:w-auto bg-white text-black px-12 py-5 text-lg font-black border-[3px] border-black hover:invert transition-all">
+                                VER PORTAFOLIO
+                            </button>
+<button class="w-full md:w-auto border-2 border-white text-white px-12 py-5 text-lg font-bold hover:bg-white hover:text-black transition-all">
+                                NUESTROS SERVICIOS
+                            </button>
+</div>
+</div>
+</div>
+<!-- Floating Editorial Detail -->
+<div class="absolute bottom-12 left-12 hidden lg:block border-t border-white/30 pt-4">
+<p class="text-white/50 text-[10px] tracking-[0.5em] uppercase">Est. 2024 / ONIRIA COLLECTIVE</p>
+</div>
+</div>
+<!-- Features Grid (Brutalist style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 border-b border-black dark:border-white">
+<div class="p-12 border-b md:border-b-0 md:border-r border-black dark:border-white bg-white dark:bg-black group hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+<span class="material-symbols-outlined text-4xl mb-6">photo_camera</span>
+<h3 class="text-2xl font-bold brutalist-text mb-4">Fotografía de Autor</h3>
+<p class="text-sm uppercase tracking-wider opacity-70">Capturas de alto contraste y estilo cinematográfico para parejas que buscan lo extraordinario.</p>
+</div>
+<div class="p-12 border-b md:border-b-0 md:border-r border-black dark:border-white bg-white dark:bg-black group hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+<span class="material-symbols-outlined text-4xl mb-6">event_note</span>
+<h3 class="text-2xl font-bold brutalist-text mb-4">Planificación Integral</h3>
+<p class="text-sm uppercase tracking-wider opacity-70">Gestión absoluta de proveedores y logística. Nos encargamos de que cada detalle sea impecable.</p>
+</div>
+<div class="p-12 bg-white dark:bg-black group hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+<span class="material-symbols-outlined text-4xl mb-6">auto_awesome</span>
+<h3 class="text-2xl font-bold brutalist-text mb-4">Diseño de Experiencias</h3>
+<p class="text-sm uppercase tracking-wider opacity-70">Creación de conceptos visuales únicos y vanguardistas adaptados a la esencia de cada boda.</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-black text-white py-20 px-12">
+<div class="flex flex-col md:flex-row justify-between items-start gap-12 border-b border-white/20 pb-12 mb-12">
+<div>
+<h2 class="text-4xl font-bold brutalist-text mb-4 tracking-tighter">ONIRIA WEDDINGS</h2>
+<p class="text-white/50 max-w-sm uppercase text-xs tracking-widest leading-relaxed">
+                        Redefiniendo el lujo nupcial a través de la lente de la moda y el diseño contemporáneo.
+                    </p>
+</div>
+<div class="flex flex-wrap gap-20">
+<div class="flex flex-col gap-4">
+<span class="text-[10px] tracking-[0.3em] text-white/40 uppercase">Social</span>
+<a class="text-sm font-bold hover:underline" href="#">Instagram</a>
+<a class="text-sm font-bold hover:underline" href="#">Pinterest</a>
+<a class="text-sm font-bold hover:underline" href="#">Vimeo</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-[10px] tracking-[0.3em] text-white/40 uppercase">Contacto</span>
+<a class="text-sm font-bold" href="#">hello@oniria.com</a>
+<a class="text-sm font-bold" href="#">+34 600 000 000</a>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center text-[10px] tracking-[0.2em] text-white/30 uppercase font-bold">
+<p>© 2024 ONIRIA WEDDINGS. TODOS LOS DERECHOS RESERVADOS.</p>
+<div class="flex gap-8 mt-4 md:mt-0">
+<a href="#">Aviso Legal</a>
+<a href="#">Privacidad</a>
+<a href="#">Cookies</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

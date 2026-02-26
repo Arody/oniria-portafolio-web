@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#000000",
+              "background-light": "#ffffff",
+              "background-dark": "#000000",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "0px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar to match brutalist theme */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #444; }
+        ::-webkit-scrollbar-thumb:hover { background: #666; }
+        
+        .brutalist-input {
+            border: 2px solid #000;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+        .dark .brutalist-input {
+            border-color: #ffffff;
+        }
+        .brutalist-input:focus {
+            outline: none;
+            box-shadow: 4px 4px 0px 0px #000;
+        }
+        .dark .brutalist-input:focus {
+            box-shadow: 4px 4px 0px 0px #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<!-- Contact Section -->
+<section class="min-h-screen w-full flex flex-col md:flex-row border-t-2 border-slate-900 dark:border-slate-100">
+<!-- Left Side: Form -->
+<div class="w-full md:w-1/2 p-8 md:p-16 lg:p-24 border-b-2 md:border-b-0 md:border-r-2 border-slate-900 dark:border-slate-100 bg-white dark:bg-black">
+<h1 class="text-6xl md:text-8xl font-bold tracking-tighter uppercase mb-4 leading-none">
+                Contacto
+            </h1>
+<p class="text-xl md:text-2xl mb-12 font-medium">Cuéntanos sobre tu boda soñada</p>
+<form class="space-y-8 max-w-xl">
+<div class="space-y-2">
+<label class="block text-sm font-bold uppercase tracking-widest">Nombre completo</label>
+<input class="brutalist-input w-full p-4 text-lg font-medium placeholder:text-slate-400 dark:placeholder:text-slate-600" placeholder="TU NOMBRE" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="block text-sm font-bold uppercase tracking-widest">Correo electrónico</label>
+<input class="brutalist-input w-full p-4 text-lg font-medium" placeholder="EMAIL" type="email"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold uppercase tracking-widest">Teléfono</label>
+<input class="brutalist-input w-full p-4 text-lg font-medium" placeholder="+52" type="tel"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold uppercase tracking-widest">Fecha de la boda</label>
+<input class="brutalist-input w-full p-4 text-lg font-medium" type="date"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold uppercase tracking-widest">Mensaje</label>
+<textarea class="brutalist-input w-full p-4 text-lg font-medium" placeholder="DESCRIBE TU EVENTO..." rows="4"></textarea>
+</div>
+<button class="w-full md:w-auto px-12 py-5 bg-slate-900 dark:bg-slate-100 text-white dark:text-black font-bold text-xl uppercase tracking-widest hover:invert transition-all duration-300 active:translate-y-1" type="submit">
+                    Enviar Mensaje
+                </button>
+</form>
+</div>
+<!-- Right Side: Info & Map -->
+<div class="w-full md:w-1/2 flex flex-col bg-slate-50 dark:bg-zinc-900">
+<!-- Contact Details -->
+<div class="flex-grow p-8 md:p-16 lg:p-24 flex flex-col justify-center space-y-12">
+<div class="space-y-6">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-3xl">mail</span>
+<div>
+<p class="text-xs font-bold uppercase text-slate-500 mb-1">Escríbenos</p>
+<a class="text-2xl md:text-3xl font-bold hover:underline" href="mailto:hola@oniria-weddings.com">hola@oniria-weddings.com</a>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-3xl">call</span>
+<div>
+<p class="text-xs font-bold uppercase text-slate-500 mb-1">Llámanos</p>
+<p class="text-2xl md:text-3xl font-bold">+52 999 123 4567</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-3xl">location_on</span>
+<div>
+<p class="text-xs font-bold uppercase text-slate-500 mb-1">Ubicación</p>
+<p class="text-2xl md:text-3xl font-bold">Mérida, Yucatán, México</p>
+</div>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-300 dark:border-slate-700">
+<p class="text-xs font-bold uppercase text-slate-500 mb-4">Redes Sociales</p>
+<div class="flex flex-wrap gap-x-8 gap-y-4">
+<a class="text-xl font-black uppercase hover:line-through" href="#">Instagram</a>
+<a class="text-xl font-black uppercase hover:line-through" href="#">Pinterest</a>
+<a class="text-xl font-black uppercase hover:line-through" href="#">Facebook</a>
+</div>
+</div>
+</div>
+<!-- Stylized Map Graphic -->
+<div class="h-64 md:h-80 w-full border-t-2 border-slate-900 dark:border-slate-100 grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden relative">
+<div class="absolute inset-0 bg-slate-900/10 dark:bg-slate-100/10 z-10 pointer-events-none"></div>
+<img class="w-full h-full object-cover" data-alt="Grayscale stylized map of Yucatan region" data-location="Mérida, Mexico" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-_YPfm_JWEFeGgrzP3dGwDDParaDh9f4JXi76AD6T5XPVtJ43rxRyw4LhsX4S5Tvmxli54n_ehn8cv5k9g5mF2Smog6TngT1S3qzf5-Zle4Er6rsBpykOuYSqCt2UTguxU-WRSfx4McmZF1KxirieJadQPbFIlRwR4ktlNqendhgDadQF165iYDoSFDOktDXPwzjIFsCrJgidkkbYT-bw-xEkUENN3pH4xyealUvIz6YAM_t_xOxrpbbJykcg7zOYd22RgK58hJw"/>
+<div class="absolute inset-0 flex items-center justify-center z-20">
+<div class="bg-black text-white px-6 py-2 font-bold uppercase tracking-[0.2em] border-2 border-white">Localización</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-black text-white py-16 px-8 md:px-24 border-t-2 border-white">
+<div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+<!-- Footer Branding -->
+<div class="md:col-span-6 flex flex-col justify-between">
+<div>
+<h2 class="text-4xl md:text-6xl font-black uppercase leading-tight tracking-tighter mb-8">
+                        Oniria<br/>Weddings
+                    </h2>
+</div>
+<div class="hidden md:block">
+<p class="text-slate-400 text-sm max-w-xs">
+                        Creando atmósferas oníricas para momentos inolvidables. Diseño de bodas con alma brutalista y esencia elegante.
+                    </p>
+</div>
+</div>
+<!-- Footer Navigation -->
+<div class="md:col-span-3 space-y-6">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-800 pb-2">Explora</p>
+<nav class="flex flex-col gap-4 text-xl font-bold uppercase italic">
+<a class="hover:text-slate-400 transition-colors" href="#">Inicio</a>
+<a class="hover:text-slate-400 transition-colors" href="#">Portafolio</a>
+<a class="hover:text-slate-400 transition-colors" href="#">Blog</a>
+<a class="hover:text-slate-400 transition-colors" href="#">Contacto</a>
+</nav>
+</div>
+<!-- Footer Socials -->
+<div class="md:col-span-3 space-y-6">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-800 pb-2">Conecta</p>
+<div class="flex flex-col gap-4 text-xl font-bold uppercase">
+<a class="flex items-center gap-2 hover:translate-x-2 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm">north_east</span> Instagram
+                    </a>
+<a class="flex items-center gap-2 hover:translate-x-2 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm">north_east</span> Pinterest
+                    </a>
+<a class="flex items-center gap-2 hover:translate-x-2 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm">north_east</span> Facebook
+                    </a>
+<a class="flex items-center gap-2 hover:translate-x-2 transition-transform" href="#">
+<span class="material-symbols-outlined text-sm">north_east</span> LinkedIn
+                    </a>
+</div>
+</div>
+</div>
+<!-- Footer Bottom Bar -->
+<div class="max-w-[1400px] mx-auto mt-24 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
+<p>© 2025 Oniria Weddings. Todos los derechos reservados.</p>
+<div class="flex gap-8">
+<a class="hover:text-white" href="#">Aviso de Privacidad</a>
+<a class="hover:text-white" href="#">Términos y Condiciones</a>
+</div>
+</div>
+</footer>
+</body></html>

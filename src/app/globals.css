@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-space-grotesk: var(--font-space-grotesk);
+
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+  
+  --color-border: #000000;
+}
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --border: #000000;
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .brutalist-border {
+    @apply border-2 border-black;
+  }
+  .brutalist-border-thick {
+    @apply border-4 border-black;
+  }
+  .brutalist-shadow {
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+  }
+  .brutalist-shadow-hover {
+    @apply hover:translate-x-[2px] hover:translate-y-[2px] transition-transform;
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+  }
+  .brutalist-shadow-hover:hover {
+    box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+  }
+}

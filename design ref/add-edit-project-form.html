@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Oniria Weddings - Nuevo Proyecto</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#ffffff",
+              "background-light": "#f6f6f8",
+              "background-dark": "#000000",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "0px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for brutalist look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111121; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        input, textarea, select {
+            border-radius: 0 !important;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="flex min-h-screen overflow-x-hidden">
+<!-- Sidebar -->
+<aside class="w-64 bg-black border-r border-slate-800 flex flex-col fixed h-full z-20">
+<div class="p-8">
+<h1 class="text-white text-xl font-bold tracking-tighter uppercase mb-1">ONIRIA ADMIN</h1>
+<p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Panel de Control</p>
+</div>
+<nav class="flex-1 px-4 mt-4 space-y-1">
+<a class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-sm font-bold uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 bg-white text-black font-bold group" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span class="text-sm uppercase tracking-wider">Portafolio</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-bold uppercase tracking-wider">Clientes</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-bold uppercase tracking-wider">Ajustes</span>
+</a>
+</nav>
+<div class="p-8 border-t border-slate-900">
+<a class="flex items-center gap-4 text-slate-500 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="text-sm font-bold uppercase tracking-wider">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-64 p-12 mb-24">
+<!-- Header/Breadcrumbs -->
+<div class="mb-12">
+<div class="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mb-4">
+<a class="hover:text-white" href="#">DASHBOARD</a>
+<span>/</span>
+<a class="hover:text-white" href="#">PORTAFOLIO</a>
+<span>/</span>
+<span class="text-white">NUEVO PROYECTO</span>
+</div>
+<h2 class="text-8xl font-black uppercase tracking-tighter leading-none text-white">
+                    NUEVO<br/>PROYECTO
+                </h2>
+</div>
+<div class="grid grid-cols-12 gap-12">
+<!-- Left Column: Main Details -->
+<div class="col-span-7 space-y-8">
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Título del Proyecto</label>
+<input class="w-full bg-transparent border-2 border-slate-800 focus:border-white text-white p-4 font-bold placeholder:text-slate-700 outline-none transition-colors" placeholder="EJ: ATARDECER EN LA COSTA" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Nombre de la Pareja</label>
+<input class="w-full bg-transparent border-2 border-slate-800 focus:border-white text-white p-4 font-bold placeholder:text-slate-700 outline-none transition-colors" placeholder="EJ: ELENA &amp; MARCO" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Ubicación</label>
+<input class="w-full bg-transparent border-2 border-slate-800 focus:border-white text-white p-4 font-bold placeholder:text-slate-700 outline-none transition-colors" data-location="Costa Brava" placeholder="COSTA BRAVA, SPAIN" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Fecha del Evento</label>
+<input class="w-full bg-transparent border-2 border-slate-800 focus:border-white text-white p-4 font-bold outline-none transition-colors [color-scheme:dark]" type="date"/>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Categoría</label>
+<select class="w-full bg-transparent border-2 border-slate-800 focus:border-white text-white p-4 font-bold outline-none transition-colors appearance-none">
+<option class="bg-black">WEDDING STORY</option>
+<option class="bg-black">ELOPEMENT</option>
+<option class="bg-black">ENGAGEMENT</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Descripción</label>
+<textarea class="w-full bg-transparent border-2 border-slate-800 focus:border-white text-white p-4 font-bold placeholder:text-slate-700 outline-none transition-colors resize-none" placeholder="DESCRIBE LA ESENCIA DEL PROYECTO..." rows="8"></textarea>
+</div>
+</div>
+<!-- Right Column: Media & Settings -->
+<div class="col-span-5 space-y-8">
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Galería de Imágenes</label>
+<div class="border-2 border-dashed border-slate-800 hover:border-white transition-colors p-12 flex flex-col items-center justify-center cursor-pointer group">
+<span class="material-symbols-outlined text-4xl mb-4 text-slate-700 group-hover:text-white">cloud_upload</span>
+<p class="text-sm font-black uppercase tracking-widest text-slate-700 group-hover:text-white text-center">Arrastra tus imágenes aquí</p>
+<p class="text-[10px] text-slate-800 mt-2">JPG, PNG MAX 10MB</p>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="relative aspect-square bg-slate-900 overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 transition-opacity" data-alt="B&amp;W wedding photography of a couple" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxLGGyjtba9rcS_tzbQfEH2j3ffR1BceKGx1HYXlcEZhQ6hT_t7a-hXbx6SbEFsjiegj7L9MXbTH4kT5ALAOQ9gX4-ODB8ZNUDT0wiaAXIUsB-1-RQEa_gfq7x6LsnS4Ru1Ef8GVPcfRBXuidAOk7juaT2SpBYarUKZMJqFrLKQ1xUwX7pWhWluO8H6I354nj4tV-2VwmWWLjo4-wNk3DlGUp6hUO6FXItqFzsWK9Z7Px6k0Ds2NhQyhbZZDlepDoqrclsr6qWNK8"/>
+<button class="absolute top-0 right-0 bg-black text-white p-1 hover:bg-white hover:text-black transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<div class="relative aspect-square bg-slate-900 overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 transition-opacity" data-alt="Detailed shot of wedding decorations grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu4idKQn8GGX5KpF6s2rppzndYvlegtRlksM7-w6wrfNEL-AhTJJmxqLrFPndpbvKwsKH1Pwz-bKUDXMFS-SpNyByOi3Y4G-hgpFlzI3sBYgyfE457FggXC8qg1u_22U8Qd1WXAW09Lsyu_aWYcuZQJBbNsKFEvYh5eFFCVHGeeCsiwUcFI4yyOtR2lsIe1uPyGieUjBTHzRx6MF-QtZlqvhsE2Y49jaCnFH9XOB6zJFuwwKYkQGc7Wy_P3k1whOju1Ctb4u303lI"/>
+<button class="absolute top-0 right-0 bg-black text-white p-1 hover:bg-white hover:text-black transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<div class="relative aspect-square bg-slate-900 overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 transition-opacity" data-alt="Grayscale aesthetic floral arrangement" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCY5DQpnFeL1HYgdk9R-StbiUX6BFaOggMXM8e03_vBEY3ORoVMnV6zUCSJjK-ayLfcJ32yAtsry6r81HDLwbW4L_BfBlLlZZP4vxOJq3pOkigTRhL9kI8YFio06BheieyjaWpPfohabPSm-elnOfqYIVkaMAwgnAL3uak_ls6Es8LpMlNdnBJBwg6qlUi-yIzZm_wkoSPr7pCs6mXePUiw0YE4HgoEOgnDIV5JrJy2ogGFL3jb07_lssYx5r_Ejtus86kuEAaKJ84"/>
+<button class="absolute top-0 right-0 bg-black text-white p-1 hover:bg-white hover:text-black transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<div class="relative aspect-square bg-slate-900 overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 transition-opacity" data-alt="Groom and bride hands together grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzylsDfIk66_50h7oVyb4t5gjY1ZlVKM1HwJTtSWGXTJd0rIafv0-BhZO1Z6c4zFDFvz27kzt5q8RrvBlY77VXzElRfRAjrcTJsgp6RnOxkGEVXQ6HuOxzq5Sm1ey83XgN_Eyhim8oqQAqk-c7GxSSqw9QhrO302XPxqFkVsdyfJRYPEcxNS0FvH72UNZjYk1da0WttFP161qzJYeoXr3GJs4V-L6XoAcOEgVq3NTikZxu-FnIlIQZMo8TuePtSS-0coJkzl5-qgY"/>
+<button class="absolute top-0 right-0 bg-black text-white p-1 hover:bg-white hover:text-black transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+</div>
+<div class="space-y-6 pt-6 border-t border-slate-900">
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Estado</label>
+<div class="flex gap-2">
+<button class="flex-1 border-2 border-white bg-white text-black py-3 text-xs font-black uppercase tracking-widest">Publicado</button>
+<button class="flex-1 border-2 border-slate-800 text-slate-500 py-3 text-xs font-black uppercase tracking-widest hover:border-white hover:text-white transition-colors">Borrador</button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-black uppercase tracking-widest text-slate-400">Orden de Visualización</label>
+<input class="w-full bg-transparent border-2 border-slate-800 focus:border-white text-white p-4 font-bold outline-none transition-colors" type="number" value="1"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Bar -->
+<footer class="fixed bottom-0 left-64 right-0 bg-black/80 backdrop-blur-md border-t border-slate-900 p-6 flex items-center justify-between z-10 px-12">
+<div class="flex items-center gap-8">
+<button class="bg-white text-black px-10 py-4 font-black uppercase tracking-widest text-sm hover:bg-slate-200 transition-colors">
+                    Guardar Proyecto
+                </button>
+<button class="border-2 border-white text-white px-10 py-[14px] font-black uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-colors">
+                    Guardar como Borrador
+                </button>
+</div>
+<a class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 hover:text-white transition-colors" href="#">
+                Cancelar
+            </a>
+</footer>
+</div>
+</body></html>

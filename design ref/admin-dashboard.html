@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#000000",
+              "accent": "#9c1616",
+              "background-light": "#ffffff",
+              "background-dark": "#111111",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "0px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Space Grotesk', sans-serif; }
+        .brutalist-border { border: 2px solid #000000; }
+        .brutalist-border-thick { border: 3px solid #000000; }
+        .no-round { border-radius: 0 !important; }
+    </style>
+</head>
+<body class="bg-background-light text-slate-900 font-display">
+<div class="flex min-h-screen bg-background-light">
+<!-- Sidebar -->
+<aside class="w-64 bg-black text-white flex flex-col justify-between py-8 px-6 no-round shrink-0">
+<div class="flex flex-col gap-10">
+<div class="flex flex-col gap-1">
+<h1 class="text-2xl font-bold tracking-tighter uppercase">ONIRIA ADMIN</h1>
+<p class="text-slate-400 text-xs uppercase tracking-widest">Wedding Management</p>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-4 px-4 py-3 bg-white text-black no-round transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-bold uppercase tracking-tight">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">folder_special</span>
+<span class="text-sm font-medium uppercase tracking-tight">Portafolio</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">article</span>
+<span class="text-sm font-medium uppercase tracking-tight">Blog</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span class="text-sm font-medium uppercase tracking-tight">Mensajes</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium uppercase tracking-tight">Configuración</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto border-t border-slate-800 pt-6">
+<a class="flex items-center gap-4 px-4 py-3 hover:text-accent transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium uppercase tracking-tight">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col">
+<!-- Header -->
+<header class="h-20 bg-white border-b-2 border-black flex items-center justify-between px-10 shrink-0">
+<h2 class="text-xl font-bold uppercase tracking-tighter">PANEL DE ADMINISTRACIÓN</h2>
+<div class="flex items-center gap-6">
+<span class="text-sm font-bold uppercase tracking-widest border-b-2 border-black">Admin Name</span>
+<div class="w-10 h-10 bg-slate-200 border-2 border-black grayscale bg-cover bg-center" data-alt="Grayscale professional portrait of the administrator" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCqomy5-jhbmhOxwUws31BLlziqhYlNNyBKcQ6BCzkY3DclDtGb7JFzb8B-UsKeQBY3fgpeo9Me5R2UZAzdiWCMeGawB3VU5gdIC9FxsFl9is8PM6sXBAY4IJtDn7DDxErMurOGjeEMUBAIPaPbnFtrBQtfLeqV5dFBpy-K745OTXrppA5VaUyPJnsogiFJmP-G8PShMsPeRYqyWgTp4JJRzUPwgI9ZXH115Qf8RS_zEiFJQA910py-gAWjO4ZvbdmV6WPIszjn0Bk')"></div>
+</div>
+</header>
+<!-- Scrollable Area -->
+<div class="p-10 overflow-y-auto">
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+<div class="bg-white brutalist-border-thick p-6 flex flex-col gap-2">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-500">Proyectos Publicados</p>
+<p class="text-5xl font-bold tracking-tighter">24</p>
+</div>
+<div class="bg-white brutalist-border-thick p-6 flex flex-col gap-2">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-500">Artículos del Blog</p>
+<p class="text-5xl font-bold tracking-tighter">12</p>
+</div>
+<div class="bg-white brutalist-border-thick p-6 flex flex-col gap-2">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-500">Mensajes Nuevos</p>
+<p class="text-5xl font-bold tracking-tighter">5</p>
+</div>
+<div class="bg-white brutalist-border-thick p-6 flex flex-col gap-2">
+<p class="text-xs font-bold uppercase tracking-widest text-slate-500">Visitas del Mes</p>
+<p class="text-5xl font-bold tracking-tighter">3,420</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+<!-- Table Section -->
+<div class="lg:col-span-2">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-2xl font-bold uppercase tracking-tighter">Proyectos Recientes</h3>
+<button class="bg-black text-white px-4 py-2 text-xs font-bold uppercase tracking-widest no-round hover:bg-slate-800">Ver Todos</button>
+</div>
+<div class="brutalist-border overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 border-b-2 border-black">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest">Título</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest">Categoría</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest">Fecha</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-center">Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-slate-200 hover:bg-slate-50">
+<td class="px-6 py-5 font-bold uppercase text-sm tracking-tight">Boda Minimalista Madrid</td>
+<td class="px-6 py-5 text-sm text-slate-500 font-medium">Editorial</td>
+<td class="px-6 py-5 text-sm text-slate-500">12/10/2023</td>
+<td class="px-6 py-5">
+<div class="flex justify-center">
+<span class="px-3 py-1 brutalist-border text-[10px] font-bold uppercase tracking-widest bg-white">Publicado</span>
+</div>
+</td>
+</tr>
+<tr class="border-b border-slate-200 hover:bg-slate-50">
+<td class="px-6 py-5 font-bold uppercase text-sm tracking-tight">Enlace Industrial</td>
+<td class="px-6 py-5 text-sm text-slate-500 font-medium">Portfolio</td>
+<td class="px-6 py-5 text-sm text-slate-500">05/10/2023</td>
+<td class="px-6 py-5">
+<div class="flex justify-center">
+<span class="px-3 py-1 brutalist-border text-[10px] font-bold uppercase tracking-widest bg-slate-100">Borrador</span>
+</div>
+</td>
+</tr>
+<tr class="border-b border-slate-200 hover:bg-slate-50">
+<td class="px-6 py-5 font-bold uppercase text-sm tracking-tight">Votos en la Costa</td>
+<td class="px-6 py-5 text-sm text-slate-500 font-medium">Editorial</td>
+<td class="px-6 py-5 text-sm text-slate-500">28/09/2023</td>
+<td class="px-6 py-5">
+<div class="flex justify-center">
+<span class="px-3 py-1 brutalist-border text-[10px] font-bold uppercase tracking-widest bg-white">Publicado</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="px-6 py-5 font-bold uppercase text-sm tracking-tight">Elegancia Monocromática</td>
+<td class="px-6 py-5 text-sm text-slate-500 font-medium">Portfolio</td>
+<td class="px-6 py-5 text-sm text-slate-500">15/09/2023</td>
+<td class="px-6 py-5">
+<div class="flex justify-center">
+<span class="px-3 py-1 brutalist-border text-[10px] font-bold uppercase tracking-widest bg-white">Publicado</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Messages Section -->
+<div class="lg:col-span-1">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-2xl font-bold uppercase tracking-tighter">Mensajes</h3>
+</div>
+<div class="flex flex-col gap-4">
+<div class="brutalist-border p-5 bg-white hover:bg-slate-50 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold uppercase text-sm tracking-tight">Lucía Fernández</h4>
+<span class="text-[10px] font-medium text-slate-400">Hace 2h</span>
+</div>
+<p class="text-sm text-slate-600 line-clamp-2 leading-relaxed">Hola, estamos interesados en el estilo editorial para nuestra boda el próximo verano en...</p>
+</div>
+<div class="brutalist-border p-5 bg-white hover:bg-slate-50 transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold uppercase text-sm tracking-tight">Carlos Ruiz</h4>
+<span class="text-[10px] font-medium text-slate-400">Hace 5h</span>
+</div>
+<p class="text-sm text-slate-600 line-clamp-2 leading-relaxed">¿Podríais enviarme el dossier de precios actualizado para eventos en 2024?</p>
+</div>
+<div class="brutalist-border p-5 bg-white hover:bg-slate-50 transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold uppercase text-sm tracking-tight">Elena &amp; Marc</h4>
+<span class="text-[10px] font-medium text-slate-400">Ayer</span>
+</div>
+<p class="text-sm text-slate-600 line-clamp-2 leading-relaxed">Nos ha encantado el proyecto "Votos en la Costa". Querríamos algo similar...</p>
+</div>
+<button class="w-full text-center py-4 border-2 border-dashed border-slate-300 text-xs font-bold uppercase tracking-widest text-slate-400 hover:border-black hover:text-black transition-all">
+                                Ver todos los mensajes
+                            </button>
+</div>
+</div>
+</div>
+<!-- Footer-like section -->
+<div class="mt-16 border-t-2 border-black pt-8 flex justify-between items-center text-slate-400">
+<p class="text-xs font-bold uppercase tracking-widest">© 2023 Oniria Weddings Administrative System</p>
+<div class="flex gap-4">
+<span class="text-[10px] font-bold uppercase tracking-widest border-b border-transparent hover:border-black hover:text-black cursor-pointer">Privacy</span>
+<span class="text-[10px] font-bold uppercase tracking-widest border-b border-transparent hover:border-black hover:text-black cursor-pointer">Help</span>
+<span class="text-[10px] font-bold uppercase tracking-widest border-b border-transparent hover:border-black hover:text-black cursor-pointer">Status: Online</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
