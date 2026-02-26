@@ -23,6 +23,7 @@ export type GlobalSettings = {
 export const getSettings = cache(async (): Promise<GlobalSettings> => {
   const supabase = await createClient();
   const { data, error } = await supabase
+    .schema('oniria')
     .from('settings')
     .select('*')
     .limit(1)

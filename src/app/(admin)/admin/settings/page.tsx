@@ -28,6 +28,7 @@ export default function AdminSettingsPage() {
     async function loadSettings() {
       try {
         const { data, error } = await supabase
+          .schema('oniria')
           .from('settings')
           .select('*')
           .limit(1)
@@ -156,6 +157,7 @@ export default function AdminSettingsPage() {
       };
 
       const { error: dbError } = await supabase
+        .schema('oniria')
         .from('settings')
         .update(updatePayload)
         .eq('is_singleton', true); // Update the only row where is_singleton is true
