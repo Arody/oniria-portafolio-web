@@ -1,0 +1,36 @@
+@@ -62,7 +71,5 @@
+ CREATE POLICY "Super Admin and Admin full access on portfolio" 
+ ON oniria.portfolio_projects FOR ALL TO authenticated
+-USING (
+-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin'))
+-);
++USING (oniria.has_role(ARRAY['super_admin', 'admin']));
+ 
+ -- Table: Blog Posts
+@@ -90,7 +97,5 @@
+ CREATE POLICY "All admins and editors can manage blog posts" 
+ ON oniria.blog_posts FOR ALL TO authenticated
+-USING (
+-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor'))
+-);
++USING (oniria.has_role(ARRAY['super_admin', 'admin', 'editor']));
+ 
+ 
+@@ -116,7 +121,5 @@
+ CREATE POLICY "Super and Admin can view and manage messages" 
+ ON oniria.messages FOR ALL TO authenticated
+-USING (
+-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin'))
+-);
++USING (oniria.has_role(ARRAY['super_admin', 'admin']));
+ 
+ 
+@@ -134,7 +137,7 @@
+ WITH CHECK (
+     bucket_id = 'oniria' AND
+-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor'))
++    oniria.has_role(ARRAY['super_admin', 'admin', 'editor'])
+ );
+ 
+ CREATE POLICY "Editors and admins can update to oniria bucket"
+ ON storage.objects FOR UPDATE TO authenticated

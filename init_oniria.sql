@@ -14,6 +14,21 @@ CREATE TABLE oniria.user_roles (
 
 ALTER TABLE oniria.user_roles ENABLE ROW LEVEL SECURITY;
 
+-- Function to check role bypassing RLS
+CREATE OR REPLACE FUNCTION oniria.has_role(required_roles text[])
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM oniria.user_roles
+    WHERE id = auth.uid() AND role::text = ANY(required_roles)
+  );
+END;
+$$;
+
 -- Security Policies for user_roles
 CREATE POLICY "Users can read their own role" 
 ON oniria.user_roles FOR SELECT TO authenticated
@@ -21,18 +36,12 @@ USING (auth.uid() = id);
 
 CREATE POLICY "Super admin can do all on user_roles" 
 ON oniria.user_roles FOR ALL TO authenticated
-USING (
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role = 'super_admin')
-);
+USING (oniria.has_role(ARRAY['super_admin']));
 
 CREATE POLICY "Admin can view roles and manage editors" 
 ON oniria.user_roles FOR ALL TO authenticated
-USING (
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role = 'admin')
-)
-WITH CHECK (
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role = 'admin') AND role = 'editor'
-);
+USING (oniria.has_role(ARRAY['admin']))
+WITH CHECK (oniria.has_role(ARRAY['admin']) AND role = 'editor');
 
 
 -- Table: Portfolio Projects
@@ -61,9 +70,7 @@ USING (status = 'published');
 
 CREATE POLICY "Super Admin and Admin full access on portfolio" 
 ON oniria.portfolio_projects FOR ALL TO authenticated
-USING (
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin'))
-);
+USING (oniria.has_role(ARRAY['super_admin', 'admin']));
 
 -- Table: Blog Posts
 CREATE TABLE oniria.blog_posts (
@@ -89,9 +96,7 @@ USING (status = 'published');
 
 CREATE POLICY "All admins and editors can manage blog posts" 
 ON oniria.blog_posts FOR ALL TO authenticated
-USING (
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor'))
-);
+USING (oniria.has_role(ARRAY['super_admin', 'admin', 'editor']));
 
 
 -- Table: Messages (Contact Form)
@@ -115,9 +120,7 @@ WITH CHECK (true);
 
 CREATE POLICY "Super and Admin can view and manage messages" 
 ON oniria.messages FOR ALL TO authenticated
-USING (
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin'))
-);
+USING (oniria.has_role(ARRAY['super_admin', 'admin']));
 
 
 -- Storage Bucket: oniria
@@ -134,21 +137,21 @@ CREATE POLICY "Editors and admins can upload to oniria bucket"
 ON storage.objects FOR INSERT TO authenticated
 WITH CHECK (
     bucket_id = 'oniria' AND
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor'))
+    oniria.has_role(ARRAY['super_admin', 'admin', 'editor'])
 );
 
 CREATE POLICY "Editors and admins can update to oniria bucket"
 ON storage.objects FOR UPDATE TO authenticated
 USING (
     bucket_id = 'oniria' AND
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor'))
+    oniria.has_role(ARRAY['super_admin', 'admin', 'editor'])
 );
 
 CREATE POLICY "Editors and admins can delete from oniria bucket"
 ON storage.objects FOR DELETE TO authenticated
 USING (
     bucket_id = 'oniria' AND
-    EXISTS (SELECT 1 FROM oniria.user_roles WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor'))
+    oniria.has_role(ARRAY['super_admin', 'admin', 'editor'])
 );
 
 -- Triggers for updated_at
