@@ -53,6 +53,7 @@ CREATE TABLE oniria.portfolio_projects (
     event_date DATE,
     description TEXT,
     category oniria.category_type,
+    video_url TEXT,
     status oniria.publish_status DEFAULT 'draft',
     cover_image_url TEXT,
     images TEXT[] DEFAULT '{}',
@@ -176,3 +177,6 @@ GRANT USAGE ON SCHEMA oniria TO anon, authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA oniria TO anon, authenticated;
 GRANT ALL ON ALL ROUTINES IN SCHEMA oniria TO anon, authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA oniria TO anon, authenticated;
+
+-- Update existing table to add video_url
+ALTER TABLE oniria.portfolio_projects ADD COLUMN IF NOT EXISTS video_url TEXT;

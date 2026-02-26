@@ -1,5 +1,6 @@
 import { getAllProjects } from '@/core/services/portfolioService';
 import Link from 'next/link';
+import { DeleteProjectButton } from '@/ui/components/DeleteProjectButton';
 
 export default async function AdminPortfolioPage() {
   const projects = await getAllProjects();
@@ -75,7 +76,7 @@ export default async function AdminPortfolioPage() {
                 </td>
                 <td className="p-4 text-right space-x-2">
                   <Link href={`/admin/portfolio/${project.id}`} className="px-3 py-1 font-bold uppercase text-xs tracking-widest brutalist-border hover:bg-black hover:text-white transition-colors">Editar</Link>
-                  <button className="px-3 py-1 font-bold uppercase text-xs tracking-widest brutalist-border text-red-600 hover:bg-red-600 hover:text-white border-red-600 transition-colors">Eliminar</button>
+                  <DeleteProjectButton id={project.id} />
                 </td>
               </tr>
             ))}

@@ -9,6 +9,7 @@ export type PortfolioProject = {
   description: string | null;
   category: 'Bodas' | 'Pre-boda' | 'Detalles' | 'Recepción' | null;
   status: 'draft' | 'published';
+  video_url: string | null;
   cover_image_url: string | null;
   images: string[];
   display_order: number;
@@ -46,4 +47,20 @@ export async function getAllProjects(): Promise<PortfolioProject[]> {
     return [];
   }
   return data as PortfolioProject[];
+}
+
+// Fetch single project by ID
+export async function getProjectById(id: string): Promise<PortfolioProject | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('portfolio_projects')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error(`Error fetching project with id ${id}:`, error);
+    return null;
+  }
+  return data as PortfolioProject;
 }

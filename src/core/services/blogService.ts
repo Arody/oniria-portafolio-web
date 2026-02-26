@@ -28,3 +28,52 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
   }
   return data as BlogPost[];
 }
+
+
+
+// Fetch all posts for admin (includes drafts)
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching all blog posts:', error);
+    return [];
+  }
+  return data as BlogPost[];
+}
+
+// Fetch single post by slug (for public view)
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (error) {
+    console.error(`Error fetching blog post with slug ${slug}:`, error);
+    return null;
+  }
+  return data as BlogPost;
+}
+
+// Fetch single post by id (for admin edit)
+export async function getBlogPostById(id: string): Promise<BlogPost | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error(`Error fetching blog post with id ${id}:`, error);
+    return null;
+  }
+  return data as BlogPost;
+}
