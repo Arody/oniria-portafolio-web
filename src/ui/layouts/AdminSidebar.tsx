@@ -16,28 +16,28 @@ export function AdminSidebar() {
   ];
 
   return (
-    <aside className="fixed top-0 left-0 w-64 h-screen bg-black text-white flex flex-col border-r-4 border-black z-50">
-      <div className="p-6 border-b border-gray-800">
-        <h1 className="text-xl font-black uppercase tracking-tighter">
-          ONIRIA ADMIN
+    <aside className="fixed top-0 left-0 w-64 h-screen bg-charcoal text-ivory flex flex-col border-r border-graphite z-50">
+      <div className="p-6 border-b border-graphite">
+        <h1 className="text-sm font-serif font-light uppercase tracking-[0.25em] text-ivory">
+          ONIRIA <span className="text-champagne">Admin</span>
         </h1>
       </div>
 
       <nav className="flex-grow py-6">
-        <ul className="space-y-2 px-4">
+        <ul className="space-y-1 px-4">
           {links.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
             return (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`flex items-center gap-3 px-4 py-3 font-bold uppercase text-sm brutalist-border transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-3 font-sans uppercase text-[11px] tracking-[0.15em] transition-all duration-300 border ${
                     isActive 
-                      ? 'bg-white text-black' 
-                      : 'bg-transparent text-gray-300 border-transparent hover:border-gray-500 hover:text-white'
+                    ? 'bg-champagne/10 text-champagne border-champagne/30'
+                    : 'bg-transparent text-mist/50 border-transparent hover:text-ivory hover:bg-graphite/30 hover:border-graphite/50'
                   }`}
                 >
-                  <link.icon className="w-5 h-5 shrink-0" />
+                  <link.icon className="w-4 h-4 shrink-0" />
                   {link.name}
                 </Link>
               </li>
@@ -46,8 +46,8 @@ export function AdminSidebar() {
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-800">
-        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 font-bold uppercase text-sm text-red-500 brutalist-border border-red-500 hover:bg-red-500 hover:text-white transition-colors">
+      <div className="p-4 border-t border-graphite">
+        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 font-sans uppercase text-[11px] tracking-[0.15em] text-red-400/70 border border-red-400/20 hover:bg-red-400/10 hover:text-red-400 hover:border-red-400/40 transition-all duration-300">
           <LogOut className="w-4 h-4" />
           Cerrar Sesión
         </button>

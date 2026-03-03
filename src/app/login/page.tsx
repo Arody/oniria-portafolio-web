@@ -39,81 +39,90 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brutalist-white font-sans flex items-center justify-center p-6">
-      <div className="w-full max-w-md border-4 border-brutalist-black bg-brutalist-white p-8 brutalist-shadow">
-        
-        <div className="mb-8 text-center">
-          <h1 className="font-serif text-4xl font-bold uppercase tracking-tight text-brutalist-black mb-2">
-            Acceso
-          </h1>
-          <p className="text-brutalist-gray text-sm uppercase tracking-wider font-semibold">
-            Oniria Weddings Panel
-          </p>
-        </div>
+    <div className="min-h-screen bg-obsidian flex items-center justify-center p-6 relative">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(#F5F5F3 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          {error && (
-            <div className="bg-red-50 border-2 border-red-900 p-4 text-red-900 text-sm font-semibold">
-              {error}
-            </div>
-          )}
+      <div className="w-full max-w-md relative z-10 animate-fade-up">
+        {/* Champagne accent line */}
+        <div className="w-12 h-px bg-champagne mx-auto mb-10" />
 
-          <div>
-            <label className="block text-sm font-bold uppercase tracking-wider text-brutalist-black mb-2" htmlFor="email">
-              Correo Electrónico
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              className="w-full border-2 border-brutalist-black bg-brutalist-white p-3 text-brutalist-black placeholder:text-brutalist-gray/50 focus:outline-none focus:ring-2 focus:ring-brutalist-black transition-shadow hover:shadow-[4px_4px_0_0_#000]"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-            />
+        <div className="bg-charcoal border border-graphite p-10">
+          <div className="mb-10 text-center">
+            <h1 className="font-serif text-3xl font-light uppercase tracking-[0.15em] text-ivory mb-3">
+              Acceso
+            </h1>
+            <p className="text-mist/40 text-[10px] uppercase tracking-[0.3em] font-sans">
+              Oniria Wedding Films
+            </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-bold uppercase tracking-wider text-brutalist-black mb-2" htmlFor="password">
-              Contraseña
-            </label>
-            <div className="relative">
+          <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <div className="bg-red-900/20 border border-red-500/30 p-4 text-red-400 text-sm font-sans animate-fade-in">
+                {error}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-[10px] font-sans uppercase tracking-[0.2em] text-mist/50 mb-3" htmlFor="email">
+                Correo Electrónico
+              </label>
               <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
+                id="email"
+                type="email"
                 required
-                className="w-full border-2 border-brutalist-black bg-brutalist-white p-3 pr-12 text-brutalist-black placeholder:text-brutalist-gray/50 focus:outline-none focus:ring-2 focus:ring-brutalist-black transition-shadow hover:shadow-[4px_4px_0_0_#000]"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-obsidian border border-graphite p-4 text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-brutalist-gray hover:text-brutalist-black transition-colors"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-brutalist-black text-brutalist-white py-4 px-6 text-sm font-bold uppercase tracking-widest hover:bg-brutalist-gray transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brutalist-black disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <span className="animate-pulse">Verificando...</span>
-            ) : (
-              <>
-                Entrar <LogIn size={18} />
-              </>
-            )}
-          </button>
-        </form>
+            <div>
+              <label className="block text-[10px] font-sans uppercase tracking-[0.2em] text-mist/50 mb-3" htmlFor="password">
+                Contraseña
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  className="w-full bg-obsidian border border-graphite p-4 pr-12 text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-mist/30 hover:text-champagne transition-colors duration-300"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
 
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-champagne text-obsidian py-4 px-6 text-xs font-sans uppercase tracking-[0.3em] hover:bg-gold-dust transition-colors duration-400 disabled:opacity-40 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <span className="animate-pulse tracking-[0.3em]">Verificando...</span>
+              ) : (
+                <>
+                  Entrar <LogIn size={14} />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Bottom accent */}
+        <div className="w-12 h-px bg-champagne mx-auto mt-10" />
       </div>
     </div>
   );

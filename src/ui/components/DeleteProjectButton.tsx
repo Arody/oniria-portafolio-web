@@ -20,7 +20,7 @@ export function DeleteProjectButton({ id }: { id: string }) {
       const { error } = await supabase.from('portfolio_projects').delete().eq('id', id);
       if (error) throw error;
       
-      router.refresh(); // Refresh the server component list
+      router.refresh();
     } catch (err: any) {
       alert(`Error al eliminar: ${err.message}`);
     } finally {
@@ -32,9 +32,9 @@ export function DeleteProjectButton({ id }: { id: string }) {
     <button
       onClick={handleDelete}
       disabled={isDeleting}
-      className="px-3 py-1 font-bold uppercase text-xs tracking-widest brutalist-border text-red-600 hover:bg-red-600 hover:text-white border-red-600 transition-colors disabled:opacity-50"
+      className="px-3 py-1 font-sans uppercase text-[10px] tracking-[0.15em] border border-red-500/30 text-red-400/70 hover:bg-red-500/10 hover:text-red-400 hover:border-red-400/50 transition-all duration-300 disabled:opacity-50"
     >
-      {isDeleting ? <Loader2 size={14} className="animate-spin inline" /> : 'Eliminar'}
+      {isDeleting ? <Loader2 size={12} className="animate-spin inline" /> : 'Eliminar'}
     </button>
   );
 }

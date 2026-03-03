@@ -21,10 +21,10 @@ export function LogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoading}
-      className="fixed bottom-4 left-4 z-[9999] bg-red-600 text-white border-4 border-black px-4 py-2 font-black uppercase tracking-widest text-sm hover:bg-black transition-colors brutalist-shadow-hover flex items-center gap-2"
+      className="fixed bottom-6 left-6 z-[9999] bg-charcoal text-mist/60 border border-graphite px-4 py-2.5 font-sans uppercase tracking-[0.15em] text-[10px] hover:border-champagne/50 hover:text-champagne transition-all duration-400 flex items-center gap-2"
     >
-      <LogOut size={16} />
-      {isLoading ? 'Saliendo...' : 'FORZAR CIERRE DE SESIÓN'}
+      <LogOut size={14} />
+      {isLoading ? 'Saliendo...' : 'Cerrar Sesión'}
     </button>
   );
 }

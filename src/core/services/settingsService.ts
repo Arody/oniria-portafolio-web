@@ -7,6 +7,7 @@ export type GlobalSettings = {
   site_description: string | null;
   logo_text: string | null;
   logo_image_url: string | null;
+  logo_size: number;
   heading_font: string | null;
   body_font: string | null;
   hero_title: string | null;
@@ -38,6 +39,7 @@ export const getSettings = cache(async (): Promise<GlobalSettings> => {
       site_description: 'Fotografía Editorial de Bodas',
       logo_text: 'ONIRIA.',
       logo_image_url: null,
+      logo_size: 40,
       heading_font: 'Cabinet Grotesk',
       body_font: 'Inter',
       hero_title: 'CREANDO RECUERDOS ATEMPORALES',

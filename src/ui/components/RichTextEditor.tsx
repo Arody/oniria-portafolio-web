@@ -24,17 +24,17 @@ const MenuBar = ({ editor }: { editor: any }) => {
   }, [editor]);
 
   const buttonClass = (isActive: boolean) => 
-    `p-2 border-2 transition-colors ${isActive ? 'bg-black text-white border-black' : 'bg-white text-black border-black hover:bg-gray-100'}`;
+    `p-2 border transition-all duration-300 ${isActive ? 'bg-champagne/20 text-champagne border-champagne/40' : 'bg-transparent text-mist/50 border-graphite hover:text-ivory hover:border-mist/30'}`;
 
   return (
-    <div className="flex flex-wrap gap-2 mb-4 p-2 bg-gray-100 border-2 border-black">
+    <div className="flex flex-wrap gap-2 mb-0 p-3 bg-graphite/30 border border-graphite border-b-0">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={buttonClass(editor.isActive('heading', { level: 1 }))}
         title="Título 1"
       >
-        <Heading1 size={18} />
+        <Heading1 size={16} />
       </button>
       <button
         type="button"
@@ -42,10 +42,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
         className={buttonClass(editor.isActive('heading', { level: 2 }))}
         title="Título 2"
       >
-        <Heading2 size={18} />
+        <Heading2 size={16} />
       </button>
 
-      <div className="w-px h-8 bg-gray-400 mx-2 self-center"></div>
+      <div className="w-px h-8 bg-graphite mx-1 self-center"></div>
 
       <button
         type="button"
@@ -54,7 +54,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         className={buttonClass(editor.isActive('bold'))}
         title="Negrita"
       >
-        <Bold size={18} />
+        <Bold size={16} />
       </button>
       <button
         type="button"
@@ -63,10 +63,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
         className={buttonClass(editor.isActive('italic'))}
         title="Cursiva"
       >
-        <Italic size={18} />
+        <Italic size={16} />
       </button>
 
-      <div className="w-px h-8 bg-gray-400 mx-2 self-center"></div>
+      <div className="w-px h-8 bg-graphite mx-1 self-center"></div>
 
       <button
         type="button"
@@ -74,7 +74,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         className={buttonClass(editor.isActive('bulletList'))}
         title="Lista"
       >
-        <List size={18} />
+        <List size={16} />
       </button>
       <button
         type="button"
@@ -82,7 +82,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         className={buttonClass(editor.isActive('orderedList'))}
         title="Lista Numerada"
       >
-        <ListOrdered size={18} />
+        <ListOrdered size={16} />
       </button>
       <button
         type="button"
@@ -90,10 +90,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
         className={buttonClass(editor.isActive('blockquote'))}
         title="Cita"
       >
-        <Quote size={18} />
+        <Quote size={16} />
       </button>
 
-      <div className="w-px h-8 bg-gray-400 mx-2 self-center"></div>
+      <div className="w-px h-8 bg-graphite mx-1 self-center"></div>
 
       <button
         type="button"
@@ -101,7 +101,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         className={buttonClass(false)}
         title="Añadir Imagen (URL)"
       >
-        <ImageIcon size={18} />
+        <ImageIcon size={16} />
       </button>
     </div>
   );
@@ -119,14 +119,14 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
       Image.configure({
         inline: true,
         HTMLAttributes: {
-          class: 'w-full h-auto border-4 border-black grayscale my-8',
+          class: 'w-full h-auto border border-graphite my-8',
         },
       }),
     ],
     content: content,
     editorProps: {
       attributes: {
-        class: 'prose prose-lg max-w-none focus:outline-none min-h-[400px] p-4 bg-white border-2 border-black shadow-[4px_4px_0_0_#000]',
+        class: 'prose prose-invert prose-lg max-w-none focus:outline-none min-h-[400px] p-6 bg-obsidian border border-graphite text-ivory',
       },
     },
     onUpdate: ({ editor }) => {
@@ -137,58 +137,69 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   return (
     <div className="w-full">
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} className="font-serif tiptap-brutalist" />
+      <EditorContent editor={editor} className="font-sans tiptap-oniria" />
       
       {/* Global styles for the editor content */}
       <style jsx global>{`
-        .tiptap-brutalist .ProseMirror > * + * {
-          margin-top: 1.5em; /* Spacing between blocks */
+        .tiptap-oniria .ProseMirror > * + * {
+          margin-top: 1.5em;
         }
-        .tiptap-brutalist h1 {
-          font-size: 2.5rem;
-          font-weight: 900;
+        .tiptap-oniria h1 {
+          font-size: 2rem;
+          font-weight: 300;
+          font-family: 'Cormorant Garamond', serif;
           text-transform: uppercase;
-          letter-spacing: -0.05em;
-          border-bottom: 4px solid black;
+          letter-spacing: 0.05em;
+          border-bottom: 1px solid #2A2A2E;
           padding-bottom: 0.5rem;
           margin-top: 2rem;
+          color: #F5F5F3;
         }
-        .tiptap-brutalist h2 {
-          font-size: 1.8rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          margin-top: 1.5rem;
-        }
-        .tiptap-brutalist p {
-          font-size: 1.25rem;
-          line-height: 1.7;
-          color: #1a1a1a;
-        }
-        .tiptap-brutalist blockquote {
-          border-left: 8px solid black;
-          padding-left: 1rem;
-          font-style: italic;
+        .tiptap-oniria h2 {
           font-size: 1.5rem;
+          font-weight: 300;
+          font-family: 'Cormorant Garamond', serif;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          margin-top: 1.5rem;
+          color: #F5F5F3;
+        }
+        .tiptap-oniria p {
+          font-size: 1rem;
+          line-height: 1.8;
+          color: #E8E8E6;
+          font-family: 'Inter', sans-serif;
+        }
+        .tiptap-oniria blockquote {
+          border-left: 2px solid #C6A56E;
+          padding-left: 1.5rem;
+          font-style: italic;
+          font-size: 1.1rem;
           margin: 2rem 0;
-          background-color: #f3f4f6;
+          background-color: rgba(42, 42, 46, 0.3);
           padding: 1.5rem;
+          color: #E8E8E6;
         }
-        .tiptap-brutalist ul {
-          list-style-type: square;
+        .tiptap-oniria ul {
+          list-style-type: disc;
           padding-left: 1.5rem;
-          font-size: 1.25rem;
+          font-size: 1rem;
+          color: #E8E8E6;
         }
-        .tiptap-brutalist ol {
+        .tiptap-oniria ol {
           list-style-type: decimal;
-          font-weight: bold;
           padding-left: 1.5rem;
-          font-size: 1.25rem;
+          font-size: 1rem;
+          color: #E8E8E6;
         }
-        .tiptap-brutalist img {
+        .tiptap-oniria img {
           max-width: 100%;
           height: auto;
           display: block;
           margin: 2rem auto;
+        }
+        .tiptap-oniria .ProseMirror:focus {
+          border-color: rgba(198, 165, 110, 0.5);
         }
       `}</style>
     </div>

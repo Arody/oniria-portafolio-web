@@ -10,35 +10,47 @@ export function BlogSection({ posts }: BlogSectionProps) {
   // Take only the latest 3 posts for the homepage
   const recentPosts = posts.slice(0, 3);
   return (
-    <section id="blog" className="py-24 bg-gray-50 border-b-4 border-black">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="blog" className="py-28 bg-charcoal relative">
+      {/* Subtle top border */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-px bg-champagne/30" />
+
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Header */}
-        <div className="mb-16 text-center">
-          <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-4 text-black">
-            BLOG
-          </h2>
-          <p className="text-xl md:text-2xl font-medium text-gray-600">
-            Inspiración y consejos para tu gran día
+        <div className="mb-20 text-center">
+          <p className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4">
+            Stories & inspiration
           </p>
+          <h2 className="text-5xl md:text-7xl font-serif font-light text-ivory uppercase tracking-[0.1em]">
+            Blog
+          </h2>
+          <div className="w-16 h-px bg-champagne/40 mx-auto mt-8" />
         </div>
 
         {/* Blog Cards Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {recentPosts.length > 0 ? recentPosts.map((post) => (
-            <div key={post.id} className="bg-white brutalist-border flex flex-col brutalist-shadow-hover transition-transform duration-300">
+          {recentPosts.length > 0 ? recentPosts.map((post, idx) => (
+            <Link
+              key={post.id}
+              href={`/blog/${post.slug}`}
+              className="bg-graphite/50 flex flex-col group transition-all duration-500 hover:bg-graphite border border-graphite/50 hover:border-champagne/20 animate-fade-up relative overflow-hidden"
+              style={{ animationDelay: `${idx * 150}ms` }}
+            >
+              {/* Champagne top accent that slides in on hover */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-champagne scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left z-10" />
+
               {/* Image */}
-              <div className="w-full h-64 border-b-2 border-black overflow-hidden relative">
+              <div className="w-full h-64 overflow-hidden relative">
                 {post.cover_image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={post.cover_image_url}
                     alt={post.title}
-                    className="w-full h-full object-cover grayscale hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-75"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="font-bold uppercase text-gray-500 tracking-widest text-sm">Sin Portada</span>
+                    <div className="w-full h-full bg-graphite flex items-center justify-center">
+                      <span className="font-sans uppercase text-mist/30 tracking-[0.2em] text-xs">Sin Portada</span>
                   </div>
                 )}
               </div>
@@ -46,33 +58,33 @@ export function BlogSection({ posts }: BlogSectionProps) {
               {/* Content */}
               <div className="p-8 flex flex-col flex-grow">
                 {post.category && (
-                  <span className="text-xs font-black uppercase tracking-widest mb-4 inline-block bg-black text-white px-2 py-1 select-none self-start">
-                    {post.category}
-                  </span>
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="w-4 h-px bg-champagne/60 group-hover:w-8 transition-all duration-500" />
+                    <span className="font-serif italic text-champagne/80 text-sm tracking-wide">
+                      {post.category}
+                    </span>
+                  </div>
                 )}
-                <h3 className="text-2xl font-bold mb-4 leading-tight shrink-0">
+                <h3 className="text-xl font-serif font-light text-ivory mb-4 leading-relaxed tracking-wide group-hover:text-champagne transition-colors duration-400">
                   {post.title}
                 </h3>
-                <p className="text-gray-600 mb-8 flex-grow">
+                <p className="text-mist/60 text-sm font-sans leading-relaxed mb-8 flex-grow">
                   {post.excerpt || 'Sin extracto disponible...'}
                 </p>
                 
-                <div className="flex justify-between items-end mt-auto pt-4 border-t-2 border-dashed border-gray-300">
-                  <span className="text-xs font-bold text-gray-500 tracking-wider">
+                <div className="flex justify-between items-end mt-auto pt-4 border-t border-graphite">
+                  <span className="text-[10px] font-sans text-mist/40 tracking-[0.15em] uppercase">
                     {new Date(post.created_at).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
                   </span>
-                  <Link 
-                    href={`/blog/${post.slug}`} 
-                    className="text-black font-black uppercase text-sm tracking-widest border-b-4 border-black hover:text-gray-600 hover:border-gray-600 transition-colors"
-                  >
-                    LEER MÁS →
-                  </Link>
+                  <span className="text-champagne font-sans uppercase text-xs tracking-[0.2em] group-hover:text-ivory transition-colors duration-400">
+                    Leer más →
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
           )) : (
-            <div className="col-span-3 py-12 text-center text-gray-500 font-bold tracking-widest border-4 border-dashed border-gray-300 uppercase">
-              No hay artículos publicados aún.
+              <div className="col-span-3 py-16 text-center border border-graphite">
+                <p className="font-sans text-mist/40 uppercase tracking-[0.2em] text-sm">No hay artículos publicados aún.</p>
             </div>
           )}
         </div>
@@ -81,9 +93,9 @@ export function BlogSection({ posts }: BlogSectionProps) {
         <div className="text-center">
           <Link 
             href="/blog" 
-            className="inline-block bg-white text-black px-10 py-5 font-bold uppercase tracking-widest brutalist-border-thick brutalist-shadow-hover"
+            className="inline-block bg-transparent text-ivory px-10 py-4 font-sans uppercase tracking-[0.3em] text-xs border border-ivory/30 hover:border-champagne hover:text-champagne transition-all duration-500"
           >
-            VER TODOS LOS ARTÍCULOS
+            Ver todas las historias
           </Link>
         </div>
 

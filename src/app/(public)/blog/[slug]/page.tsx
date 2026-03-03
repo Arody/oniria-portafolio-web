@@ -38,34 +38,34 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className="min-h-screen flex flex-col pt-20 bg-white">
+    <div className="min-h-screen flex flex-col bg-obsidian">
       <Navbar />
-      <main className="flex-grow">
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <main className="flex-grow pt-32">
+        <article className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
           
-          <Link href="/blog" className="inline-flex items-center gap-2 font-bold uppercase tracking-widest text-sm text-gray-500 hover:text-black transition-colors mb-12">
-            <ArrowLeft size={16} /> Volver al Blog
+          <Link href="/blog" className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[10px] text-mist/40 hover:text-champagne transition-colors duration-300 mb-12">
+            <ArrowLeft size={14} /> Volver al Blog
           </Link>
 
           {/* Header */}
-          <header className="mb-16">
-            <div className="flex flex-wrap items-center gap-4 mb-6">
+          <header className="mb-16 animate-fade-up">
+            <div className="flex flex-wrap items-center gap-4 mb-8">
               {post.category && (
-                <span className="bg-black text-white px-3 py-1 text-xs font-black uppercase tracking-widest">
+                <span className="text-[10px] font-sans text-champagne uppercase tracking-[0.25em]">
                   {post.category}
                 </span>
               )}
-              <time className="text-sm font-bold text-gray-500 tracking-wider">
+              <time className="text-[10px] font-sans text-mist/30 tracking-[0.15em]">
                 {new Date(post.created_at).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
               </time>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-tight mb-8">
+            <h1 className="text-4xl md:text-6xl font-serif font-light uppercase tracking-[0.05em] leading-tight text-ivory mb-8">
               {post.title}
             </h1>
 
             {post.excerpt && (
-              <p className="text-xl md:text-2xl font-medium text-gray-600 border-l-8 border-black pl-6 italic">
+              <p className="text-lg md:text-xl font-sans text-mist/50 border-l-2 border-champagne pl-6 italic">
                 {post.excerpt}
               </p>
             )}
@@ -73,12 +73,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           {/* Cover Image */}
           {post.cover_image_url && (
-            <div className="w-full aspect-video border-4 border-black mb-16 relative">
+            <div className="w-full aspect-video border border-graphite mb-16 relative overflow-hidden animate-fade-up" style={{ animationDelay: '200ms' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={post.cover_image_url} 
                 alt={`Imagen principal de ${post.title}`}
-                className="w-full h-full object-cover grayscale"
+                className="w-full h-full object-cover"
               />
             </div>
           )}
@@ -86,30 +86,31 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           {/* Rich Text Content */}
           {post.content ? (
             <div 
-              className="prose prose-lg md:prose-xl max-w-none tiptap-brutalist"
+              className="prose prose-invert prose-lg md:prose-xl max-w-none tiptap-oniria-reader animate-fade-up"
+              style={{ animationDelay: '400ms' }}
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           ) : (
-            <div className="py-20 text-center border-4 border-black bg-gray-50">
-               <p className="font-bold uppercase tracking-widest text-gray-600">El contenido de este artículo está vacío.</p>
+              <div className="py-20 text-center border border-graphite bg-charcoal">
+                <p className="font-sans uppercase tracking-[0.15em] text-mist/30 text-sm">El contenido de este artículo está vacío.</p>
             </div>
           )}
 
         </article>
       </main>
 
-      {/* Global TiTap Brutalist Styles for Readers */}
+      {/* Oniria TipTap Styles for Readers */}
       <style dangerouslySetInnerHTML={{__html: `
-        .tiptap-brutalist > * + * { margin-top: 1.5em; }
-        .tiptap-brutalist h1 { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; border-bottom: 4px solid black; padding-bottom: 0.5rem; margin-top: 2rem; color: black; }
-        .tiptap-brutalist h2 { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; margin-top: 1.5rem; color: black; }
-        .tiptap-brutalist p { font-size: 1.25rem; line-height: 1.7; color: #1a1a1a; font-family: ui-sans-serif, system-ui, sans-serif; }
-        .tiptap-brutalist blockquote { border-left: 8px solid black; padding-left: 1rem; font-style: italic; font-size: 1.5rem; margin: 2rem 0; background-color: #f3f4f6; padding: 1.5rem; color: black; }
-        .tiptap-brutalist ul { list-style-type: square; padding-left: 1.5rem; font-size: 1.25rem; color: black; }
-        .tiptap-brutalist ol { list-style-type: decimal; font-weight: bold; padding-left: 1.5rem; font-size: 1.25rem; color: black; }
-        .tiptap-brutalist img { max-width: 100%; height: auto; display: block; margin: 3rem auto; border: 4px solid black; filter: grayscale(100%); }
-        .tiptap-brutalist a { color: black; text-decoration: underline; font-weight: bold; }
-        .tiptap-brutalist a:hover { background-color: black; color: white; }
+        .tiptap-oniria-reader > * + * { margin-top: 1.5em; }
+        .tiptap-oniria-reader h1 { font-size: 2rem; font-weight: 300; font-family: 'Cormorant Garamond', serif; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #2A2A2E; padding-bottom: 0.5rem; margin-top: 2rem; color: #F5F5F3; }
+        .tiptap-oniria-reader h2 { font-size: 1.5rem; font-weight: 300; font-family: 'Cormorant Garamond', serif; text-transform: uppercase; letter-spacing: 0.03em; margin-top: 1.5rem; color: #F5F5F3; }
+        .tiptap-oniria-reader p { font-size: 1.1rem; line-height: 1.8; color: #E8E8E6; font-family: 'Inter', sans-serif; }
+        .tiptap-oniria-reader blockquote { border-left: 2px solid #C6A56E; padding-left: 1.5rem; font-style: italic; font-size: 1.15rem; margin: 2rem 0; background-color: rgba(42, 42, 46, 0.3); padding: 1.5rem; color: #E8E8E6; }
+        .tiptap-oniria-reader ul { list-style-type: disc; padding-left: 1.5rem; font-size: 1.1rem; color: #E8E8E6; }
+        .tiptap-oniria-reader ol { list-style-type: decimal; padding-left: 1.5rem; font-size: 1.1rem; color: #E8E8E6; }
+        .tiptap-oniria-reader img { max-width: 100%; height: auto; display: block; margin: 3rem auto; border: 1px solid #2A2A2E; }
+        .tiptap-oniria-reader a { color: #C6A56E; text-decoration: none; border-bottom: 1px solid rgba(198, 165, 110, 0.3); }
+        .tiptap-oniria-reader a:hover { border-bottom-color: #C6A56E; }
       `}} />
 
       <Footer />

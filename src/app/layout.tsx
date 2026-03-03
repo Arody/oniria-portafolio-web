@@ -1,11 +1,19 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk } from 'next/font/google'
+import { Cormorant_Garamond, Inter } from 'next/font/google'
 import { getSettings } from '@/core/services/settingsService'
 import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({
-  variable: '--font-space-grotesk',
+const cormorant = Cormorant_Garamond({
+  variable: '--font-cormorant',
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const inter = Inter({
+  variable: '--font-inter',
+  subsets: ['latin'],
+  display: 'swap',
 })
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,12 +32,12 @@ export default async function RootLayout({
   const settings = await getSettings();
 
   return (
-    <html lang="es">
+    <html lang="es" className="dark">
       <head>
         <style>
           {`
                :root {
-                  --font-heading: ${settings.heading_font || 'Cabinet Grotesk, sans-serif'};
+                  --font-heading: ${settings.heading_font || 'Cormorant Garamond, serif'};
                   --font-body: ${settings.body_font || 'Inter, sans-serif'};
                }
                
@@ -37,13 +45,13 @@ export default async function RootLayout({
                   font-family: var(--font-body);
                }
 
-               h1, h2, h3, h4, h5, h6, .font-black {
+               h1, h2, h3, h4, h5, h6, .font-heading {
                   font-family: var(--font-heading);
                }
             `}
         </style>
       </head>
-      <body className={`${spaceGrotesk.variable} antialiased`}>
+      <body className={`${cormorant.variable} ${inter.variable} antialiased bg-obsidian text-ivory`}>
         {children}
       </body>
     </html>

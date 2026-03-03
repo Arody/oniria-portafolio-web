@@ -61,42 +61,47 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contacto" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+    <section id="contacto" className="py-28 bg-obsidian relative">
+      {/* Subtle top divider */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-px bg-champagne/30" />
+
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
           
           {/* Left Form Side */}
           <div>
-            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-4 text-black border-b-4 border-black inline-block pb-2">
-              CONTACTO
-            </h2>
-            <p className="text-xl md:text-2xl font-medium text-gray-600 mb-12">
-              Cuéntanos sobre tu boda soñada
+            <p className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4">
+              Let&apos;s create something eternal
             </p>
+            <h2 className="text-5xl md:text-7xl font-serif font-light text-ivory uppercase tracking-[0.1em] mb-4">
+              Contacto
+            </h2>
+            <div className="w-16 h-px bg-champagne/40 mb-12" />
 
             {status === 'success' && (
-              <div className="mb-8 p-6 bg-black text-white brutalist-border-thick brutalist-shadow">
-                <h3 className="text-xl font-bold uppercase tracking-widest mb-2">¡Mensaje Enviado!</h3>
-                <p>Gracias por contactarnos. Hemos recibido tu solicitud y enviado una confirmación a tu correo. Nos pondremos en contacto pronto.</p>
+              <div className="mb-8 p-6 bg-champagne/10 border border-champagne/30 animate-fade-in">
+                <h3 className="text-lg font-serif text-champagne mb-2">¡Mensaje Enviado!</h3>
+                <p className="text-mist/70 text-sm font-sans">Gracias por contactarnos. Hemos recibido tu solicitud y enviado una confirmación a tu correo.</p>
               </div>
             )}
 
             {status === 'error' && (
-              <div className="mb-8 p-6 bg-red-100 text-red-900 brutalist-border-thick border-red-900 brutalist-shadow">
-                <h3 className="text-xl font-bold uppercase tracking-widest mb-2">Error</h3>
-                <p>{errorMessage}</p>
+              <div className="mb-8 p-6 bg-red-900/20 border border-red-500/30 animate-fade-in">
+                <h3 className="text-lg font-serif text-red-400 mb-2">Error</h3>
+                <p className="text-red-300/70 text-sm font-sans">{errorMessage}</p>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-bold uppercase tracking-widest mb-2">Nombre completo</label>
+                <label htmlFor="name" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Nombre completo</label>
                 <input 
                   type="text" 
                   id="name" 
                   name="name"
-                  className="w-full p-4 brutalist-border bg-gray-50 focus:outline-none focus:bg-white focus:ring-2 focus:ring-black"
+                  className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
+                  placeholder="Tu nombre"
                   required 
                   disabled={status === 'loading'}
                 />
@@ -104,46 +109,49 @@ export function ContactSection() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-bold uppercase tracking-widest mb-2">Correo electrónico</label>
+                  <label htmlFor="email" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Correo electrónico</label>
                   <input 
                     type="email" 
                     id="email" 
                     name="email"
-                    className="w-full p-4 brutalist-border bg-gray-50 focus:outline-none focus:bg-white focus:ring-2 focus:ring-black"
+                    className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
+                    placeholder="correo@ejemplo.com"
                     required 
                     disabled={status === 'loading'}
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-bold uppercase tracking-widest mb-2">Teléfono</label>
+                  <label htmlFor="phone" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Teléfono</label>
                   <input 
                     type="tel" 
                     id="phone" 
                     name="phone"
-                    className="w-full p-4 brutalist-border bg-gray-50 focus:outline-none focus:bg-white focus:ring-2 focus:ring-black"
+                    className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
+                    placeholder="+52 999 000 0000"
                     disabled={status === 'loading'}
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="date" className="block text-sm font-bold uppercase tracking-widest mb-2">Fecha de la boda</label>
+                <label htmlFor="date" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Fecha de la boda</label>
                 <input 
                   type="date" 
                   id="date" 
                   name="date"
-                  className="w-full p-4 brutalist-border bg-gray-50 focus:outline-none focus:bg-white focus:ring-2 focus:ring-black" 
+                  className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm focus:outline-none focus:border-champagne/50 transition-colors duration-400" 
                   disabled={status === 'loading'}
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-bold uppercase tracking-widest mb-2">Mensaje</label>
+                <label htmlFor="message" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Mensaje</label>
                 <textarea 
                   id="message" 
                   name="message"
-                  rows={6}
-                  className="w-full p-4 brutalist-border bg-gray-50 focus:outline-none focus:bg-white focus:ring-2 focus:ring-black resize-none"
+                  rows={5}
+                  className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400 resize-none"
+                  placeholder="Cuéntanos sobre tu boda soñada..."
                   required 
                   disabled={status === 'loading'}
                 />
@@ -152,49 +160,46 @@ export function ContactSection() {
               <button 
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full bg-black text-white p-5 font-bold uppercase tracking-widest text-lg brutalist-border hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+                className="w-full bg-champagne text-obsidian p-4 font-sans uppercase tracking-[0.3em] text-xs hover:bg-gold-dust transition-colors duration-400 disabled:opacity-40 disabled:cursor-not-allowed flex justify-center items-center"
               >
-                {status === 'loading' ? 'ENVIANDO...' : 'ENVIAR MENSAJE'}
+                {status === 'loading' ? 'Enviando...' : 'Begin your story'}
               </button>
             </form>
           </div>
 
           {/* Right Info Side */}
-          <div className="lg:pl-12 flex flex-col justify-center">
+          <div className="lg:pl-8 flex flex-col justify-center">
             <div className="mb-16">
-              <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 pb-2 border-b-2 border-black inline-block">INFO</h3>
+              <h3 className="text-xs font-sans uppercase tracking-[0.3em] text-champagne mb-10">Info</h3>
               
-              <div className="space-y-6">
+              <div className="space-y-10">
                 <div>
-                  <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">Email</p>
-                  <a href="mailto:hola@oniria-weddings.com" className="text-2xl font-bold hover:underline">
+                  <p className="text-[10px] font-sans text-mist/40 uppercase tracking-[0.2em] mb-2">Email</p>
+                  <a href="mailto:hola@oniria-weddings.com" className="text-xl font-serif font-light text-ivory hover:text-champagne transition-colors duration-400">
                     hola@oniria-weddings.com
                   </a>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">Teléfono</p>
-                  <a href="tel:+529991234567" className="text-2xl font-bold hover:underline">
+                  <p className="text-[10px] font-sans text-mist/40 uppercase tracking-[0.2em] mb-2">Teléfono</p>
+                  <a href="tel:+529991234567" className="text-xl font-serif font-light text-ivory hover:text-champagne transition-colors duration-400">
                     +52 999 123 4567
                   </a>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">Ubicación</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-[10px] font-sans text-mist/40 uppercase tracking-[0.2em] mb-2">Ubicación</p>
+                  <p className="text-xl font-serif font-light text-ivory">
                     Mérida, Yucatán, México
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Faux Map Graphic */}
-            <div className="w-full h-64 bg-zinc-200 brutalist-border relative overflow-hidden flex items-center justify-center group">
-               <div className="absolute inset-0 opacity-40" 
-                    style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
-              <div className="z-10 bg-black text-white px-6 py-3 font-bold uppercase tracking-widest text-sm shadow-xl group-hover:scale-110 transition-transform cursor-pointer">
-                 VER MÚLTIPLES UBICACIONES
-               </div>
-            </div>
-            
+            {/* Decorative Element */}
+            <div className="w-full h-px bg-gradient-to-r from-transparent via-champagne/30 to-transparent mb-10" />
+
+            <p className="text-mist/30 text-xs font-sans tracking-[0.15em] uppercase text-center">
+              Available worldwide
+            </p>
           </div>
         </div>
       </div>

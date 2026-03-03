@@ -51,3 +51,6 @@ VALUES (
     'Cabinet Grotesk',
     'Inter'
 ) ON CONFLICT DO NOTHING;
+
+-- Migration to add logo_size
+ALTER TABLE oniria.settings ADD COLUMN IF NOT EXISTS logo_size INTEGER DEFAULT 40;
