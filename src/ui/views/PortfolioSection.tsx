@@ -67,19 +67,71 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
     return `h-[90vh] ${heights[index % heights.length]}`;
   };
 
+  // — Animated header with scroll parallax —
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerVisible, setHeaderVisible] = useState(false);
+  const [headerParallax, setHeaderParallax] = useState({ opacity: 1, y: 0 });
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setHeaderVisible(true); },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = headerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const sectionTop = rect.top;
+      // Once the header scrolls above the viewport center, start fading & displacing
+      const progress = Math.max(0, Math.min(1, -sectionTop / (rect.height * 1.5)));
+      setHeaderParallax({
+        opacity: 1 - progress * 1.2,
+        y: progress * -60,
+      });
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <section id="portafolio" className="py-28 bg-obsidian relative">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
-        {/* Header */}
-        <div className="mb-20 text-center">
-          <p className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4">
-            Our work
+        {/* Animated Header */}
+        <div
+          ref={headerRef}
+          className="mb-20 text-center"
+          style={{
+            opacity: headerParallax.opacity,
+            transform: `translateY(${headerParallax.y}px)`,
+            willChange: 'transform, opacity',
+          }}
+        >
+          <p
+            className={`text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4 transition-all duration-1000 ease-out ${headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}
+          >
+            {dict.subtitle}
           </p>
-          <h2 className="text-5xl md:text-7xl font-serif font-light text-ivory uppercase tracking-[0.1em]">
-            Portafolio
+          <h2
+            className={`text-5xl md:text-8xl font-serif font-light text-ivory uppercase tracking-[0.12em] transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${headerVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
+              }`}
+            style={{ transitionDelay: '200ms' }}
+          >
+            {dict.title}
           </h2>
-          <div className="w-16 h-px bg-champagne/40 mx-auto mt-8" />
+          <div
+            className={`w-16 h-px bg-champagne/40 mx-auto mt-8 transition-all duration-1000 ease-out ${headerVisible ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+              }`}
+            style={{ transitionDelay: '600ms' }}
+          />
         </div>
 
         {/* Mobile: Collapsible Capsule Filter */}
