@@ -5,9 +5,12 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import type { Locale } from '@/i18n.config';
+
+import { getDictionary } from "@/lib/dictionaries";
 
 // Genera la metadata SSR dinámica extraida de la base de datos para SEO
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string, locale: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const post = await getBlogPostBySlug(resolvedParams.slug);
 
@@ -29,9 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string, locale: string }> }) {
   const resolvedParams = await params;
   const post = await getBlogPostBySlug(resolvedParams.slug);
+  const dict = await getDictionary(resolvedParams.locale as Locale);
 
   if (!post || post.status !== 'published') {
     notFound();
@@ -39,12 +43,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
-      <Navbar />
+      <Navbar dict={dict.navigation} locale={resolvedParams.locale as any} />
       <main className="flex-grow pt-32">
         <article className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
           
-          <Link href="/blog" className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[10px] text-mist/40 hover:text-champagne transition-colors duration-300 mb-12">
-            <ArrowLeft size={14} /> Volver al Blog
+          <Link href={`/${resolvedParams.locale}/blog`} className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[10px] text-mist/40 hover:text-champagne transition-colors duration-300 mb-12">
+            <ArrowLeft size={14} /> {resolvedParams.locale === 'es' ? 'Volver al Blog' : 'Back to Blog'}
           </Link>
 
           {/* Header */}
@@ -56,7 +60,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 </span>
               )}
               <time className="text-[10px] font-sans text-mist/30 tracking-[0.15em]">
-                {new Date(post.created_at).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
+                {new Date(post.created_at).toLocaleDateString(resolvedParams.locale === 'es' ? 'es-MX' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
               </time>
             </div>
             
@@ -113,7 +117,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         .tiptap-oniria-reader a:hover { border-bottom-color: #C6A56E; }
       `}} />
 
-      <Footer />
+      <Footer dict={dict.footer} navDict={dict.navigation} locale={resolvedParams.locale as any} />
     </div>
   );
 }

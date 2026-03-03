@@ -1,0 +1,60 @@
+{
+  "navigation": {
+    "home": "INICIO",
+    "our_work": "HISTORIAS",
+    "blog": "BLOG",
+    "contact": "CONTACTO",
+    "admin": "Admin"
+  },
+  "hero": {
+    "scroll": "HACER SCROLL",
+    "subtitle": "CAPTURING LOVE"
+  },
+  "interludes": {
+    "1_quote": "Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.",
+    "1_accent": "eterno",
+    "1_signature": "— Filosofía Oniria",
+    "2_quote": "No capturamos momentos. Creamos fragmentos de eternidad que respirarán por siempre.",
+    "2_accent": "eternidad",
+    "2_signature": "— El Arte de Recordar",
+    "3_quote": "Tu historia merece más que una fotografía. Merece un poema visual que trascienda el tiempo.",
+    "3_accent": "poema visual",
+    "3_signature": "— Creemos en lo Inolvidable"
+  },
+  "portfolio": {
+    "subtitle": "OUR WORK",
+    "title": "HISTORIAS",
+    "categories": {
+      "all": "Todas",
+      "weddings": "Bodas",
+      "pre_wedding": "Pre-boda",
+      "details": "Detalles",
+      "reception": "Recepción"
+    },
+    "no_cover": "Sin Portada",
+    "empty": "No hay proyectos para esta categoría."
+  },
+  "blog": {
+    "subtitle": "STORIES & INSPIRATION",
+    "title": "BLOG",
+    "read_more": "Leer más →",
+    "no_cover": "Sin Portada",
+    "empty": "No hay artículos publicados aún.",
+    "view_all": "Ver todas las historias"
+  },
+  "contact": {
+    "subtitle": "LET'S CREATE",
+    "title": "CONTACTO",
+    "form": {
+      "name": "Nombres",
+      "email": "Correo Electrónico",
+      "phone": "Teléfono",
+      "date": "Fecha Estimada (opcional)",
+      "message": "Mensaje",
+      "submit": "ENVIAR MENSAJE"
+    }
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados."
+  }
+}

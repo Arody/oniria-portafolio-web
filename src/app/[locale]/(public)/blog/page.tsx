@@ -3,23 +3,36 @@ import { Footer } from "@/ui/layouts/Footer";
 import { getPublishedBlogPosts } from "@/core/services/blogService";
 import Link from 'next/link';
 import { Metadata } from 'next';
+import type { Locale } from '@/i18n.config';
 
-export const metadata: Metadata = {
-  title: 'Blog de Bodas | Oniria',
-  description: 'Inspiración, consejos y tendencias sobre fotografía y planeación de bodas para que tu gran día sea inolvidable.',
-  openGraph: {
-    title: 'Blog de Bodas | Oniria',
-    description: 'Inspiración, consejos y tendencias sobre fotografía y planeación de bodas para que tu gran día sea inolvidable.',
-    type: 'website',
-  }
+import { getDictionary } from "@/lib/dictionaries";
+
+type Props = {
+  params: Promise<{ locale: string }>;
 };
 
-export default async function PublicBlogPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const dict = await getDictionary(locale as Locale);
+  return {
+    title: dict.blog.title + ' | Oniria',
+    description: dict.blog.subtitle,
+    openGraph: {
+      title: dict.blog.title + ' | Oniria',
+      description: dict.blog.subtitle,
+      type: 'website',
+    }
+  };
+}
+
+export default async function PublicBlogPage({ params }: Props) {
+  const { locale } = await params;
+  const dict = await getDictionary(locale as Locale);
   const posts = await getPublishedBlogPosts();
 
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
-      <Navbar />
+      <Navbar dict={dict.navigation} locale={locale as any} />
       <main className="flex-grow pt-32">
         <section className="py-24 min-h-[50vh]">
           <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -73,13 +86,13 @@ export default async function PublicBlogPage() {
                     
                     <div className="flex justify-between items-end mt-auto pt-4 border-t border-graphite/50">
                       <span className="text-[10px] font-sans text-mist/30 tracking-[0.15em]">
-                        {new Date(post.created_at).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
+                        {new Date(post.created_at).toLocaleDateString(locale === 'es' ? 'es-MX' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
                       </span>
                       <Link 
-                        href={`/blog/${post.slug}`} 
+                        href={`/${locale}/blog/${post.slug}`} 
                         className="text-[10px] font-sans text-champagne uppercase tracking-[0.2em] hover:text-ivory transition-colors duration-300"
                       >
-                        Leer más →
+                        {dict.blog.read_more}
                       </Link>
                     </div>
                   </div>
@@ -94,7 +107,7 @@ export default async function PublicBlogPage() {
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer dict={dict.footer} navDict={dict.navigation} locale={locale as any} />
     </div>
   );
 }

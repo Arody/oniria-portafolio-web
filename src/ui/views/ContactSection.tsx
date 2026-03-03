@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { sendContactEmails } from '@/core/actions/emailActions';
 import { createClient } from '@/lib/supabase/client';
+import type { Dictionary } from '@/lib/dictionaries';
 
-export function ContactSection() {
+export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const supabase = createClient();
@@ -72,10 +73,10 @@ export function ContactSection() {
           {/* Left Form Side */}
           <div>
             <p className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4">
-              Let&apos;s create something eternal
+              {dict.subtitle}
             </p>
             <h2 className="text-5xl md:text-7xl font-serif font-light text-ivory uppercase tracking-[0.1em] mb-4">
-              Contacto
+              {dict.title}
             </h2>
             <div className="w-16 h-px bg-champagne/40 mb-12" />
 
@@ -95,13 +96,13 @@ export function ContactSection() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Nombre completo</label>
+                <label htmlFor="name" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.name}</label>
                 <input 
                   type="text" 
                   id="name" 
                   name="name"
                   className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
-                  placeholder="Tu nombre"
+                  placeholder=""
                   required 
                   disabled={status === 'loading'}
                 />
@@ -109,32 +110,32 @@ export function ContactSection() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="email" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Correo electrónico</label>
+                  <label htmlFor="email" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.email}</label>
                   <input 
                     type="email" 
                     id="email" 
                     name="email"
                     className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
-                    placeholder="correo@ejemplo.com"
+                    placeholder="ejemplo@email.com"
                     required 
                     disabled={status === 'loading'}
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Teléfono</label>
+                  <label htmlFor="phone" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.phone}</label>
                   <input 
                     type="tel" 
                     id="phone" 
                     name="phone"
                     className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
-                    placeholder="+52 999 000 0000"
+                    placeholder="+52 000 000 0000"
                     disabled={status === 'loading'}
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="date" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Fecha de la boda</label>
+                <label htmlFor="date" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.date}</label>
                 <input 
                   type="date" 
                   id="date" 
@@ -145,13 +146,13 @@ export function ContactSection() {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">Mensaje</label>
+                <label htmlFor="message" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.message}</label>
                 <textarea 
                   id="message" 
                   name="message"
                   rows={5}
                   className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400 resize-none"
-                  placeholder="Cuéntanos sobre tu boda soñada..."
+                  placeholder="..."
                   required 
                   disabled={status === 'loading'}
                 />
@@ -162,7 +163,7 @@ export function ContactSection() {
                 disabled={status === 'loading'}
                 className="w-full bg-champagne text-obsidian p-4 font-sans uppercase tracking-[0.3em] text-xs hover:bg-gold-dust transition-colors duration-400 disabled:opacity-40 disabled:cursor-not-allowed flex justify-center items-center"
               >
-                {status === 'loading' ? 'Enviando...' : 'Begin your story'}
+                {status === 'loading' ? '⏳' : dict.form.submit}
               </button>
             </form>
           </div>

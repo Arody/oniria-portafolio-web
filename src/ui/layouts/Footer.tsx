@@ -1,6 +1,14 @@
 import Link from 'next/link';
+import type { Dictionary } from '@/lib/dictionaries';
+import type { Locale } from '@/i18n.config';
 
-export function Footer() {
+interface FooterProps {
+  dict: Dictionary['footer'];
+  navDict?: Dictionary['navigation'];
+  locale: Locale;
+}
+
+export function Footer({ dict, locale, navDict }: FooterProps) {
   return (
     <footer className="bg-obsidian relative py-16">
       {/* Top champagne divider */}
@@ -13,10 +21,18 @@ export function Footer() {
           </div>
 
           <div className="flex space-x-10 mb-8 md:mb-0">
-            <Link href="/#inicio" className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">Inicio</Link>
-            <Link href="/#portafolio" className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">Portafolio</Link>
-            <Link href="/#blog" className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">Blog</Link>
-            <Link href="/#contacto" className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">Contacto</Link>
+            <Link href={`/${locale}`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
+              {navDict ? 'Inicio' : 'Inicio'}
+            </Link>
+            <Link href={`/${locale}#portafolio`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
+              {navDict?.our_work || 'Portafolio'}
+            </Link>
+            <Link href={`/${locale}/blog`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
+              {navDict?.blog || 'Blog'}
+            </Link>
+            <Link href={`/${locale}#contacto`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
+              {navDict?.contact || 'Contacto'}
+            </Link>
           </div>
 
           <div className="flex space-x-8">
@@ -30,7 +46,7 @@ export function Footer() {
         <div className="h-px bg-graphite/50 mb-8" />
 
         <p className="text-center text-mist/25 text-[10px] font-sans tracking-[0.15em] uppercase">
-          © {new Date().getFullYear()} Oniria Wedding Films. All rights reserved.
+          © {new Date().getFullYear()} Oniria Wedding Films. {dict?.rights || 'All rights reserved.'}
         </p>
       </div>
     </footer>

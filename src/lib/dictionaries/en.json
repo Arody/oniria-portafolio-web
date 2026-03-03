@@ -1,0 +1,60 @@
+{
+  "navigation": {
+    "home": "HOME",
+    "our_work": "STORIES",
+    "blog": "BLOG",
+    "contact": "CONTACT",
+    "admin": "Admin"
+  },
+  "hero": {
+    "scroll": "SCROLL DOWN",
+    "subtitle": "CAPTURING LOVE"
+  },
+  "interludes": {
+    "1_quote": "Every love story deserves to be told with the delicacy of a whisper and the strength of eternity.",
+    "1_accent": "eternity",
+    "1_signature": "— Oniria Philosophy",
+    "2_quote": "We don't capture moments. We create fragments of eternity that will breathe forever.",
+    "2_accent": "eternity",
+    "2_signature": "— The Art of Remembering",
+    "3_quote": "Your story deserves more than a photograph. It deserves a visual poem that transcends time.",
+    "3_accent": "visual poem",
+    "3_signature": "— We Believe in the Unforgettable"
+  },
+  "portfolio": {
+    "subtitle": "OUR WORK",
+    "title": "STORIES",
+    "categories": {
+      "all": "All",
+      "weddings": "Weddings",
+      "pre_wedding": "Pre-Wedding",
+      "details": "Details",
+      "reception": "Reception"
+    },
+    "no_cover": "No Cover",
+    "empty": "No projects in this category."
+  },
+  "blog": {
+    "subtitle": "STORIES & INSPIRATION",
+    "title": "JOURNAL",
+    "read_more": "Read more →",
+    "no_cover": "No Cover",
+    "empty": "No articles published yet.",
+    "view_all": "View all stories"
+  },
+  "contact": {
+    "subtitle": "LET'S CREATE",
+    "title": "CONTACT",
+    "form": {
+      "name": "Names",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "date": "Estimated Date (optional)",
+      "message": "Message",
+      "submit": "SEND MESSAGE"
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  }
+}

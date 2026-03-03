@@ -3,15 +3,19 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import type { Dictionary } from '@/lib/dictionaries';
+import type { Locale } from '@/i18n.config';
 
 interface NavbarClientProps {
   logoText: string;
   logoImageUrl: string | null;
   logoSize: number;
   headingFont: string | null;
+  dict?: Dictionary['navigation'];
+  locale?: Locale;
 }
 
-export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont }: NavbarClientProps) {
+export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, dict, locale }: NavbarClientProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -21,11 +25,12 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont }: 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const loc = locale || 'es';
   const navLinks = [
-    { href: '/#inicio', label: 'Inicio' },
-    { href: '/#portafolio', label: 'Portafolio' },
-    { href: '/#blog', label: 'Blog' },
-    { href: '/#contacto', label: 'Contacto' },
+    { href: `/${loc}`, label: dict?.home || 'Inicio' },
+    { href: `/${loc}#portafolio`, label: dict?.our_work || 'Portafolio' },
+    { href: `/${loc}/blog`, label: dict?.blog || 'Blog' },
+    { href: `/${loc}#contacto`, label: dict?.contact || 'Contacto' },
   ];
 
   return (

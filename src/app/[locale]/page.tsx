@@ -9,55 +9,68 @@ import { LogoutButton } from "@/ui/components/LogoutButton";
 
 import { getPublishedProjects } from "@/core/services/portfolioService";
 import { getPublishedBlogPosts } from "@/core/services/blogService";
+import { getDictionary } from "@/lib/dictionaries";
+import { Locale } from "@/i18n.config";
 
-export default async function Home() {
+type Props = {
+  params: Promise<{ locale: Locale }>;
+}
+
+export default async function Home({ params }: Props) {
+  const { locale } = await params;
+  const dict = await getDictionary(locale);
+  
   const projects = await getPublishedProjects();
   const blogPosts = await getPublishedBlogPosts();
 
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
-      <Navbar />
+      {/* 
+        We pass the relevant dictionary sections down to the components.
+        They need to be updated to accept these new props.
+      */}
+      <Navbar dict={dict.navigation} locale={locale} />
       <main className="flex-grow">
         <HeroSection />
 
         {/* Interlude 1 — Between Hero and Portfolio */}
         <EditorialInterlude
-          quote="Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno."
-          subtitle="— Filosofía Oniria"
+          quote={dict.interludes['1_quote']}
+          subtitle={dict.interludes['1_signature']}
           mediaUrl="/interludes/hands.png"
           mediaType="image"
           textSide="left"
-          accentWord="eterno"
+          accentWord={dict.interludes['1_accent']}
         />
 
-        <PortfolioSection projects={projects} />
+        <PortfolioSection projects={projects} dict={dict.portfolio} />
 
         {/* Interlude 2 — Between Portfolio and Blog */}
         <EditorialInterlude
-          quote="No capturamos momentos. Creamos fragmentos de eternidad que respirarán por siempre."
-          subtitle="— El Arte de Recordar"
+          quote={dict.interludes['2_quote']}
+          subtitle={dict.interludes['2_signature']}
           mediaUrl="/interludes/veil.png"
           mediaType="image"
           textSide="right"
-          accentWord="eternidad"
+          accentWord={dict.interludes['2_accent']}
         />
 
-        <BlogSection posts={blogPosts} />
+        <BlogSection posts={blogPosts} dict={dict.blog} locale={locale} />
 
         {/* Interlude 3 — Between Blog and Contact */}
         <EditorialInterlude
-          quote="Tu historia merece más que una fotografía. Merece un poema visual que trascienda el tiempo."
-          subtitle="— Creemos en lo Inolvidable"
+          quote={dict.interludes['3_quote']}
+          subtitle={dict.interludes['3_signature']}
           mediaUrl="/interludes/toast.png"
           mediaType="image"
           textSide="left"
-          accentWord="poema visual"
+          accentWord={dict.interludes['3_accent']}
         />
 
-        <ContactSection />
+        <ContactSection dict={dict.contact} />
         <LogoutButton />
       </main>
-      <Footer />
+      <Footer dict={dict.footer} navDict={dict.navigation} locale={locale} />
     </div>
   );
 }

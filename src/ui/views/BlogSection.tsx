@@ -1,12 +1,16 @@
 import Link from 'next/link';
 
 import type { BlogPost } from '@/core/services/blogService';
+import type { Dictionary } from '@/lib/dictionaries';
+import type { Locale } from '@/i18n.config';
 
 interface BlogSectionProps {
   posts: BlogPost[];
+  dict: Dictionary['blog'];
+  locale: Locale;
 }
 
-export function BlogSection({ posts }: BlogSectionProps) {
+export function BlogSection({ posts, dict, locale }: BlogSectionProps) {
   // Take only the latest 3 posts for the homepage
   const recentPosts = posts.slice(0, 3);
   return (
@@ -19,10 +23,10 @@ export function BlogSection({ posts }: BlogSectionProps) {
         {/* Header */}
         <div className="mb-20 text-center">
           <p className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4">
-            Stories & inspiration
+            {dict.subtitle}
           </p>
           <h2 className="text-5xl md:text-7xl font-serif font-light text-ivory uppercase tracking-[0.1em]">
-            Blog
+            {dict.title}
           </h2>
           <div className="w-16 h-px bg-champagne/40 mx-auto mt-8" />
         </div>
@@ -32,7 +36,7 @@ export function BlogSection({ posts }: BlogSectionProps) {
           {recentPosts.length > 0 ? recentPosts.map((post, idx) => (
             <Link
               key={post.id}
-              href={`/blog/${post.slug}`}
+              href={`/${locale}/blog/${post.slug}`}
               className="bg-graphite/50 flex flex-col group transition-all duration-500 hover:bg-graphite border border-graphite/50 hover:border-champagne/20 animate-fade-up relative overflow-hidden"
               style={{ animationDelay: `${idx * 150}ms` }}
             >
@@ -50,7 +54,7 @@ export function BlogSection({ posts }: BlogSectionProps) {
                   />
                 ) : (
                     <div className="w-full h-full bg-graphite flex items-center justify-center">
-                      <span className="font-sans uppercase text-mist/30 tracking-[0.2em] text-xs">Sin Portada</span>
+                      <span className="font-sans uppercase text-mist/30 tracking-[0.2em] text-xs">{dict.no_cover}</span>
                   </div>
                 )}
               </div>
@@ -74,17 +78,17 @@ export function BlogSection({ posts }: BlogSectionProps) {
                 
                 <div className="flex justify-between items-end mt-auto pt-4 border-t border-graphite">
                   <span className="text-[10px] font-sans text-mist/40 tracking-[0.15em] uppercase">
-                    {new Date(post.created_at).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
+                    {new Date(post.created_at).toLocaleDateString(locale === 'es' ? 'es-MX' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
                   </span>
                   <span className="text-champagne font-sans uppercase text-xs tracking-[0.2em] group-hover:text-ivory transition-colors duration-400">
-                    Leer más →
+                    {dict.read_more}
                   </span>
                 </div>
               </div>
             </Link>
           )) : (
               <div className="col-span-3 py-16 text-center border border-graphite">
-                <p className="font-sans text-mist/40 uppercase tracking-[0.2em] text-sm">No hay artículos publicados aún.</p>
+                <p className="font-sans text-mist/40 uppercase tracking-[0.2em] text-sm">{dict.empty}</p>
             </div>
           )}
         </div>
@@ -92,10 +96,10 @@ export function BlogSection({ posts }: BlogSectionProps) {
         {/* CTA */}
         <div className="text-center">
           <Link 
-            href="/blog" 
+            href={`/${locale}/blog`}
             className="inline-block bg-transparent text-ivory px-10 py-4 font-sans uppercase tracking-[0.3em] text-xs border border-ivory/30 hover:border-champagne hover:text-champagne transition-all duration-500"
           >
-            Ver todas las historias
+            {dict.view_all}
           </Link>
         </div>
 
