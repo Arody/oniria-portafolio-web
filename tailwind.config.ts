@@ -19,7 +19,7 @@ const config: Config = {
         "gold-dust": "#BFA16A",
       },
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Cormorant Garamond", "Playfair Display", "Georgia", "serif"],
+        serif: ["var(--font-tsars)", "TT Tsars A Trial", "Cormorant Garamond", "Playfair Display", "Georgia", "serif"],
         sans: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       transitionDuration: {

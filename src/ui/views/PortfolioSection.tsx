@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { X, Play, ChevronDown } from 'lucide-react';
+import { X, Play } from 'lucide-react';
 import type { PortfolioProject } from '@/core/services/portfolioService';
 import type { Dictionary } from '@/lib/dictionaries';
 
@@ -17,55 +17,10 @@ interface PortfolioSectionProps {
 }
 
 export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
-  const [filter, setFilter] = useState(dict.categories.all);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeProjectData, setActiveProjectData] = useState<PortfolioProject | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
-  const filterBarRef = useRef<HTMLDivElement>(null);
-  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Use the dictionary values for categories
-  const categoryKeys = ['all', 'weddings', 'pre_wedding', 'details', 'reception'] as const;
 
-  // Update filter initially to ensure dict isn't stale if languages swap quickly
-  useEffect(() => {
-    setFilter(dict.categories.all);
-  }, [dict]);
-
-  // Sliding underline indicator
-  const updateIndicator = useCallback(() => {
-    const btn = buttonRefs.current.get(filter);
-    const bar = filterBarRef.current;
-    if (btn && bar) {
-      const barRect = bar.getBoundingClientRect();
-      const btnRect = btn.getBoundingClientRect();
-      setIndicatorStyle({
-        left: btnRect.left - barRect.left,
-        width: btnRect.width,
-      });
-    }
-  }, [filter]);
-
-  useEffect(() => {
-    updateIndicator();
-    window.addEventListener('resize', updateIndicator);
-    return () => window.removeEventListener('resize', updateIndicator);
-  }, [updateIndicator]);
-
-  const filteredProjects = projects.filter((project) => {
-    if (filter === dict.categories.all) return true;
-
-    // Fallback logic for database matching where DB stores specific keys or strings
-    // E.g., if project.category string matches translated label
-    return project.category === filter;
-  });
-
-  // Assign dynamic heights for masonry look on desktop, mobile is always h-[90vh]
-  const getDynamicHeight = (index: number) => {
-    const heights = ['md:h-96', 'md:h-72', 'md:h-80', 'md:h-[28rem]'];
-    return `h-[90vh] ${heights[index % heights.length]}`;
-  };
 
   // — Animated header with scroll parallax —
   const headerRef = useRef<HTMLDivElement>(null);
@@ -121,7 +76,7 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
             {dict.subtitle}
           </p>
           <h2
-            className={`text-5xl md:text-8xl font-serif font-light text-ivory uppercase tracking-[0.12em] transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${headerVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
+            className={`text-4xl md:text-6xl font-serif font-light text-ivory uppercase tracking-[0.12em] transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${headerVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
               }`}
             style={{ transitionDelay: '200ms' }}
           >
@@ -134,80 +89,19 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
           />
         </div>
 
-        {/* Mobile: Collapsible Capsule Filter */}
-        <div className="md:hidden flex flex-col items-center mb-16">
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex items-center gap-3 px-6 py-3 border border-graphite bg-charcoal text-ivory font-serif text-sm tracking-[0.08em] transition-all duration-400 hover:border-champagne/30"
-          >
-            <span className="text-champagne">{filter}</span>
-            <ChevronDown size={14} className={`text-mist/40 transition-transform duration-400 ${mobileOpen ? 'rotate-180' : ''}`} />
-          </button>
 
-          <div className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${mobileOpen ? 'max-h-80 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'}`}>
-            <div className="flex flex-col items-center gap-1 border border-graphite bg-charcoal p-3">
-              {categoryKeys.map((catKey, idx) => {
-                const catLabel = dict.categories[catKey];
-                return (
-                  <button
-                    key={catKey}
-                    onClick={() => { setFilter(catLabel); setMobileOpen(false); }}
-                    className={`w-full px-8 py-3 font-serif text-sm tracking-[0.08em] transition-all duration-400 ${filter === catLabel
-                      ? 'text-champagne bg-champagne/5'
-                      : 'text-mist/40 hover:text-ivory'
-                      }`}
-                    style={{ animationDelay: `${idx * 50}ms` }}
-                  >
-                    {catLabel}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
 
-        {/* Desktop: Editorial Sliding Underline Bar */}
-        <div className="relative hidden md:flex justify-center mb-20" ref={filterBarRef}>
-          <div className="flex items-center">
-            {categoryKeys.map((catKey, idx) => {
-              const catLabel = dict.categories[catKey];
-              return (
-                <div key={catKey} className="flex items-center">
-                  {idx > 0 && (
-                    <span className="w-px h-3 bg-graphite/60 mx-3" />
-                  )}
-                  <button
-                    ref={(el) => { if (el) buttonRefs.current.set(catLabel, el); }}
-                    onClick={() => setFilter(catLabel)}
-                    className={`relative px-6 py-3 font-serif text-base tracking-[0.08em] transition-all duration-500 ${filter === catLabel
-                      ? 'text-champagne'
-                      : 'text-mist/35 hover:text-mist/70'
-                      }`}
-                  >
-                    {catLabel}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-          {/* Sliding underline */}
-          <span
-            className="absolute bottom-0 h-px bg-champagne transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-            style={{ left: indicatorStyle.left, width: indicatorStyle.width }}
-          />
-        </div>
-
-        {/* Grid */}
-        {filteredProjects.length > 0 ? (
-          <div className="flex flex-col md:block md:columns-2 lg:columns-3 gap-2 md:gap-5 space-y-2 md:space-y-5">
-            {filteredProjects.map((project, idx) => (
+        {/* Horizontal Filmstrip Gallery */}
+        {projects.length > 0 ? (
+          <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar space-x-4 md:space-x-8 pb-12 pt-4 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12">
+            {projects.map((project, idx) => (
               <div
                 key={project.id}
-                className="relative group overflow-hidden bg-charcoal block break-inside-avoid cursor-pointer animate-scale-reveal mb-2 md:mb-0"
+                className="relative group overflow-hidden bg-charcoal flex-shrink-0 snap-center cursor-pointer animate-scale-reveal w-[85vw] md:w-[60vw] lg:w-[45vw] h-[70vh] md:h-[75vh]"
                 style={{ animationDelay: `${idx * 100}ms` }}
                 onClick={() => { if (project.video_url) { setActiveVideo(project.video_url); setActiveProjectData(project); } }}
               >
-                <div className={`relative w-full ${getDynamicHeight(idx)}`}>
+                <div className="relative w-full h-full">
                   {project.cover_image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img 

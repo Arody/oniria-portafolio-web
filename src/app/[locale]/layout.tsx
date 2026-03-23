@@ -1,13 +1,29 @@
 import type { Metadata, ResolvingMetadata } from 'next'
-import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { Inter } from 'next/font/google'
+import localFont from 'next/font/local'
 import { getSettings } from '@/core/services/settingsService'
 import '../globals.css'
 import { i18n, type Locale } from '@/i18n.config'
 
-const cormorant = Cormorant_Garamond({
-  variable: '--font-cormorant',
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+const ttTsars = localFont({
+  src: [
+    {
+      path: '../../../public/tt_tsars/TT Tsars A Trial Light.otf',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/tt_tsars/TT Tsars A Trial Regular.otf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../../public/tt_tsars/TT Tsars A Trial Bold.otf',
+      weight: '700',
+      style: 'normal',
+    }
+  ],
+  variable: '--font-tsars',
   display: 'swap',
 })
 
@@ -59,8 +75,8 @@ export default async function RootLayout({
         <style>
           {`
                :root {
-                  --font-heading: ${settings.heading_font || 'Cormorant Garamond, serif'};
-                  --font-body: ${settings.body_font || 'Inter, sans-serif'};
+                  --font-heading: ${settings.heading_font || 'var(--font-tsars), serif'};
+                  --font-body: ${settings.body_font || 'var(--font-inter), sans-serif'};
                }
                
                body {
@@ -73,7 +89,7 @@ export default async function RootLayout({
             `}
         </style>
       </head>
-      <body className={`${cormorant.variable} ${inter.variable} antialiased bg-obsidian text-ivory`}>
+      <body className={`${ttTsars.variable} ${inter.variable} antialiased bg-obsidian text-ivory`}>
         {children}
       </body>
     </html>

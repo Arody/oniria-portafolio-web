@@ -144,8 +144,18 @@ html {
   background-size: 200% 100%;
   animation: shimmer 3s ease-in-out infinite;
   }
-/* ── Premium focus ring ── */
-.oniria-focus {
-  @apply focus:outline-none focus:ring-1 focus:ring-champagne/50 focus:border-champagne;
+  /* ── Premium focus ring ── */
+  .oniria-focus {
+    @apply focus:outline-none focus:ring-1 focus:ring-champagne/50 focus:border-champagne;
+  }
+
+  /* ── Hide scrollbar but keep functionality ── */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
+

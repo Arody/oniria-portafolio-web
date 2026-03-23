@@ -19,9 +19,9 @@ export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
     const data = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
-      phone: formData.get('phone') as string,
-      date: formData.get('date') as string,
       message: formData.get('message') as string,
+      phone: '',
+      date: '',
     };
 
     try {
@@ -31,8 +31,8 @@ export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
         .insert([{
           full_name: data.name,
           email: data.email,
-          phone: data.phone || null,
-          event_date: data.date || null,
+          phone: null,
+          event_date: null,
           message: data.message,
         }]);
 
@@ -108,39 +108,15 @@ export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="email" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.email}</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    name="email"
-                    className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
-                    placeholder="ejemplo@email.com"
-                    required 
-                    disabled={status === 'loading'}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.phone}</label>
-                  <input 
-                    type="tel" 
-                    id="phone" 
-                    name="phone"
-                    className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
-                    placeholder="+52 000 000 0000"
-                    disabled={status === 'loading'}
-                  />
-                </div>
-              </div>
-
               <div>
-                <label htmlFor="date" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.date}</label>
+                <label htmlFor="email" className="block text-xs font-sans uppercase tracking-[0.2em] text-mist/50 mb-3">{dict.form.email}</label>
                 <input 
-                  type="date" 
-                  id="date" 
-                  name="date"
-                  className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm focus:outline-none focus:border-champagne/50 transition-colors duration-400" 
+                  type="email" 
+                  id="email" 
+                  name="email"
+                  className="w-full p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
+                  placeholder="ejemplo@email.com"
+                  required 
                   disabled={status === 'loading'}
                 />
               </div>
@@ -179,18 +155,6 @@ export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
                   <a href="mailto:hola@oniria-weddings.com" className="text-xl font-serif font-light text-ivory hover:text-champagne transition-colors duration-400">
                     hola@oniria-weddings.com
                   </a>
-                </div>
-                <div>
-                  <p className="text-[10px] font-sans text-mist/40 uppercase tracking-[0.2em] mb-2">Teléfono</p>
-                  <a href="tel:+529991234567" className="text-xl font-serif font-light text-ivory hover:text-champagne transition-colors duration-400">
-                    +52 999 123 4567
-                  </a>
-                </div>
-                <div>
-                  <p className="text-[10px] font-sans text-mist/40 uppercase tracking-[0.2em] mb-2">Ubicación</p>
-                  <p className="text-xl font-serif font-light text-ivory">
-                    Mérida, Yucatán, México
-                  </p>
                 </div>
               </div>
             </div>
