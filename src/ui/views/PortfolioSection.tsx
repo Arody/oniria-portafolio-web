@@ -1,15 +1,58 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { X, Play } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { PortfolioProject } from '@/core/services/portfolioService';
 import type { Dictionary } from '@/lib/dictionaries';
 
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
 // Dynamically import Vimeo player to avoid SSR issues
 const Vimeo = dynamic(() => import('@u-wave/react-vimeo'), { ssr: false });
+
+/* ─────────────────────────────────────────────
+   Masonry size assignment based on index
+   Creates visual rhythm: large → small → medium → small → medium → large …
+   ───────────────────────────────────────────── */
+type CardSize = 'large' | 'medium' | 'small';
+
+const SIZE_PATTERN: CardSize[] = ['large', 'small', 'medium', 'small', 'medium', 'large'];
+
+function getCardSize(index: number): CardSize {
+  return SIZE_PATTERN[index % SIZE_PATTERN.length];
+}
+
+/** CSS grid span classes per size */
+const sizeClasses: Record<CardSize, string> = {
+  large:  'md:col-span-2 md:row-span-2',
+  medium: 'md:col-span-1 md:row-span-2',
+  small:  'md:col-span-1 md:row-span-1',
+};
+
+/** Aspect ratio classes per size */
+const aspectClasses: Record<CardSize, string> = {
+  large:  'aspect-[4/5]',
+  medium: 'aspect-[3/4]',
+  small:  'aspect-[4/3]',
+};
+
+/* ─────────────────────────────────────────────
+   Parallax speed multiplier — larger cards move slower
+   giving a depth/3D perception on scroll
+   ───────────────────────────────────────────── */
+const parallaxSpeed: Record<CardSize, number> = {
+  large:  30,
+  medium: 50,
+  small:  70,
+};
+
+/* ─────────────────────────────────────────────
+   Component
+   ───────────────────────────────────────────── */
 
 interface PortfolioSectionProps {
   projects: PortfolioProject[];
@@ -20,134 +63,396 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeProjectData, setActiveProjectData] = useState<PortfolioProject | null>(null);
 
-
-
-  // — Animated header with scroll parallax —
+  // Refs
+  const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const [headerParallax, setHeaderParallax] = useState({ opacity: 1, y: 0 });
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  /* ═══════════════════════════════════════════
+     1. HEADER TEXT SPLIT ANIMATION
+     Each character of "HISTORIAS" reveals individually
+     with a staggered timeline
+     ═══════════════════════════════════════════ */
   useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setHeaderVisible(true); },
-      { threshold: 0.3 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    const ctx = gsap.context(() => {
+      // --- Split title into characters ---
+      const titleEl = titleRef.current;
+      if (!titleEl) return;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const el = headerRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const sectionTop = rect.top;
-      // Once the header scrolls above the viewport center, start fading & displacing
-      const progress = Math.max(0, Math.min(1, -sectionTop / (rect.height * 1.5)));
-      setHeaderParallax({
-        opacity: 1 - progress * 1.2,
-        y: progress * -60,
+      const text = titleEl.textContent || '';
+      titleEl.textContent = '';
+      titleEl.setAttribute('aria-label', text);
+
+      const chars: HTMLSpanElement[] = [];
+      text.split('').forEach((char) => {
+        const span = document.createElement('span');
+        span.textContent = char === ' ' ? '\u00A0' : char;
+        span.style.display = 'inline-block';
+        span.style.opacity = '0';
+        span.classList.add('title-char');
+        titleEl.appendChild(span);
+        chars.push(span);
       });
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+      // --- Master timeline for header ---
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: 'top 80%',
+          end: 'top 30%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      // Subtitle fade up
+      tl.from(subtitleRef.current, {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+      });
+
+      // Character-by-character reveal
+      tl.from(chars, {
+        y: 60,
+        opacity: 0,
+        rotateX: -90,
+        stagger: 0.04,
+        duration: 0.8,
+        ease: 'back.out(1.7)',
+      }, '-=0.3');
+
+      // Decorative line scale in
+      tl.from(lineRef.current, {
+        scaleX: 0,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+      }, '-=0.4');
+
+      // --- Header parallax on scroll ---
+      gsap.to(headerRef.current, {
+        y: -80,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: 'top 20%',
+          end: 'top -20%',
+          scrub: 1,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
+  /* ═══════════════════════════════════════════
+     2. MASONRY CARDS — REVEAL ON SCROLL + PARALLAX
+     Each card fades in with stagger and has
+     independent parallax speed based on size
+     ═══════════════════════════════════════════ */
+  useEffect(() => {
+    if (!projects.length) return;
+
+    const ctx = gsap.context(() => {
+      const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
+
+      // --- Staggered reveal ---
+      gsap.from(cards, {
+        y: 80,
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.9,
+        stagger: {
+          each: 0.12,
+          from: 'start',
+        },
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: 'top 75%',
+          end: 'top 25%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      // --- Per-card parallax based on size ---
+      cards.forEach((card, i) => {
+        const size = getCardSize(i);
+        const speed = parallaxSpeed[size];
+
+        gsap.to(card, {
+          y: -speed,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.5,
+          },
+        });
+
+        // Inner image parallax (Ken Burns feel)
+        const img = card.querySelector('.card-image');
+        if (img) {
+          gsap.to(img, {
+            y: speed * 0.4,
+            scale: 1.08,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5,
+            },
+          });
+        }
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [projects]);
+
+  /* ═══════════════════════════════════════════
+     3. MAGNETIC HOVER EFFECT
+     Card tilts subtly toward the cursor position
+     with a smooth GSAP tween
+     ═══════════════════════════════════════════ */
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>, index: number) => {
+    const card = cardRefs.current[index];
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Normalize to -1…1
+    const xNorm = (x / rect.width - 0.5) * 2;
+    const yNorm = (y / rect.height - 0.5) * 2;
+
+    gsap.to(card, {
+      rotateY: xNorm * 6,
+      rotateX: -yNorm * 6,
+      x: xNorm * 8,
+      y: yNorm * 8,
+      scale: 1.02,
+      duration: 0.4,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
+
+    // Move the inner overlay glow toward cursor
+    const glow = card.querySelector('.magnetic-glow');
+    if (glow) {
+      gsap.to(glow, {
+        opacity: 1,
+        x: xNorm * 30,
+        y: yNorm * 30,
+        duration: 0.4,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback((index: number) => {
+    const card = cardRefs.current[index];
+    if (!card) return;
+
+    gsap.to(card, {
+      rotateY: 0,
+      rotateX: 0,
+      x: 0,
+      y: 0,
+      scale: 1,
+      duration: 0.6,
+      ease: 'elastic.out(1, 0.5)',
+      overwrite: 'auto',
+    });
+
+    const glow = card.querySelector('.magnetic-glow');
+    if (glow) {
+      gsap.to(glow, {
+        opacity: 0,
+        x: 0,
+        y: 0,
+        duration: 0.6,
+        overwrite: 'auto',
+      });
+    }
+  }, []);
+
+  /* ═══════════════════════════════════════════
+     RENDER
+     ═══════════════════════════════════════════ */
   return (
-    <section id="portafolio" className="py-28 bg-obsidian relative">
+    <section
+      ref={sectionRef}
+      id="portafolio"
+      className="py-28 bg-obsidian relative overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        
-        {/* Animated Header */}
-        <div
-          ref={headerRef}
-          className="mb-20 text-center"
-          style={{
-            opacity: headerParallax.opacity,
-            transform: `translateY(${headerParallax.y}px)`,
-            willChange: 'transform, opacity',
-          }}
-        >
+
+        {/* ── Animated Header ── */}
+        <div ref={headerRef} className="mb-24 text-center" style={{ perspective: '600px' }}>
           <p
-            className={`text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4 transition-all duration-1000 ease-out ${headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-              }`}
+            ref={subtitleRef}
+            className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4"
           >
             {dict.subtitle}
           </p>
           <h2
-            className={`text-4xl md:text-6xl font-serif font-light text-ivory uppercase tracking-[0.12em] transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${headerVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
-              }`}
-            style={{ transitionDelay: '200ms' }}
+            ref={titleRef}
+            className="text-5xl md:text-7xl lg:text-8xl font-serif font-light text-ivory uppercase tracking-[0.15em]"
+            style={{ perspective: '600px' }}
           >
             {dict.title}
           </h2>
           <div
-            className={`w-16 h-px bg-champagne/40 mx-auto mt-8 transition-all duration-1000 ease-out ${headerVisible ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
-              }`}
-            style={{ transitionDelay: '600ms' }}
+            ref={lineRef}
+            className="w-20 h-px bg-champagne/40 mx-auto mt-8 origin-center"
           />
         </div>
 
-
-
-        {/* Horizontal Filmstrip Gallery */}
+        {/* ── Masonry Grid ── */}
         {projects.length > 0 ? (
-          <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar space-x-4 md:space-x-8 pb-12 pt-4 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12">
-            {projects.map((project, idx) => (
-              <div
-                key={project.id}
-                className="relative group overflow-hidden bg-charcoal flex-shrink-0 snap-center cursor-pointer animate-scale-reveal w-[85vw] md:w-[60vw] lg:w-[45vw] h-[70vh] md:h-[75vh]"
-                style={{ animationDelay: `${idx * 100}ms` }}
-                onClick={() => { if (project.video_url) { setActiveVideo(project.video_url); setActiveProjectData(project); } }}
-              >
-                <div className="relative w-full h-full">
-                  {project.cover_image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img 
-                      src={project.cover_image_url}
-                      alt={`${project.title} - ${project.couple_name}`}
-                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-50"
-                    />
-                  ) : (
-                      <div className="w-full h-full bg-graphite flex items-center justify-center">
-                        <span className="font-sans uppercase text-mist/40 tracking-[0.2em] text-xs">{dict.no_cover}</span>
-                    </div>
-                  )}
-                </div>
+          <div
+            ref={gridRef}
+            className="grid grid-cols-1 md:grid-cols-3 auto-rows-[minmax(200px,auto)] gap-4 md:gap-5"
+          >
+            {projects.map((project, idx) => {
+              const size = getCardSize(idx);
 
-                {/* Hover Overlay Desktop / Always-on Overlay Mobile */}
-                <div className="absolute inset-0 bg-obsidian/40 md:bg-obsidian/70 md:opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center p-6 text-center">
-                  <p className="text-champagne text-xs tracking-[0.3em] uppercase mb-3 font-sans md:translate-y-4 group-hover:translate-y-0 transition-transform duration-500 shadow-black drop-shadow-md">
-                    {project.couple_name}
-                  </p>
-                  <h3 className="text-ivory text-3xl md:text-2xl font-serif font-light tracking-[0.1em] uppercase mb-4 md:translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75 shadow-black drop-shadow-md">
-                    {project.title}
-                  </h3>
-                  {project.video_url && (
-                    <div className="mt-4 w-12 h-12 border border-champagne/50 flex items-center justify-center text-champagne hover:bg-champagne hover:text-obsidian transition-all duration-400 md:translate-y-4 group-hover:translate-y-0 delay-150 backdrop-blur-sm bg-obsidian/20 md:bg-transparent">
-                      <Play size={18} className="ml-0.5" />
-                    </div>
-                  )}
+              return (
+                <div
+                  key={project.id}
+                  ref={(el) => { cardRefs.current[idx] = el; }}
+                  className={`
+                    relative group overflow-hidden bg-charcoal cursor-pointer
+                    ${sizeClasses[size]}
+                    ${aspectClasses[size]}
+                  `}
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    willChange: 'transform',
+                  }}
+                  onMouseMove={(e) => handleMouseMove(e, idx)}
+                  onMouseLeave={() => handleMouseLeave(idx)}
+                  onClick={() => {
+                    if (project.video_url) {
+                      setActiveVideo(project.video_url);
+                      setActiveProjectData(project);
+                    }
+                  }}
+                >
+                  {/* Image */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    {project.cover_image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={project.cover_image_url}
+                        alt={`${project.title} — ${project.couple_name}`}
+                        className="card-image w-full h-full object-cover transition-[filter] duration-700 group-hover:brightness-[0.35]"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-graphite flex items-center justify-center">
+                        <span className="font-sans uppercase text-mist/40 tracking-[0.2em] text-xs">
+                          {dict.no_cover}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Magnetic glow — follows cursor */}
+                  <div
+                    className="magnetic-glow pointer-events-none absolute inset-0 opacity-0"
+                    style={{
+                      background: 'radial-gradient(circle 300px at center, rgba(198,165,110,0.12), transparent 70%)',
+                    }}
+                  />
+
+                  {/* Bottom gradient */}
+                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-obsidian/90 via-obsidian/40 to-transparent pointer-events-none" />
+
+                  {/* Content overlay */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-7">
+                    {/* Category pill */}
+                    {project.category && (
+                      <span className="self-start text-[10px] font-sans uppercase tracking-[0.25em] text-champagne/70 border border-champagne/20 px-3 py-1 mb-3 backdrop-blur-sm bg-obsidian/30 md:opacity-0 md:translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+                        {project.category}
+                      </span>
+                    )}
+
+                    <p className="text-champagne text-[11px] tracking-[0.3em] uppercase font-sans mb-1.5 md:translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
+                      {project.couple_name}
+                    </p>
+                    <h3
+                      className={`
+                        text-ivory font-serif font-light tracking-[0.08em] uppercase leading-tight
+                        md:translate-y-3 group-hover:translate-y-0 transition-transform duration-500 delay-75
+                        ${size === 'large' ? 'text-2xl md:text-3xl' : 'text-lg md:text-xl'}
+                      `}
+                    >
+                      {project.title}
+                    </h3>
+
+                    {/* Location + Date */}
+                    {(project.location || project.event_date) && (
+                      <div className="flex items-center gap-3 mt-2 md:opacity-0 md:translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-150">
+                        {project.location && (
+                          <span className="text-mist/40 text-[10px] font-sans uppercase tracking-[0.15em]">
+                            {project.location}
+                          </span>
+                        )}
+                        {project.location && project.event_date && (
+                          <span className="w-3 h-px bg-champagne/30" />
+                        )}
+                        {project.event_date && (
+                          <span className="text-mist/30 text-[10px] font-sans tracking-[0.15em]">
+                            {new Date(project.event_date).toLocaleDateString('es-MX', {
+                              year: 'numeric',
+                              month: 'short',
+                            }).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Play button for video projects */}
+                    {project.video_url && (
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 border border-champagne/40 flex items-center justify-center text-champagne opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100 backdrop-blur-sm bg-obsidian/20 rounded-full">
+                        <Play size={20} className="ml-0.5" />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
-            <div className="py-20 text-center border border-graphite">
-              <p className="font-sans text-mist/40 uppercase tracking-[0.2em] text-sm">{dict.empty}</p>
+          <div className="py-20 text-center border border-graphite">
+            <p className="font-sans text-mist/40 uppercase tracking-[0.2em] text-sm">
+              {dict.empty}
+            </p>
           </div>
         )}
-
       </div>
 
-      {/* Video Modal — Cinematic Style */}
+      {/* ── Video Modal — Cinematic Style ── */}
       {activeVideo && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-obsidian/95 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-6xl">
             {/* Close Button */}
             <button
-              onClick={() => { setActiveVideo(null); setActiveProjectData(null); }}
+              onClick={() => {
+                setActiveVideo(null);
+                setActiveProjectData(null);
+              }}
               className="absolute -top-10 right-0 text-mist/60 hover:text-champagne transition-colors duration-400 z-50"
               aria-label="Cerrar video"
             >
@@ -165,7 +470,10 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
 
             {/* Gallery Plaque — Museum Style */}
             {activeProjectData && (
-              <div className="mt-5 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 animate-fade-up" style={{ animationDelay: '300ms' }}>
+              <div
+                className="mt-5 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 animate-fade-up"
+                style={{ animationDelay: '300ms' }}
+              >
                 <div className="flex-1 min-w-0">
                   <p className="text-champagne text-[10px] font-sans uppercase tracking-[0.3em] mb-1">
                     {activeProjectData.couple_name}
@@ -187,7 +495,9 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
                   )}
                   {activeProjectData.event_date && (
                     <p className="text-mist/20 text-[10px] font-sans tracking-[0.15em] mt-1">
-                      {new Date(activeProjectData.event_date).toLocaleDateString('es-MX', { year: 'numeric', month: 'long' }).toUpperCase()}
+                      {new Date(activeProjectData.event_date)
+                        .toLocaleDateString('es-MX', { year: 'numeric', month: 'long' })
+                        .toUpperCase()}
                     </p>
                   )}
                 </div>
