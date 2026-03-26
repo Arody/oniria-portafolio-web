@@ -1,6 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface EditorialInterludeProps {
   /** The main large quote or phrase */
@@ -25,49 +29,117 @@ export function EditorialInterlude({
   textSide = 'left',
   accentWord,
 }: EditorialInterludeProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const mediaRef = useRef<HTMLDivElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
+  const mediaInnerRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+  const quoteRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRefEl = useRef<HTMLParagraphElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
+    const ctx = gsap.context(() => {
+      /* ── Media parallax ── */
+      if (mediaInnerRef.current) {
+        gsap.fromTo(
+          mediaInnerRef.current,
+          { y: 60, scale: 1.15 },
+          {
+            y: -60,
+            scale: 1.15,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.2,
+            },
+          }
+        );
+      }
 
-    // Intersection Observer for visibility trigger
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.15 }
-    );
-    observer.observe(section);
+      /* ── Text drift ── */
+      if (textRef.current) {
+        gsap.fromTo(
+          textRef.current,
+          { y: 60 },
+          {
+            y: -30,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5,
+            },
+          }
+        );
+      }
 
-    // Scroll handler for parallax + text displacement
-    const handleScroll = () => {
-      const rect = section.getBoundingClientRect();
-      const windowH = window.innerHeight;
-      // progress: 0 when section enters bottom, 1 when it exits top
-      const raw = (windowH - rect.top) / (windowH + rect.height);
-      setScrollProgress(Math.max(0, Math.min(1, raw)));
-    };
+      /* ── Reveal animations ── */
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 75%',
+          toggleActions: 'play none none reverse',
+        },
+      });
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // initial calc
+      // Decorative line
+      if (lineRef.current) {
+        tl.from(lineRef.current, {
+          scaleX: 0,
+          opacity: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+        });
+      }
 
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('scroll', handleScroll);
-    };
+      // Quote
+      if (quoteRef.current) {
+        tl.from(
+          quoteRef.current,
+          {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out',
+          },
+          '-=0.4'
+        );
+      }
+
+      // Subtitle
+      if (subtitleRefEl.current) {
+        tl.from(
+          subtitleRefEl.current,
+          {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+          },
+          '-=0.6'
+        );
+      }
+
+      // Dot
+      if (dotRef.current) {
+        tl.from(
+          dotRef.current,
+          {
+            scale: 0,
+            opacity: 0,
+            duration: 0.6,
+            ease: 'back.out(2)',
+          },
+          '-=0.4'
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
-
-  // Parallax: media moves slower than scroll (negative translateY)
-  const parallaxY = (scrollProgress - 0.5) * -100; // ±50px range — more pronounced
-  // Text displacement: upward drift as you scroll
-  const textY = (1 - scrollProgress) * 80; // starts 80px down, ends at 0 — more pronounced
 
   // Split the quote to highlight the accent word
   const renderQuote = () => {
@@ -88,21 +160,18 @@ export function EditorialInterlude({
     <div
       ref={textRef}
       className="flex flex-col justify-center px-8 md:px-16 lg:px-24 py-20 md:py-0"
-      style={{ transform: `translateY(${textY}px)`, transition: 'transform 0.1s linear' }}
     >
       {/* Decorative line */}
       <div
-        className={`w-10 h-px bg-champagne mb-10 transition-all duration-1000 ease-out ${
-          isVisible ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
-        }`}
+        ref={lineRef}
+        className="w-10 h-px bg-champagne mb-10"
         style={{ transformOrigin: textSide === 'left' ? 'left' : 'right' }}
       />
 
       {/* Quote */}
       <h2
-        className={`text-3xl md:text-4xl lg:text-5xl font-serif font-light leading-[1.2] tracking-[0.02em] text-ivory transition-all duration-[1400ms] ease-out ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'
-        }`}
+        ref={quoteRef}
+        className="text-3xl md:text-4xl lg:text-5xl font-serif font-light leading-[1.2] tracking-[0.02em] text-ivory"
       >
         {renderQuote()}
       </h2>
@@ -110,9 +179,8 @@ export function EditorialInterlude({
       {/* Subtitle */}
       {subtitle && (
         <p
-          className={`mt-8 text-xs font-sans uppercase tracking-[0.3em] text-mist/40 transition-all duration-[1600ms] ease-out delay-300 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-          }`}
+          ref={subtitleRefEl}
+          className="mt-8 text-xs font-sans uppercase tracking-[0.3em] text-mist/40"
         >
           {subtitle}
         </p>
@@ -120,24 +188,17 @@ export function EditorialInterlude({
 
       {/* Floating accent dot */}
       <div
-        className={`mt-12 w-1.5 h-1.5 rounded-full bg-champagne/60 transition-all duration-[1600ms] ease-out delay-500 ${
-          isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
-        }`}
+        ref={dotRef}
+        className="mt-12 w-1.5 h-1.5 rounded-full bg-champagne/60"
       />
     </div>
   );
 
   const mediaContent = (
-    <div
-      ref={mediaRef}
-      className="relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]"
-    >
+    <div className="relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]">
       <div
+        ref={mediaInnerRef}
         className="absolute inset-0"
-        style={{
-          transform: `translateY(${parallaxY}px) scale(1.15)`,
-          transition: 'transform 0.1s linear',
-        }}
       >
         {mediaType === 'video' ? (
           <video
@@ -146,23 +207,19 @@ export function EditorialInterlude({
             muted
             loop
             playsInline
-            className={`w-full h-full object-cover transition-all duration-[1500ms] ease-out ${
-              isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-            }`}
+            className="w-full h-full object-cover"
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={mediaUrl}
             alt=""
-            className={`w-full h-full object-cover transition-all duration-[1500ms] ease-out ${
-              isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-            }`}
+            className="w-full h-full object-cover"
           />
         )}
       </div>
 
-      {/* Strong gradient blend toward text side — dissolves image into obsidian */}
+      {/* Strong gradient blend toward text side */}
       <div
         className={`absolute inset-0 pointer-events-none ${
           textSide === 'left'
@@ -192,7 +249,7 @@ export function EditorialInterlude({
         </div>
       </div>
 
-      {/* Very subtle horizontal separator lines */}
+      {/* Subtle horizontal separator lines */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-graphite/40 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-graphite/40 to-transparent" />
     </section>

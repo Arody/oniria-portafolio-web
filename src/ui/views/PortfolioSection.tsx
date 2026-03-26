@@ -79,54 +79,30 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
      ═══════════════════════════════════════════ */
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // --- Split title into characters ---
-      const titleEl = titleRef.current;
-      if (!titleEl) return;
-
-      const text = titleEl.textContent || '';
-      titleEl.textContent = '';
-      titleEl.setAttribute('aria-label', text);
-
-      const chars: HTMLSpanElement[] = [];
-      text.split('').forEach((char) => {
-        const span = document.createElement('span');
-        span.textContent = char === ' ' ? '\u00A0' : char;
-        span.style.display = 'inline-block';
-        span.classList.add('title-char');
-        titleEl.appendChild(span);
-        chars.push(span);
-      });
-
-      // Set initial state — GSAP .to() will animate to final values
-      gsap.set(chars, { opacity: 0, y: 60, rotateX: -90 });
-
       // --- Master timeline for header ---
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: headerRef.current,
           start: 'top 80%',
-          end: 'top 30%',
           toggleActions: 'play none none reverse',
         },
       });
 
       // Subtitle fade up
       tl.from(subtitleRef.current, {
-        y: 20,
+        y: 14,
         opacity: 0,
-        duration: 0.6,
+        duration: 0.7,
         ease: 'power3.out',
       });
 
-      // Character-by-character reveal
-      tl.to(chars, {
-        y: 0,
-        opacity: 1,
-        rotateX: 0,
-        stagger: 0.04,
-        duration: 0.8,
-        ease: 'back.out(1.7)',
-      }, '-=0.3');
+      // Title — simple fade up
+      tl.from(titleRef.current, {
+        y: 24,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+      }, '-=0.4');
 
       // Decorative line scale in
       tl.from(lineRef.current, {
@@ -134,7 +110,7 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
         opacity: 0,
         duration: 0.8,
         ease: 'power2.out',
-      }, '-=0.4');
+      }, '-=0.5');
 
       // --- Header parallax on scroll ---
       gsap.to(headerRef.current, {
@@ -164,30 +140,26 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
     const ctx = gsap.context(() => {
       const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
 
-      // --- Staggered reveal ---
-      gsap.from(cards, {
-        y: 80,
-        opacity: 0,
-        scale: 0.95,
-        duration: 0.9,
-        stagger: {
-          each: 0.12,
-          from: 'start',
-        },
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: gridRef.current,
-          start: 'top 75%',
-          end: 'top 25%',
-          toggleActions: 'play none none reverse',
-        },
-      });
-
-      // --- Per-card parallax based on size ---
+      // --- Per-card reveal from sides + parallax ---
       cards.forEach((card, i) => {
         const size = getCardSize(i);
         const speed = parallaxSpeed[size];
+        // Alternate sides: even from left, odd from right
+        const fromX = i % 2 === 0 ? -80 : 80;
 
+        gsap.from(card, {
+          x: fromX,
+          opacity: 0,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+
+        // Per-card parallax based on size
         gsap.to(card, {
           y: -speed,
           ease: 'none',
@@ -301,7 +273,7 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
 
         {/* ── Animated Header ── */}
-        <div ref={headerRef} className="mb-24 text-center" style={{ perspective: '600px' }}>
+        <div ref={headerRef} className="mb-24 text-center">
           <p
             ref={subtitleRef}
             className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4"
@@ -310,8 +282,7 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
           </p>
           <h2
             ref={titleRef}
-            className="text-5xl md:text-7xl lg:text-8xl font-serif font-light text-ivory uppercase tracking-[0.15em]"
-            style={{ perspective: '600px' }}
+            className="text-3xl md:text-5xl lg:text-6xl font-serif font-light text-ivory uppercase tracking-[0.15em]"
           >
             {dict.title}
           </h2>
@@ -335,13 +306,13 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
                   key={project.id}
                   ref={(el) => { cardRefs.current[idx] = el; }}
                   className={`
-                    relative group overflow-hidden bg-charcoal cursor-pointer
+                    relative group bg-charcoal cursor-pointer overflow-hidden
                     ${sizeClasses[size]}
                     ${aspectClasses[size]}
                   `}
                   style={{
-                    transformStyle: 'preserve-3d',
                     willChange: 'transform',
+                    transform: 'translateZ(0)',
                   }}
                   onMouseMove={(e) => handleMouseMove(e, idx)}
                   onMouseLeave={() => handleMouseLeave(idx)}
@@ -383,13 +354,6 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
 
                   {/* Content overlay */}
                   <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-7">
-                    {/* Category pill */}
-                    {project.category && (
-                      <span className="self-start text-[10px] font-sans uppercase tracking-[0.25em] text-champagne/70 border border-champagne/20 px-3 py-1 mb-3 backdrop-blur-sm bg-obsidian/30 md:opacity-0 md:translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
-                        {project.category}
-                      </span>
-                    )}
-
                     <p className="text-champagne text-[11px] tracking-[0.3em] uppercase font-sans mb-1.5 md:translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
                       {project.couple_name}
                     </p>

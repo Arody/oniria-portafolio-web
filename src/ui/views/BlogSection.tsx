@@ -25,7 +25,7 @@ export function BlogSection({ posts, dict, locale }: BlogSectionProps) {
           <p className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4">
             {dict.subtitle}
           </p>
-          <h2 className="text-5xl md:text-7xl font-serif font-light text-ivory uppercase tracking-[0.1em]">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-serif font-light text-ivory uppercase tracking-[0.1em]">
             {dict.title}
           </h2>
           <div className="w-16 h-px bg-champagne/40 mx-auto mt-8" />

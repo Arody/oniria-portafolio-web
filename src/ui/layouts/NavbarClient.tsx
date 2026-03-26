@@ -47,11 +47,11 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
       <div
         className={`transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled
           ? 'bg-obsidian/75 backdrop-blur-2xl border border-white/[0.06] rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.4)] px-4 md:px-6 py-1.5'
-          : 'bg-transparent border border-transparent px-6 sm:px-8 lg:px-12 py-4'
+          : 'bg-transparent border border-transparent px-4 sm:px-8 lg:px-12 py-2 md:py-4'
           }`}
       >
         <div
-          className={`flex justify-between items-center transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? 'min-h-0 gap-4 md:gap-6' : 'min-h-[5rem] max-w-7xl mx-auto'
+          className={`flex justify-between items-center transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? 'min-h-0 gap-4 md:gap-6' : 'min-h-[3rem] md:min-h-[5rem] max-w-7xl mx-auto'
             }`}
         >
           {/* Logo */}
