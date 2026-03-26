@@ -92,11 +92,13 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
         const span = document.createElement('span');
         span.textContent = char === ' ' ? '\u00A0' : char;
         span.style.display = 'inline-block';
-        span.style.opacity = '0';
         span.classList.add('title-char');
         titleEl.appendChild(span);
         chars.push(span);
       });
+
+      // Set initial state — GSAP .to() will animate to final values
+      gsap.set(chars, { opacity: 0, y: 60, rotateX: -90 });
 
       // --- Master timeline for header ---
       const tl = gsap.timeline({
@@ -117,10 +119,10 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
       });
 
       // Character-by-character reveal
-      tl.from(chars, {
-        y: 60,
-        opacity: 0,
-        rotateX: -90,
+      tl.to(chars, {
+        y: 0,
+        opacity: 1,
+        rotateX: 0,
         stagger: 0.04,
         duration: 0.8,
         ease: 'back.out(1.7)',
