@@ -1,0 +1,137 @@
+'use client';
+
+import { useRef, useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface HeroPhilosophyProps {
+  phrases: string[];
+  children: React.ReactNode;
+}
+
+export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const heroContentRef = useRef<HTMLDivElement>(null);
+  const phraseRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Target only the hero's inner text content (z-10 layer),
+      // not the video background or gradients
+      const heroTextLayer = heroContentRef.current?.querySelector('.hero-text-content');
+
+      const master = gsap.timeline({
+        scrollTrigger: {
+          trigger: wrapperRef.current,
+          start: 'top top',
+          end: `+=${phrases.length * 100}vh`,
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+        },
+      });
+
+      // ── Fade out hero text softly ──
+      if (heroTextLayer) {
+        master.to(
+          heroTextLayer,
+          { opacity: 0, y: -20, duration: 0.12, ease: 'power1.inOut' },
+          0
+        );
+      }
+
+      // ── Each phrase: gentle fade in → hold → gentle fade out ──
+      const phraseDuration = 0.85 / phrases.length; // distribute across 0.08–0.93
+
+      phraseRefs.current.forEach((phrase, i) => {
+        if (!phrase) return;
+        const line = lineRefs.current[i];
+        const start = 0.08 + i * phraseDuration;
+
+        // Fade in — very subtle, just opacity + tiny y shift
+        master.fromTo(
+          phrase,
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: phraseDuration * 0.25, ease: 'power2.out' },
+          start
+        );
+
+        // Line gently expands
+        if (line) {
+          master.fromTo(
+            line,
+            { scaleX: 0, opacity: 0 },
+            { scaleX: 1, opacity: 1, duration: phraseDuration * 0.2, ease: 'power1.inOut' },
+            start + phraseDuration * 0.1
+          );
+        }
+
+        // Fade out — soft dissolve
+        master.to(
+          phrase,
+          { opacity: 0, y: -12, duration: phraseDuration * 0.25, ease: 'power1.in' },
+          start + phraseDuration * 0.7
+        );
+
+        if (line) {
+          master.to(
+            line,
+            { scaleX: 0, opacity: 0, duration: phraseDuration * 0.15, ease: 'power1.in' },
+            start + phraseDuration * 0.68
+          );
+        }
+      });
+
+      // ── Bring hero text back at the end ──
+      if (heroTextLayer) {
+        master.to(
+          heroTextLayer,
+          { opacity: 1, y: 0, duration: 0.08, ease: 'power2.out' },
+          0.93
+        );
+      }
+    }, wrapperRef);
+
+    return () => ctx.revert();
+  }, [phrases]);
+
+  return (
+    <div ref={wrapperRef} className="relative">
+      {/* Hero — video + content, untouched */}
+      <div ref={heroContentRef}>
+        {children}
+      </div>
+
+      {/* Phrases float over the video, same position as the title */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+        {phrases.map((phrase, i) => (
+          <div
+            key={i}
+            ref={(el) => { phraseRefs.current[i] = el; }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-8 sm:px-12 md:px-20 opacity-0"
+          >
+            {/* Counter */}
+            <span className="text-champagne/40 text-[10px] font-sans uppercase tracking-[0.4em] mb-5">
+              {String(i + 1).padStart(2, '0')} / {String(phrases.length).padStart(2, '0')}
+            </span>
+
+            {/* Phrase */}
+            <p className="text-ivory/90 text-lg sm:text-xl md:text-2xl lg:text-3xl font-serif font-light text-center leading-relaxed max-w-3xl tracking-wide">
+              {phrase}
+            </p>
+
+            {/* Accent line */}
+            <div
+              ref={(el) => { lineRefs.current[i] = el; }}
+              className="w-12 h-px bg-champagne/60 mt-6 origin-center"
+              style={{ transform: 'scaleX(0)' }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

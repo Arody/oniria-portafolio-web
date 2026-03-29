@@ -8,7 +8,12 @@
   },
   "hero": {
     "scroll": "SCROLL DOWN",
-    "subtitle": "CAPTURING LOVE"
+    "subtitle": "CAPTURING LOVE",
+    "philosophy": [
+      "We don't photograph weddings. We immortalize the way they look at each other when they think no one is watching.",
+      "Every frame is an emotional decision. We seek truth in the fleeting, beauty in the invisible.",
+      "We craft visual narratives that feel like your own memories — intimate, eternal, unrepeatable."
+    ]
   },
   "interludes": {
     "1_quote": "Every love story deserves to be told with the delicacy of a whisper and the strength of eternity.",

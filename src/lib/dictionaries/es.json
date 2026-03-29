@@ -8,7 +8,12 @@
   },
   "hero": {
     "scroll": "HACER SCROLL",
-    "subtitle": "CAPTURING LOVE"
+    "subtitle": "CAPTURING LOVE",
+    "philosophy": [
+      "No fotografiamos bodas. Inmortalizamos la forma en que se miran cuando creen que nadie los ve.",
+      "Cada encuadre es una decisión emocional. Buscamos la verdad en lo efímero, la belleza en lo invisible.",
+      "Creamos relatos visuales que se sienten como recuerdos propios — íntimos, eternos, irrepetibles."
+    ]
   },
   "interludes": {
     "1_quote": "Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.",

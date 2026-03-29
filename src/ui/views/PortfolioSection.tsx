@@ -411,65 +411,75 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
 
       {/* ── Video Modal — Cinematic Style ── */}
       {activeVideo && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-obsidian/95 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-6xl">
-            {/* Close Button */}
-            <button
-              onClick={() => {
-                setActiveVideo(null);
-                setActiveProjectData(null);
-              }}
-              className="absolute -top-10 right-0 text-mist/60 hover:text-champagne transition-colors duration-400 z-50"
-              aria-label="Cerrar video"
-            >
-              <X size={24} />
-            </button>
+        <div
+          className="fixed inset-0 z-[100] bg-obsidian/95 backdrop-blur-md animate-fade-in overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setActiveVideo(null);
+              setActiveProjectData(null);
+            }
+          }}
+        >
+          {/* Close Button — fixed top-right, always visible */}
+          <button
+            onClick={() => {
+              setActiveVideo(null);
+              setActiveProjectData(null);
+            }}
+            className="fixed top-4 right-4 sm:top-6 sm:right-6 text-mist/60 hover:text-champagne transition-colors duration-400 z-[110] w-10 h-10 flex items-center justify-center rounded-full bg-obsidian/60 backdrop-blur-sm border border-white/10"
+            aria-label="Cerrar video"
+          >
+            <X size={20} />
+          </button>
 
-            <div className="w-full aspect-video bg-black border border-graphite relative">
-              <Vimeo
-                video={activeVideo}
-                autoplay={true}
-                responsive={true}
-                className="w-full h-full [&>div]:w-full [&>div]:h-full [&>div>iframe]:w-full [&>div>iframe]:h-full absolute top-0 left-0"
-              />
-            </div>
-
-            {/* Gallery Plaque — Museum Style */}
-            {activeProjectData && (
-              <div
-                className="mt-5 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 animate-fade-up"
-                style={{ animationDelay: '300ms' }}
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-champagne text-[10px] font-sans uppercase tracking-[0.3em] mb-1">
-                    {activeProjectData.couple_name}
-                  </p>
-                  <h3 className="text-ivory text-lg sm:text-xl font-serif font-light tracking-[0.08em] uppercase leading-tight">
-                    {activeProjectData.title}
-                  </h3>
-                  {activeProjectData.description && (
-                    <p className="text-mist/40 text-xs font-sans mt-2 leading-relaxed max-w-2xl italic">
-                      {activeProjectData.description}
-                    </p>
-                  )}
-                </div>
-                <div className="flex-shrink-0 sm:text-right">
-                  {activeProjectData.location && (
-                    <p className="text-mist/30 text-[10px] font-sans uppercase tracking-[0.2em]">
-                      {activeProjectData.location}
-                    </p>
-                  )}
-                  {activeProjectData.event_date && (
-                    <p className="text-mist/20 text-[10px] font-sans tracking-[0.15em] mt-1">
-                      {new Date(activeProjectData.event_date)
-                        .toLocaleDateString('es-MX', { year: 'numeric', month: 'long' })
-                        .toUpperCase()}
-                    </p>
-                  )}
-                </div>
+          <div className="min-h-full flex flex-col items-center justify-center px-4 py-16 sm:px-6 sm:py-12">
+            <div className="w-full max-w-6xl">
+              <div className="w-full aspect-video bg-black border border-graphite relative">
+                <Vimeo
+                  video={activeVideo}
+                  autoplay={true}
+                  responsive={true}
+                  className="w-full h-full [&>div]:w-full [&>div]:h-full [&>div>iframe]:w-full [&>div>iframe]:h-full absolute top-0 left-0"
+                />
               </div>
-            )}
-            <div className="w-full h-px bg-gradient-to-r from-transparent via-champagne/20 to-transparent mt-3" />
+
+              {/* Gallery Plaque — Museum Style */}
+              {activeProjectData && (
+                <div
+                  className="mt-5 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 animate-fade-up"
+                  style={{ animationDelay: '300ms' }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-champagne text-[10px] font-sans uppercase tracking-[0.3em] mb-1">
+                      {activeProjectData.couple_name}
+                    </p>
+                    <h3 className="text-ivory text-lg sm:text-xl font-serif font-light tracking-[0.08em] uppercase leading-tight">
+                      {activeProjectData.title}
+                    </h3>
+                    {activeProjectData.description && (
+                      <p className="text-mist/40 text-xs font-sans mt-2 leading-relaxed max-w-2xl italic">
+                        {activeProjectData.description}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex-shrink-0 sm:text-right">
+                    {activeProjectData.location && (
+                      <p className="text-mist/30 text-[10px] font-sans uppercase tracking-[0.2em]">
+                        {activeProjectData.location}
+                      </p>
+                    )}
+                    {activeProjectData.event_date && (
+                      <p className="text-mist/20 text-[10px] font-sans tracking-[0.15em] mt-1">
+                        {new Date(activeProjectData.event_date)
+                          .toLocaleDateString('es-MX', { year: 'numeric', month: 'long' })
+                          .toUpperCase()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              <div className="w-full h-px bg-gradient-to-r from-transparent via-champagne/20 to-transparent mt-3" />
+            </div>
           </div>
         </div>
       )}

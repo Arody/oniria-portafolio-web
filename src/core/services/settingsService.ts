@@ -15,6 +15,10 @@ export type GlobalSettings = {
   hero_background_type: 'image' | 'video';
   hero_background_url: string | null;
   contact_email: string | null;
+  philosophy_phrase_1: string | null;
+  philosophy_phrase_2: string | null;
+  philosophy_phrase_3: string | null;
+  philosophy_enabled: boolean;
   updated_at: string;
 };
 
@@ -47,6 +51,10 @@ export const getSettings = cache(async (): Promise<GlobalSettings> => {
       hero_background_type: 'image',
       hero_background_url: null,
       contact_email: null,
+      philosophy_phrase_1: 'No fotografiamos bodas. Inmortalizamos la forma en que se miran cuando creen que nadie los ve.',
+      philosophy_phrase_2: 'Cada encuadre es una decisión emocional. Buscamos la verdad en lo efímero, la belleza en lo invisible.',
+      philosophy_phrase_3: 'Creamos relatos visuales que se sienten como recuerdos propios — íntimos, eternos, irrepetibles.',
+      philosophy_enabled: true,
       updated_at: new Date().toISOString()
     };
   }

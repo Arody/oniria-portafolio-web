@@ -59,6 +59,10 @@ export default function AdminSettingsPage() {
                  hero_background_type: 'image',
                  hero_background_url: null,
                  contact_email: '',
+                 philosophy_phrase_1: 'No fotografiamos bodas. Inmortalizamos la forma en que se miran cuando creen que nadie los ve.',
+                 philosophy_phrase_2: 'Cada encuadre es una decisión emocional. Buscamos la verdad en lo efímero, la belleza en lo invisible.',
+                 philosophy_phrase_3: 'Creamos relatos visuales que se sienten como recuerdos propios — íntimos, eternos, irrepetibles.',
+                 philosophy_enabled: true,
                  updated_at: ''
              });
         }
@@ -147,6 +151,10 @@ export default function AdminSettingsPage() {
           hero_background_type: settings.hero_background_type,
           hero_background_url: final_hero_bg_url,
           contact_email: settings.contact_email,
+          philosophy_phrase_1: settings.philosophy_phrase_1,
+          philosophy_phrase_2: settings.philosophy_phrase_2,
+          philosophy_phrase_3: settings.philosophy_phrase_3,
+          philosophy_enabled: settings.philosophy_enabled ?? true,
           updated_at: new Date().toISOString()
       };
 
@@ -332,6 +340,50 @@ export default function AdminSettingsPage() {
                     )}
                 </div>
             </div>
+        </section>
+
+        {/* FILOSOFÍA — Frases de Scroll */}
+        <section className="bg-charcoal border border-graphite p-8">
+          <h2 className="text-sm font-serif text-champagne uppercase tracking-[0.15em] border-b border-graphite pb-4 mb-6">Filosofía de Marca (Scroll Hero)</h2>
+          <p className="text-[10px] text-mist/25 font-sans mb-6">
+            Estas tres frases aparecen animadas mientras el usuario hace scroll en la portada, antes de llegar al resto del contenido.
+          </p>
+
+          <div className="mb-6">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={settings.philosophy_enabled ?? true}
+                onChange={(e) => setSettings({ ...settings, philosophy_enabled: e.target.checked })}
+                className="w-4 h-4 accent-champagne cursor-pointer"
+              />
+              <span className="font-sans uppercase text-[10px] tracking-[0.2em] text-mist/60 group-hover:text-ivory transition-colors">
+                Activar sección de filosofía
+              </span>
+            </label>
+          </div>
+
+          <div className={`space-y-6 transition-opacity duration-400 ${settings.philosophy_enabled === false ? 'opacity-30 pointer-events-none' : ''}`}>
+            {[1, 2, 3].map((num) => {
+              const key = `philosophy_phrase_${num}` as keyof GlobalSettings;
+              return (
+                <div key={num}>
+                  <label className={labelClass}>
+                    <span className="text-champagne/60 mr-2">{String(num).padStart(2, '0')}</span>
+                    Frase {num}
+                  </label>
+                  <textarea
+                    name={key}
+                    value={(settings[key] as string) || ''}
+                    onChange={(e) => setSettings({ ...settings, [key]: e.target.value })}
+                    rows={2}
+                    className={`${inputClass} resize-none font-serif italic`}
+                    placeholder={`Frase filosófica ${num}...`}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </section>
 
         {/* OTROS AJUSTES */}

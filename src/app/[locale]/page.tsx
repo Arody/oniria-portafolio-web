@@ -6,9 +6,12 @@ import { BlogSection } from "@/ui/views/BlogSection";
 import { ContactSection } from "@/ui/views/ContactSection";
 import { EditorialInterlude } from "@/ui/views/EditorialInterlude";
 import { LogoutButton } from "@/ui/components/LogoutButton";
+import { SplashScreen } from "@/ui/components/SplashScreen";
+import { HeroPhilosophy } from "@/ui/views/HeroPhilosophy";
 
 import { getPublishedProjects } from "@/core/services/portfolioService";
 import { getPublishedBlogPosts } from "@/core/services/blogService";
+import { getSettings } from "@/core/services/settingsService";
 import { getDictionary } from "@/lib/dictionaries";
 import { Locale } from "@/i18n.config";
 
@@ -20,18 +23,34 @@ export default async function Home({ params }: Props) {
   const { locale } = await params;
   const dict = await getDictionary(locale);
   
-  const projects = await getPublishedProjects();
-  const blogPosts = await getPublishedBlogPosts();
+  const [projects, blogPosts, settings] = await Promise.all([
+    getPublishedProjects(),
+    getPublishedBlogPosts(),
+    getSettings(),
+  ]);
 
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
-      {/* 
-        We pass the relevant dictionary sections down to the components.
-        They need to be updated to accept these new props.
-      */}
+      <SplashScreen
+        logoImageUrl={settings.logo_image_url}
+        logoText={settings.logo_text || 'ONIRIA.'}
+        headingFont={settings.heading_font}
+      />
       <Navbar dict={dict.navigation} locale={locale} />
       <main className="flex-grow">
-        <HeroSection />
+        {settings.philosophy_enabled !== false ? (
+          <HeroPhilosophy
+            phrases={[
+              settings.philosophy_phrase_1 || dict.hero.philosophy[0],
+              settings.philosophy_phrase_2 || dict.hero.philosophy[1],
+              settings.philosophy_phrase_3 || dict.hero.philosophy[2],
+            ].filter(Boolean)}
+          >
+            <HeroSection />
+          </HeroPhilosophy>
+        ) : (
+          <HeroSection />
+        )}
 
         {/* Interlude 1 — Between Hero and Portfolio */}
         <EditorialInterlude

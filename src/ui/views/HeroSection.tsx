@@ -33,11 +33,7 @@ export async function HeroSection() {
         <div className="absolute inset-0 z-0 opacity-50 pointer-events-none overflow-hidden">
           <iframe
             src={buildVimeoEmbedUrl(settings.hero_background_url)}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            style={{
-              width: 'max(100vw, calc(100vh * 16 / 9))',
-              height: 'max(100vh, calc(100vw * 9 / 16))',
-            }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full"
             frameBorder="0"
             allow="autoplay; fullscreen"
           ></iframe>
@@ -52,7 +48,7 @@ export async function HeroSection() {
       {/* Gradient overlay — only darken bottom for cinematic transition, top stays clear */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-transparent via-obsidian/20 to-obsidian/90" />
 
-      <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto">
+      <div className="hero-text-content relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto">
         {/* Subtle top accent line */}
         <div className="w-12 h-px bg-champagne mb-10 animate-fade-in" />
 
