@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -37,109 +38,105 @@ export function EditorialInterlude({
   const subtitleRefEl = useRef<HTMLParagraphElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      /* ── Media parallax ── */
-      if (mediaInnerRef.current) {
-        gsap.fromTo(
-          mediaInnerRef.current,
-          { y: 60, scale: 1.15 },
-          {
-            y: -60,
-            scale: 1.15,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1.2,
-            },
-          }
-        );
-      }
+  useGSAP(() => {
+    /* ── Media parallax ── */
+    if (mediaInnerRef.current) {
+      gsap.fromTo(
+        mediaInnerRef.current,
+        { y: 60, scale: 1.15 },
+        {
+          y: -60,
+          scale: 1.15,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2,
+          },
+        }
+      );
+    }
 
-      /* ── Text drift ── */
-      if (textRef.current) {
-        gsap.fromTo(
-          textRef.current,
-          { y: 60 },
-          {
-            y: -30,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1.5,
-            },
-          }
-        );
-      }
+    /* ── Text drift ── */
+    if (textRef.current) {
+      gsap.fromTo(
+        textRef.current,
+        { y: 60 },
+        {
+          y: -30,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.5,
+          },
+        }
+      );
+    }
 
-      /* ── Reveal animations ── */
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 75%',
-          toggleActions: 'play none none reverse',
-        },
+    /* ── Reveal animations ── */
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 75%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
+    // Decorative line
+    if (lineRef.current) {
+      tl.from(lineRef.current, {
+        scaleX: 0,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power2.out',
       });
+    }
 
-      // Decorative line
-      if (lineRef.current) {
-        tl.from(lineRef.current, {
-          scaleX: 0,
+    // Quote
+    if (quoteRef.current) {
+      tl.from(
+        quoteRef.current,
+        {
+          y: 50,
+          opacity: 0,
+          duration: 1,
+          ease: 'power3.out',
+        },
+        '-=0.4'
+      );
+    }
+
+    // Subtitle
+    if (subtitleRefEl.current) {
+      tl.from(
+        subtitleRefEl.current,
+        {
+          y: 30,
           opacity: 0,
           duration: 0.8,
-          ease: 'power2.out',
-        });
-      }
+          ease: 'power3.out',
+        },
+        '-=0.6'
+      );
+    }
 
-      // Quote
-      if (quoteRef.current) {
-        tl.from(
-          quoteRef.current,
-          {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out',
-          },
-          '-=0.4'
-        );
-      }
-
-      // Subtitle
-      if (subtitleRefEl.current) {
-        tl.from(
-          subtitleRefEl.current,
-          {
-            y: 30,
-            opacity: 0,
-            duration: 0.8,
-            ease: 'power3.out',
-          },
-          '-=0.6'
-        );
-      }
-
-      // Dot
-      if (dotRef.current) {
-        tl.from(
-          dotRef.current,
-          {
-            scale: 0,
-            opacity: 0,
-            duration: 0.6,
-            ease: 'back.out(2)',
-          },
-          '-=0.4'
-        );
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    // Dot
+    if (dotRef.current) {
+      tl.from(
+        dotRef.current,
+        {
+          scale: 0,
+          opacity: 0,
+          duration: 0.6,
+          ease: 'back.out(2)',
+        },
+        '-=0.4'
+      );
+    }
+  }, { scope: sectionRef });
 
   // Split the quote to highlight the accent word
   const renderQuote = () => {

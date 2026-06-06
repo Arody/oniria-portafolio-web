@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { X, Play } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import type { PortfolioProject } from '@/core/services/portfolioService';
 import type { Dictionary } from '@/lib/dictionaries';
 
@@ -77,91 +78,101 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
      Each character of "HISTORIAS" reveals individually
      with a staggered timeline
      ═══════════════════════════════════════════ */
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // --- Master timeline for header ---
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: headerRef.current,
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+  useGSAP(() => {
+    // --- Master timeline for header ---
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: headerRef.current,
+        start: 'top 80%',
+        toggleActions: 'play none none reverse',
+      },
+    });
 
-      // Subtitle fade up
-      tl.from(subtitleRef.current, {
-        y: 14,
-        opacity: 0,
-        duration: 0.7,
-        ease: 'power3.out',
-      });
+    // Subtitle fade up
+    tl.from(subtitleRef.current, {
+      y: 14,
+      opacity: 0,
+      duration: 0.7,
+      ease: 'power3.out',
+    });
 
-      // Title — simple fade up
-      tl.from(titleRef.current, {
-        y: 24,
-        opacity: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-      }, '-=0.4');
+    // Title — simple fade up
+    tl.from(titleRef.current, {
+      y: 24,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+    }, '-=0.4');
 
-      // Decorative line scale in
-      tl.from(lineRef.current, {
-        scaleX: 0,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power2.out',
-      }, '-=0.5');
+    // Decorative line scale in
+    tl.from(lineRef.current, {
+      scaleX: 0,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'power2.out',
+    }, '-=0.5');
 
-      // --- Header parallax on scroll ---
-      gsap.to(headerRef.current, {
-        y: -80,
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: headerRef.current,
-          start: 'top 20%',
-          end: 'top -20%',
-          scrub: 1,
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    // --- Header parallax on scroll ---
+    gsap.to(headerRef.current, {
+      y: -80,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: headerRef.current,
+        start: 'top 20%',
+        end: 'top -20%',
+        scrub: 1,
+      },
+    });
+  }, { scope: sectionRef });
 
   /* ═══════════════════════════════════════════
      2. MASONRY CARDS — REVEAL ON SCROLL + PARALLAX
      Each card fades in with stagger and has
      independent parallax speed based on size
      ═══════════════════════════════════════════ */
-  useEffect(() => {
+  useGSAP(() => {
     if (!projects.length) return;
 
-    const ctx = gsap.context(() => {
-      const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
+    const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
 
-      // --- Per-card reveal from sides + parallax ---
-      cards.forEach((card, i) => {
-        const size = getCardSize(i);
-        const speed = parallaxSpeed[size];
-        // Alternate sides: even from left, odd from right
-        const fromX = i % 2 === 0 ? -80 : 80;
+    // --- Per-card reveal from sides + parallax ---
+    cards.forEach((card, i) => {
+      const size = getCardSize(i);
+      const speed = parallaxSpeed[size];
+      // Alternate sides: even from left, odd from right
+      const fromX = i % 2 === 0 ? -80 : 80;
 
-        gsap.from(card, {
-          x: fromX,
-          opacity: 0,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
-          },
-        });
+      gsap.from(card, {
+        x: fromX,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse',
+        },
+      });
 
-        // Per-card parallax based on size
-        gsap.to(card, {
-          y: -speed,
+      // Per-card parallax based on size
+      gsap.to(card, {
+        y: -speed,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1.5,
+        },
+      });
+
+      // Inner image parallax (Ken Burns feel)
+      const img = card.querySelector('.card-image');
+      if (img) {
+        gsap.to(img, {
+          y: speed * 0.4,
+          scale: 1.08,
           ease: 'none',
           scrollTrigger: {
             trigger: card,
@@ -170,27 +181,9 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
             scrub: 1.5,
           },
         });
-
-        // Inner image parallax (Ken Burns feel)
-        const img = card.querySelector('.card-image');
-        if (img) {
-          gsap.to(img, {
-            y: speed * 0.4,
-            scale: 1.08,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1.5,
-            },
-          });
-        }
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [projects]);
+      }
+    });
+  }, { dependencies: [projects], scope: sectionRef });
 
   /* ═══════════════════════════════════════════
      3. MAGNETIC HOVER EFFECT

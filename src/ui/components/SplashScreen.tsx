@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 interface SplashScreenProps {
   logoImageUrl: string | null;
@@ -16,62 +17,59 @@ export function SplashScreen({ logoImageUrl, logoText, headingFont }: SplashScre
   const glowRef = useRef<HTMLDivElement>(null);
   const [done, setDone] = useState(false);
 
-  useEffect(() => {
+  useGSAP(() => {
     // Prevent scroll during splash
     document.body.style.overflow = 'hidden';
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          document.body.style.overflow = '';
-          setDone(true);
-        },
-      });
+    const tl = gsap.timeline({
+      onComplete: () => {
+        document.body.style.overflow = '';
+        setDone(true);
+      },
+    });
 
-      // 1. Logo fades in + scales from 0.7 → 1
-      tl.fromTo(
-        logoRef.current,
-        { opacity: 0, scale: 0.7 },
-        { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }
-      );
+    // 1. Logo fades in + scales from 0.7 → 1
+    tl.fromTo(
+      logoRef.current,
+      { opacity: 0, scale: 0.7 },
+      { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }
+    );
 
-      // 2. Gold line expands
-      tl.fromTo(
-        lineRef.current,
-        { scaleX: 0, opacity: 0 },
-        { scaleX: 1, opacity: 1, duration: 0.8, ease: 'power2.inOut' },
-        '-=0.3'
-      );
+    // 2. Gold line expands
+    tl.fromTo(
+      lineRef.current,
+      { scaleX: 0, opacity: 0 },
+      { scaleX: 1, opacity: 1, duration: 0.8, ease: 'power2.inOut' },
+      '-=0.3'
+    );
 
-      // 3. Ambient glow pulse
-      tl.fromTo(
-        glowRef.current,
-        { opacity: 0, scale: 0.5 },
-        { opacity: 0.4, scale: 1.2, duration: 1, ease: 'power2.out' },
-        '-=0.8'
-      );
+    // 3. Ambient glow pulse
+    tl.fromTo(
+      glowRef.current,
+      { opacity: 0, scale: 0.5 },
+      { opacity: 0.4, scale: 1.2, duration: 1, ease: 'power2.out' },
+      '-=0.8'
+    );
 
-      // 4. Hold briefly
-      tl.to({}, { duration: 0.4 });
+    // 4. Hold briefly
+    tl.to({}, { duration: 0.4 });
 
-      // 5. Logo scales up + fades, curtain lifts
-      tl.to(
-        [logoRef.current, lineRef.current, glowRef.current],
-        { opacity: 0, scale: 1.5, duration: 0.8, ease: 'power3.in' }
-      );
+    // 5. Logo scales up + fades, curtain lifts
+    tl.to(
+      [logoRef.current, lineRef.current, glowRef.current],
+      { opacity: 0, scale: 1.5, duration: 0.8, ease: 'power3.in' }
+    );
 
-      tl.to(
-        containerRef.current,
-        { yPercent: -100, duration: 0.9, ease: 'power4.inOut' },
-        '-=0.4'
-      );
-    }, containerRef);
+    tl.to(
+      containerRef.current,
+      { yPercent: -100, duration: 0.9, ease: 'power4.inOut' },
+      '-=0.4'
+    );
 
     return () => {
       document.body.style.overflow = '';
-      ctx.revert();
     };
-  }, []);
+  }, { scope: containerRef });
 
   if (done) return null;
 
