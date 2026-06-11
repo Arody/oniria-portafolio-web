@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ScrollReveal } from '@/ui/components/ScrollReveal';
 import type { Dictionary } from '@/lib/dictionaries';
 import type { Locale } from '@/i18n.config';
 import { getSettings } from '@/core/services/settingsService';
@@ -21,7 +22,7 @@ export async function Footer({ dict, locale, navDict }: FooterProps) {
       {/* Top champagne divider */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-champagne/30 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <ScrollReveal y={28} start="top 95%" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div className="mb-8 md:mb-0 flex-shrink-0 flex items-center">
             {logoImageUrl ? (
@@ -68,7 +69,7 @@ export async function Footer({ dict, locale, navDict }: FooterProps) {
         <p className="text-center text-mist/25 text-[10px] font-sans tracking-[0.15em] uppercase">
           © {new Date().getFullYear()} Oniria Wedding Films. {dict?.rights || 'All rights reserved.'}
         </p>
-      </div>
+      </ScrollReveal>
     </footer>
   );
 }

@@ -8,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import type { PortfolioProject } from '@/core/services/portfolioService';
 import type { Dictionary } from '@/lib/dictionaries';
+import { prefersReducedMotion } from '@/lib/motion';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -79,6 +80,8 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
      with a staggered timeline
      ═══════════════════════════════════════════ */
   useGSAP(() => {
+    if (prefersReducedMotion()) return;
+
     // --- Master timeline for header ---
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -96,12 +99,12 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
       ease: 'power3.out',
     });
 
-    // Title — simple fade up
-    tl.from(titleRef.current, {
-      y: 24,
-      opacity: 0,
-      duration: 0.9,
-      ease: 'power3.out',
+    // Title — each character rises out of its mask with stagger
+    tl.fromTo('.title-char', { yPercent: 110 }, {
+      yPercent: 0,
+      duration: 0.8,
+      stagger: 0.03,
+      ease: 'power4.out',
     }, '-=0.4');
 
     // Decorative line scale in
@@ -132,28 +135,38 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
      independent parallax speed based on size
      ═══════════════════════════════════════════ */
   useGSAP(() => {
+    if (prefersReducedMotion()) return;
     if (!projects.length) return;
 
     const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
 
-    // --- Per-card reveal from sides + parallax ---
+    // --- Per-card aperture reveal + parallax ---
     cards.forEach((card, i) => {
       const size = getCardSize(i);
       const speed = parallaxSpeed[size];
-      // Alternate sides: even from left, odd from right
-      const fromX = i % 2 === 0 ? -80 : 80;
 
-      gsap.from(card, {
-        x: fromX,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: card,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse',
+      // Camera-settle reveal: the frame opens (clip) while the card
+      // scales down into place. Avoids x/y so it never fights the
+      // scrubbed parallax tween below.
+      gsap.fromTo(card,
+        {
+          opacity: 0,
+          scale: 1.06,
+          clipPath: 'inset(14% 8% 14% 8%)',
         },
-      });
+        {
+          opacity: 1,
+          scale: 1,
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: 1.2,
+          delay: (i % 3) * 0.12,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse',
+          },
+        });
 
       // Per-card parallax based on size
       gsap.to(card, {
@@ -192,7 +205,7 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
      ═══════════════════════════════════════════ */
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>, index: number) => {
     const card = cardRefs.current[index];
-    if (!card) return;
+    if (!card || prefersReducedMotion()) return;
 
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -202,16 +215,22 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
     const xNorm = (x / rect.width - 0.5) * 2;
     const yNorm = (y / rect.height - 0.5) * 2;
 
-    gsap.to(card, {
-      rotateY: xNorm * 6,
-      rotateX: -yNorm * 6,
-      x: xNorm * 8,
-      y: yNorm * 8,
-      scale: 1.02,
-      duration: 0.4,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    });
+    // Tilt the inner wrapper, not the card itself — the card's transform
+    // belongs to the scrubbed parallax tween and must stay untouched
+    const inner = card.querySelector('.card-inner');
+    if (inner) {
+      gsap.to(inner, {
+        rotateY: xNorm * 6,
+        rotateX: -yNorm * 6,
+        x: xNorm * 8,
+        y: yNorm * 8,
+        scale: 1.02,
+        transformPerspective: 900,
+        duration: 0.4,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    }
 
     // Move the inner overlay glow toward cursor
     const glow = card.querySelector('.magnetic-glow');
@@ -231,16 +250,19 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
     const card = cardRefs.current[index];
     if (!card) return;
 
-    gsap.to(card, {
-      rotateY: 0,
-      rotateX: 0,
-      x: 0,
-      y: 0,
-      scale: 1,
-      duration: 0.6,
-      ease: 'elastic.out(1, 0.5)',
-      overwrite: 'auto',
-    });
+    const inner = card.querySelector('.card-inner');
+    if (inner) {
+      gsap.to(inner, {
+        rotateY: 0,
+        rotateX: 0,
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        ease: 'elastic.out(1, 0.5)',
+        overwrite: 'auto',
+      });
+    }
 
     const glow = card.querySelector('.magnetic-glow');
     if (glow) {
@@ -275,9 +297,20 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
           </p>
           <h2
             ref={titleRef}
+            aria-label={dict.title}
             className="text-3xl md:text-5xl lg:text-6xl font-serif font-light text-ivory uppercase tracking-[0.15em]"
           >
-            {dict.title}
+            {dict.title.split('').map((char, i) => (
+              <span
+                key={i}
+                aria-hidden="true"
+                className="inline-block overflow-hidden align-bottom pb-[0.1em] -mb-[0.1em]"
+              >
+                <span className="title-char inline-block will-change-transform">
+                  {char === ' ' ? ' ' : char}
+                </span>
+              </span>
+            ))}
           </h2>
           <div
             ref={lineRef}
@@ -316,6 +349,9 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
                     }
                   }}
                 >
+                  {/* Inner wrapper — receives the magnetic 3D tilt so the
+                      card itself stays free for the scroll parallax tween */}
+                  <div className="card-inner relative w-full h-full">
                   {/* Image */}
                   <div className="absolute inset-0 overflow-hidden">
                     {project.cover_image_url ? (
@@ -389,6 +425,7 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
                       </div>
                     )}
                   </div>
+                  </div>
                 </div>
               );
             })}
@@ -426,7 +463,7 @@ export function PortfolioSection({ projects, dict }: PortfolioSectionProps) {
           </button>
 
           <div className="min-h-full flex flex-col items-center justify-center px-4 py-16 sm:px-6 sm:py-12">
-            <div className="w-full max-w-6xl">
+            <div className="w-full max-w-6xl animate-scale-reveal">
               <div className="w-full aspect-video bg-black border border-graphite relative">
                 <Vimeo
                   video={activeVideo}

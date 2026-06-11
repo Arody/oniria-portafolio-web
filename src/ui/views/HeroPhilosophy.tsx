@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { prefersReducedMotion } from '@/lib/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,9 +21,13 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
   const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useGSAP(() => {
-    // Target only the hero's inner text content (z-10 layer),
+    if (prefersReducedMotion()) return;
+
+    // Target only the hero's inner text content and scroll cue (z-10 layers),
     // not the video background or gradients
-    const heroTextLayer = heroContentRef.current?.querySelector('.hero-text-content');
+    const heroTextLayers = heroContentRef.current
+      ? Array.from(heroContentRef.current.querySelectorAll('.hero-text-content, .hero-scroll-cue'))
+      : [];
 
     const master = gsap.timeline({
       scrollTrigger: {
@@ -36,15 +41,15 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
     });
 
     // ── Fade out hero text softly ──
-    if (heroTextLayer) {
+    if (heroTextLayers.length) {
       master.to(
-        heroTextLayer,
+        heroTextLayers,
         { opacity: 0, y: -20, duration: 0.12, ease: 'power1.inOut' },
         0
       );
     }
 
-    // ── Each phrase: gentle fade in → hold → gentle fade out ──
+    // ── Each phrase: emerge from blur → hold → dissolve ──
     const phraseDuration = 0.85 / phrases.length; // distribute across 0.08–0.93
 
     phraseRefs.current.forEach((phrase, i) => {
@@ -52,11 +57,11 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
       const line = lineRefs.current[i];
       const start = 0.08 + i * phraseDuration;
 
-      // Fade in — very subtle, just opacity + tiny y shift
+      // Fade in — opacity + tiny y shift + focus pull from blur
       master.fromTo(
         phrase,
-        { opacity: 0, y: 18 },
-        { opacity: 1, y: 0, duration: phraseDuration * 0.25, ease: 'power2.out' },
+        { opacity: 0, y: 18, filter: 'blur(10px)' },
+        { opacity: 1, y: 0, filter: 'blur(0px)', duration: phraseDuration * 0.25, ease: 'power2.out' },
         start
       );
 
@@ -70,10 +75,10 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
         );
       }
 
-      // Fade out — soft dissolve
+      // Fade out — soft dissolve back into blur
       master.to(
         phrase,
-        { opacity: 0, y: -12, duration: phraseDuration * 0.25, ease: 'power1.in' },
+        { opacity: 0, y: -12, filter: 'blur(8px)', duration: phraseDuration * 0.25, ease: 'power1.in' },
         start + phraseDuration * 0.7
       );
 
@@ -87,9 +92,9 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
     });
 
     // ── Bring hero text back at the end ──
-    if (heroTextLayer) {
+    if (heroTextLayers.length) {
       master.to(
-        heroTextLayer,
+        heroTextLayers,
         { opacity: 1, y: 0, duration: 0.08, ease: 'power2.out' },
         0.93
       );

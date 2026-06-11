@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { ScrollReveal } from '@/ui/components/ScrollReveal';
 import type { BlogPost } from '@/core/services/blogService';
 import type { Dictionary } from '@/lib/dictionaries';
 import type { Locale } from '@/i18n.config';
@@ -21,7 +22,7 @@ export function BlogSection({ posts, dict, locale }: BlogSectionProps) {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Header */}
-        <div className="mb-20 text-center">
+        <ScrollReveal stagger={0.12} y={32} className="mb-20 text-center">
           <p className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4">
             {dict.subtitle}
           </p>
@@ -29,16 +30,15 @@ export function BlogSection({ posts, dict, locale }: BlogSectionProps) {
             {dict.title}
           </h2>
           <div className="w-16 h-px bg-champagne/40 mx-auto mt-8" />
-        </div>
+        </ScrollReveal>
 
         {/* Blog Cards Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {recentPosts.length > 0 ? recentPosts.map((post, idx) => (
+        <ScrollReveal stagger={0.15} y={56} className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          {recentPosts.length > 0 ? recentPosts.map((post) => (
             <Link
               key={post.id}
               href={`/${locale}/blog/${post.slug}`}
-              className="bg-graphite/50 flex flex-col group transition-all duration-500 hover:bg-graphite border border-graphite/50 hover:border-champagne/20 animate-fade-up relative overflow-hidden"
-              style={{ animationDelay: `${idx * 150}ms` }}
+              className="bg-graphite/50 flex flex-col group transition-colors duration-500 hover:bg-graphite border border-graphite/50 hover:border-champagne/20 relative overflow-hidden"
             >
               {/* Champagne top accent that slides in on hover */}
               <div className="absolute top-0 left-0 right-0 h-px bg-champagne scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] origin-left z-10" />
@@ -91,17 +91,17 @@ export function BlogSection({ posts, dict, locale }: BlogSectionProps) {
                 <p className="font-sans text-mist/40 uppercase tracking-[0.2em] text-sm">{dict.empty}</p>
             </div>
           )}
-        </div>
+        </ScrollReveal>
 
         {/* CTA */}
-        <div className="text-center">
-          <Link 
+        <ScrollReveal y={24} className="text-center">
+          <Link
             href={`/${locale}/blog`}
             className="inline-block bg-transparent text-ivory px-10 py-4 font-sans uppercase tracking-[0.3em] text-xs border border-ivory/30 hover:border-champagne hover:text-champagne transition-all duration-500"
           >
             {dict.view_all}
           </Link>
-        </div>
+        </ScrollReveal>
 
       </div>
     </section>

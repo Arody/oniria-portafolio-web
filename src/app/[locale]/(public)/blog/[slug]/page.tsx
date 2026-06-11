@@ -52,7 +52,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </Link>
 
           {/* Header */}
-          <header className="mb-16 animate-fade-up">
+          <header className="mb-16 animate-blur-up">
             <div className="flex flex-wrap items-center gap-4 mb-8">
               {post.category && (
                 <span className="text-[10px] font-sans text-champagne uppercase tracking-[0.25em]">
@@ -77,7 +77,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           {/* Cover Image */}
           {post.cover_image_url && (
-            <div className="w-full aspect-video border border-graphite mb-16 relative overflow-hidden animate-fade-up" style={{ animationDelay: '200ms' }}>
+            <div className="w-full aspect-video border border-graphite mb-16 relative overflow-hidden animate-scale-reveal animation-delay-200">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={post.cover_image_url} 

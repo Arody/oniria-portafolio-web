@@ -1,5 +1,6 @@
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
+import { ScrollReveal } from "@/ui/components/ScrollReveal";
 import { getPublishedBlogPosts } from "@/core/services/blogService";
 import Link from 'next/link';
 import { Metadata } from 'next';
@@ -39,22 +40,21 @@ export default async function PublicBlogPage({ params }: Props) {
             
             {/* Header */}
             <div className="mb-20 text-center">
-              <div className="w-12 h-px bg-champagne mx-auto mb-8" />
-              <h1 className="text-5xl md:text-7xl font-serif font-light uppercase tracking-[0.08em] text-ivory mb-6">
+              <div className="w-12 h-px bg-champagne mx-auto mb-8 origin-center animate-line-grow" />
+              <h1 className="text-5xl md:text-7xl font-serif font-light uppercase tracking-[0.08em] text-ivory mb-6 animate-blur-up animation-delay-200">
                 Nuestro Blog
               </h1>
-              <p className="text-base md:text-lg font-sans text-mist/50 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg font-sans text-mist/50 max-w-2xl mx-auto animate-fade-up animation-delay-400">
                 Léenos y descubre cómo hacer de tu boda un evento épico.
               </p>
             </div>
 
             {/* Blog Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-              {posts.length > 0 ? posts.map((post, index) => (
+            <ScrollReveal stagger={0.1} y={48} start="top 90%" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              {posts.length > 0 ? posts.map((post) => (
                 <div
                   key={post.id}
-                  className="bg-charcoal border border-graphite flex flex-col hover:border-champagne/30 transition-all duration-500 animate-fade-up group"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="bg-charcoal border border-graphite flex flex-col hover:border-champagne/30 transition-colors duration-500 group"
                 >
                   <div className="w-full h-64 border-b border-graphite overflow-hidden relative">
                     {post.cover_image_url ? (
@@ -102,7 +102,7 @@ export default async function PublicBlogPage({ params }: Props) {
                   Próximamente publicaremos artículos increíbles aquí.
                 </div>
               )}
-            </div>
+            </ScrollReveal>
 
           </div>
         </section>

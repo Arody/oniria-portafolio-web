@@ -40,7 +40,7 @@ export async function HeroSection() {
         </div>
       ) : (
         <div
-            className="absolute inset-0 z-0 opacity-50 bg-cover bg-center"
+            className="absolute inset-0 z-0 opacity-50 bg-cover bg-center animate-ken-burns"
             style={{ backgroundImage: `url('${settings.hero_background_url || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2560'}')` }}
           />
       )}
@@ -50,30 +50,39 @@ export async function HeroSection() {
 
       <div className="hero-text-content relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto">
         {/* Subtle top accent line */}
-        <div className="w-12 h-px bg-champagne mb-10 animate-fade-in" />
+        <div className="w-12 h-px bg-champagne mb-10 origin-center animate-line-grow splash-wait" />
 
         <h1
-          className="text-4xl md:text-6xl lg:text-7xl font-serif font-light text-ivory uppercase tracking-[0.15em] leading-[1.1] mb-8 animate-fade-up"
+          className="text-4xl md:text-6xl lg:text-7xl font-serif font-light text-ivory uppercase tracking-[0.15em] leading-[1.1] mb-8 animate-blur-up animation-delay-200 splash-wait"
           style={{ fontFamily: settings.heading_font || 'inherit' }}
         >
           {settings.hero_title}
         </h1>
 
         <p
-          className="text-base md:text-lg text-mist/80 mb-12 max-w-xl font-light tracking-[0.1em] uppercase animate-fade-up animation-delay-200"
+          className="text-base md:text-lg text-mist/80 mb-12 max-w-xl font-light tracking-[0.1em] uppercase animate-blur-up animation-delay-400 splash-wait"
           style={{ fontFamily: settings.body_font || 'inherit' }}
         >
           {settings.hero_subtitle}
         </p>
-        
-        <Link 
-          href="#portafolio" 
-          className="group relative bg-transparent text-ivory px-10 py-4 font-sans uppercase tracking-[0.3em] text-xs border border-ivory/30 hover:border-champagne hover:text-champagne transition-all duration-500 animate-fade-up animation-delay-400"
+
+        <Link
+          href="#portafolio"
+          className="group relative bg-transparent text-ivory px-10 py-4 font-sans uppercase tracking-[0.3em] text-xs border border-ivory/30 hover:border-champagne hover:text-champagne transition-all duration-500 animate-fade-up animation-delay-600 splash-wait"
           style={{ fontFamily: settings.body_font || 'inherit' }}
         >
           Watch the story
           <span className="absolute bottom-0 left-0 w-0 h-px bg-champagne transition-all duration-500 group-hover:w-full" />
         </Link>
+      </div>
+
+      {/* Scroll cue — animated champagne line */}
+      <div className="hero-scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+        <div className="animate-fade-in animation-delay-1000 splash-wait">
+          <div className="w-px h-12 overflow-hidden">
+            <div className="w-full h-full bg-gradient-to-b from-champagne/70 via-champagne/40 to-transparent animate-scroll-cue" />
+          </div>
+        </div>
       </div>
 
       {/* Bottom fade */}

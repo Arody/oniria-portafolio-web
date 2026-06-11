@@ -83,12 +83,14 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
               <Link
                 key={link.href}
                 href={link.href}
-                className={`uppercase font-light transition-all duration-500 hover:text-champagne whitespace-nowrap ${scrolled
+                className={`group relative uppercase font-light transition-all duration-500 hover:text-champagne whitespace-nowrap ${scrolled
                     ? 'text-[9px] tracking-[0.14em] text-ivory/60'
                     : 'text-xs tracking-[0.2em] text-mist'
                   }`}
               >
                 {link.label}
+                {/* Underline draws in from the left, exits to the right */}
+                <span className="absolute -bottom-1 left-0 w-full h-px bg-champagne scale-x-0 origin-right group-hover:scale-x-100 group-hover:origin-left transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" />
               </Link>
             ))}
           </div>
@@ -114,12 +116,15 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
           className={`border border-ivory/[0.08] backdrop-blur-2xl bg-obsidian/80 px-6 py-5 space-y-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ${scrolled ? 'rounded-2xl mx-0' : 'rounded-2xl mx-4'
             }`}
         >
-          {navLinks.map((link) => (
+          {navLinks.map((link, i) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="block text-mist hover:text-champagne uppercase text-sm tracking-[0.2em] font-light transition-colors duration-400 py-2"
+              className={`block text-mist hover:text-champagne uppercase text-sm tracking-[0.2em] font-light transition-all duration-500 py-2 ${
+                menuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+              }`}
+              style={{ transitionDelay: menuOpen ? `${100 + i * 60}ms` : '0ms' }}
             >
               {link.label}
             </Link>

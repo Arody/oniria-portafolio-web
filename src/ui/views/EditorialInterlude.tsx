@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { prefersReducedMotion } from '@/lib/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,13 +33,15 @@ export function EditorialInterlude({
 }: EditorialInterludeProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
+  const mediaWrapRef = useRef<HTMLDivElement>(null);
   const mediaInnerRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
-  const quoteRef = useRef<HTMLHeadingElement>(null);
   const subtitleRefEl = useRef<HTMLParagraphElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
+    if (prefersReducedMotion()) return;
+
     /* ── Media parallax ── */
     if (mediaInnerRef.current) {
       gsap.fromTo(
@@ -85,29 +88,51 @@ export function EditorialInterlude({
       },
     });
 
-    // Decorative line
-    if (lineRef.current) {
-      tl.from(lineRef.current, {
-        scaleX: 0,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power2.out',
-      });
-    }
-
-    // Quote
-    if (quoteRef.current) {
-      tl.from(
-        quoteRef.current,
+    // Media — cinematic curtain reveal sweeping away from the text side
+    if (mediaWrapRef.current) {
+      tl.fromTo(
+        mediaWrapRef.current,
         {
-          y: 50,
-          opacity: 0,
-          duration: 1,
-          ease: 'power3.out',
+          clipPath:
+            textSide === 'left'
+              ? 'inset(0% 100% 0% 0%)' // media on the right → reveal left to right
+              : 'inset(0% 0% 0% 100%)', // media on the left → reveal right to left
         },
-        '-=0.4'
+        {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: 1.4,
+          ease: 'power3.inOut',
+        },
+        0
       );
     }
+
+    // Decorative line
+    if (lineRef.current) {
+      tl.from(
+        lineRef.current,
+        {
+          scaleX: 0,
+          opacity: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+        },
+        0.2
+      );
+    }
+
+    // Quote — words rise out of their masks one by one
+    tl.fromTo(
+      '.quote-word',
+      { yPercent: 110 },
+      {
+        yPercent: 0,
+        duration: 0.9,
+        stagger: 0.045,
+        ease: 'power4.out',
+      },
+      0.35
+    );
 
     // Subtitle
     if (subtitleRefEl.current) {
@@ -138,19 +163,37 @@ export function EditorialInterlude({
     }
   }, { scope: sectionRef });
 
-  // Split the quote to highlight the accent word
+  // Split the quote into masked words, keeping the accent highlight intact.
+  // Punctuation stays attached to its word; only the word core is compared
+  // against the accent word(s).
+  const accentParts = accentWord
+    ? accentWord.toLowerCase().split(/\s+/).filter(Boolean)
+    : [];
+
   const renderQuote = () => {
-    if (!accentWord) {
-      return <span>{quote}</span>;
-    }
-    const parts = quote.split(new RegExp(`(${accentWord})`, 'i'));
-    return parts.map((part, i) =>
-      part.toLowerCase() === accentWord.toLowerCase() ? (
-        <span key={i} className="text-champagne">{part}</span>
-      ) : (
-        <span key={i}>{part}</span>
-      )
-    );
+    const words: React.ReactNode[] = [];
+    quote.split(/\s+/).filter(Boolean).forEach((token, i) => {
+      const lead = token.match(/^[^\p{L}\p{N}]*/u)?.[0] ?? '';
+      // All-punctuation token: render it whole as the lead, no core/trail
+      const trail = lead === token ? '' : token.match(/[^\p{L}\p{N}]*$/u)?.[0] ?? '';
+      const core = token.slice(lead.length, token.length - trail.length);
+      const isAccent = core !== '' && accentParts.includes(core.toLowerCase());
+
+      words.push(
+        <span
+          key={i}
+          className="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em]"
+        >
+          <span className="quote-word inline-block will-change-transform">
+            {lead}
+            <span className={isAccent ? 'text-champagne' : undefined}>{core}</span>
+            {trail}
+          </span>
+        </span>
+      );
+      words.push(' ');
+    });
+    return words;
   };
 
   const textContent = (
@@ -166,10 +209,7 @@ export function EditorialInterlude({
       />
 
       {/* Quote */}
-      <h2
-        ref={quoteRef}
-        className="text-3xl md:text-4xl lg:text-5xl font-serif font-light leading-[1.2] tracking-[0.02em] text-ivory"
-      >
+      <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-light leading-[1.2] tracking-[0.02em] text-ivory">
         {renderQuote()}
       </h2>
 
@@ -192,7 +232,10 @@ export function EditorialInterlude({
   );
 
   const mediaContent = (
-    <div className="relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]">
+    <div
+      ref={mediaWrapRef}
+      className="relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]"
+    >
       <div
         ref={mediaInnerRef}
         className="absolute inset-0"

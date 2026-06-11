@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { prefersReducedMotion } from '@/lib/motion';
 
 interface SplashScreenProps {
   logoImageUrl: string | null;
@@ -18,8 +19,17 @@ export function SplashScreen({ logoImageUrl, logoText, headingFont }: SplashScre
   const [done, setDone] = useState(false);
 
   useGSAP(() => {
+    // Hold hero entrance animations (`.splash-wait`) until the curtain lifts
+    document.documentElement.classList.add('splash-active');
     // Prevent scroll during splash
     document.body.style.overflow = 'hidden';
+
+    if (prefersReducedMotion()) {
+      document.documentElement.classList.remove('splash-active');
+      document.body.style.overflow = '';
+      setDone(true);
+      return;
+    }
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -28,11 +38,11 @@ export function SplashScreen({ logoImageUrl, logoText, headingFont }: SplashScre
       },
     });
 
-    // 1. Logo fades in + scales from 0.7 → 1
+    // 1. Logo emerges from blur + scales from 0.85 → 1
     tl.fromTo(
       logoRef.current,
-      { opacity: 0, scale: 0.7 },
-      { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }
+      { opacity: 0, scale: 0.85, filter: 'blur(14px)' },
+      { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.4, ease: 'power3.out' }
     );
 
     // 2. Gold line expands
@@ -40,7 +50,7 @@ export function SplashScreen({ logoImageUrl, logoText, headingFont }: SplashScre
       lineRef.current,
       { scaleX: 0, opacity: 0 },
       { scaleX: 1, opacity: 1, duration: 0.8, ease: 'power2.inOut' },
-      '-=0.3'
+      '-=0.5'
     );
 
     // 3. Ambient glow pulse
@@ -54,20 +64,25 @@ export function SplashScreen({ logoImageUrl, logoText, headingFont }: SplashScre
     // 4. Hold briefly
     tl.to({}, { duration: 0.4 });
 
-    // 5. Logo scales up + fades, curtain lifts
+    // 5. Logo dissolves upward into blur, curtain lifts
     tl.to(
       [logoRef.current, lineRef.current, glowRef.current],
-      { opacity: 0, scale: 1.5, duration: 0.8, ease: 'power3.in' }
+      { opacity: 0, scale: 1.4, filter: 'blur(10px)', duration: 0.8, ease: 'power3.in' }
     );
+
+    // Release the hero entrance right as the curtain starts lifting,
+    // so its animations play while being revealed
+    tl.add(() => document.documentElement.classList.remove('splash-active'), '-=0.4');
 
     tl.to(
       containerRef.current,
       { yPercent: -100, duration: 0.9, ease: 'power4.inOut' },
-      '-=0.4'
+      '<'
     );
 
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.classList.remove('splash-active');
     };
   }, { scope: containerRef });
 
