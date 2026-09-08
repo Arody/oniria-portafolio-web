@@ -45,7 +45,7 @@ export async function Footer({ dict, locale, navDict }: FooterProps) {
 
           <div className="flex space-x-10 mb-8 md:mb-0">
             <Link href={`/${locale}`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
-              {navDict ? 'Inicio' : 'Inicio'}
+              {navDict?.home || 'Inicio'}
             </Link>
             <Link href={`/${locale}#portafolio`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
               {navDict?.our_work || 'Portafolio'}

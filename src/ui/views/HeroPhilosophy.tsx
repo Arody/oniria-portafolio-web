@@ -99,7 +99,7 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
         0.93
       );
     }
-  }, { dependencies: [phrases], scope: wrapperRef });
+  }, { dependencies: [phrases], scope: wrapperRef, revertOnUpdate: true });
 
   return (
     <div ref={wrapperRef} className="relative">

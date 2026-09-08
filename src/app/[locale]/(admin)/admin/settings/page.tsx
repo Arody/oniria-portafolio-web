@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import imageCompression from 'browser-image-compression';
 import { Loader2, UploadCloud, X } from 'lucide-react';
 import type { GlobalSettings } from '@/core/services/settingsService';
+import { revalidateGlobalSettings } from '@/core/actions/settingsActions';
 
 export default function AdminSettingsPage() {
   const router = useRouter();
@@ -23,6 +24,12 @@ export default function AdminSettingsPage() {
 
   const [heroBgPreview, setHeroBgPreview] = useState<string | null>(null);
   const [heroBgFile, setHeroBgFile] = useState<File | null>(null);
+
+  const [interlude1BgPreview, setInterlude1BgPreview] = useState<string | null>(null);
+  const [interlude1BgFile, setInterlude1BgFile] = useState<File | null>(null);
+
+  const [interlude2BgPreview, setInterlude2BgPreview] = useState<string | null>(null);
+  const [interlude2BgFile, setInterlude2BgFile] = useState<File | null>(null);
 
   useEffect(() => {
     async function loadSettings() {
@@ -44,6 +51,12 @@ export default function AdminSettingsPage() {
           if (data.hero_background_type === 'image') {
               setHeroBgPreview(data.hero_background_url);
           }
+          if (data.interlude_1_media_type !== 'video' && data.interlude_1_media_url) {
+              setInterlude1BgPreview(data.interlude_1_media_url);
+          }
+          if (data.interlude_2_media_type !== 'video' && data.interlude_2_media_url) {
+              setInterlude2BgPreview(data.interlude_2_media_url);
+          }
         } else {
              setSettings({
                  id: 'default',
@@ -51,7 +64,7 @@ export default function AdminSettingsPage() {
                  site_description: '',
                  logo_text: 'ONIRIA.',
                  logo_image_url: null,
-               logo_size: 40,
+                 logo_size: 40,
                  heading_font: 'Cabinet Grotesk',
                  body_font: 'Inter',
                  hero_title: 'CREANDO RECUERDOS ATEMPORALES',
@@ -63,6 +76,18 @@ export default function AdminSettingsPage() {
                  philosophy_phrase_2: 'Cada encuadre es una decisión emocional. Buscamos la verdad en lo efímero, la belleza en lo invisible.',
                  philosophy_phrase_3: 'Creamos relatos visuales que se sienten como recuerdos propios — íntimos, eternos, irrepetibles.',
                  philosophy_enabled: true,
+                 interlude_1_enabled: true,
+                 interlude_1_quote: 'Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.',
+                 interlude_1_subtitle: '— Filosofía Oniria',
+                 interlude_1_accent: 'eterno',
+                 interlude_1_media_type: 'image',
+                 interlude_1_media_url: '/interludes/hands.png',
+                 interlude_2_enabled: true,
+                 interlude_2_quote: 'No capturamos momentos. Creamos fragmentos de eternidad que respirarán por siempre.',
+                 interlude_2_subtitle: '— El Arte de Recordar',
+                 interlude_2_accent: 'eternidad',
+                 interlude_2_media_type: 'image',
+                 interlude_2_media_url: '/interludes/veil.png',
                  updated_at: ''
              });
         }
@@ -76,7 +101,7 @@ export default function AdminSettingsPage() {
     loadSettings();
   }, [supabase]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (!settings) return;
     const { name, value } = e.target;
     setSettings({ ...settings, [name]: value });
@@ -97,6 +122,24 @@ export default function AdminSettingsPage() {
       setHeroBgFile(file);
       setHeroBgPreview(URL.createObjectURL(file));
       if (settings) setSettings({ ...settings, hero_background_url: '' });
+    }
+  };
+
+  const handleInterlude1BgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setInterlude1BgFile(file);
+      setInterlude1BgPreview(URL.createObjectURL(file));
+      if (settings) setSettings({ ...settings, interlude_1_media_url: '' });
+    }
+  };
+
+  const handleInterlude2BgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setInterlude2BgFile(file);
+      setInterlude2BgPreview(URL.createObjectURL(file));
+      if (settings) setSettings({ ...settings, interlude_2_media_url: '' });
     }
   };
 
@@ -121,6 +164,8 @@ export default function AdminSettingsPage() {
     try {
       let final_logo_url = settings.logo_image_url;
       let final_hero_bg_url = settings.hero_background_url;
+      let final_interlude1_url = settings.interlude_1_media_url;
+      let final_interlude2_url = settings.interlude_2_media_url;
 
       if (logoFile) {
         const compressedLogo = await compressImage(logoFile, true);
@@ -138,12 +183,28 @@ export default function AdminSettingsPage() {
         final_hero_bg_url = supabase.storage.from('oniria').getPublicUrl(`settings/${fileName}`).data.publicUrl;
       }
 
+      if (interlude1BgFile && settings.interlude_1_media_type !== 'video') {
+        const compressed = await compressImage(interlude1BgFile, false);
+        const fileName = `interlude-1-${Date.now()}.${compressed.name.split('.').pop()}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(`settings/${fileName}`, compressed);
+        if (uploadError) throw uploadError;
+        final_interlude1_url = supabase.storage.from('oniria').getPublicUrl(`settings/${fileName}`).data.publicUrl;
+      }
+
+      if (interlude2BgFile && settings.interlude_2_media_type !== 'video') {
+        const compressed = await compressImage(interlude2BgFile, false);
+        const fileName = `interlude-2-${Date.now()}.${compressed.name.split('.').pop()}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(`settings/${fileName}`, compressed);
+        if (uploadError) throw uploadError;
+        final_interlude2_url = supabase.storage.from('oniria').getPublicUrl(`settings/${fileName}`).data.publicUrl;
+      }
+
       const updatePayload = {
           site_title: settings.site_title,
           site_description: settings.site_description,
           logo_text: settings.logo_text,
           logo_image_url: final_logo_url,
-        logo_size: Number(settings.logo_size),
+          logo_size: Number(settings.logo_size),
           heading_font: settings.heading_font,
           body_font: settings.body_font,
           hero_title: settings.hero_title,
@@ -155,18 +216,36 @@ export default function AdminSettingsPage() {
           philosophy_phrase_2: settings.philosophy_phrase_2,
           philosophy_phrase_3: settings.philosophy_phrase_3,
           philosophy_enabled: settings.philosophy_enabled ?? true,
+          interlude_1_enabled: settings.interlude_1_enabled ?? true,
+          interlude_1_quote: settings.interlude_1_quote,
+          interlude_1_subtitle: settings.interlude_1_subtitle,
+          interlude_1_accent: settings.interlude_1_accent,
+          interlude_1_media_type: settings.interlude_1_media_type || 'image',
+          interlude_1_media_url: final_interlude1_url,
+          interlude_2_enabled: settings.interlude_2_enabled ?? true,
+          interlude_2_quote: settings.interlude_2_quote,
+          interlude_2_subtitle: settings.interlude_2_subtitle,
+          interlude_2_accent: settings.interlude_2_accent,
+          interlude_2_media_type: settings.interlude_2_media_type || 'image',
+          interlude_2_media_url: final_interlude2_url,
           updated_at: new Date().toISOString()
       };
 
-      const { error: dbError } = await supabase
-        .schema('oniria')
+      const { data: updatedRows, error: dbError } = await supabase
         .from('settings')
         .update(updatePayload)
-        .eq('is_singleton', true);
+        .eq('id', settings.id)
+        .select();
 
       if (dbError) throw dbError;
 
-      setSuccessMsg("Configuración global actualizada correctamente.");
+      if (!updatedRows || updatedRows.length === 0) {
+        throw new Error("No se pudo actualizar la configuración en la base de datos (0 filas afectadas). Ejecuta el script 'enable_realtime_settings.sql' en el SQL Editor de Supabase para habilitar los permisos RLS.");
+      }
+
+      await revalidateGlobalSettings();
+
+      setSuccessMsg("Configuración global guardada y sincronizada en tiempo real.");
       router.refresh();
 
     } catch (err: any) {
@@ -383,6 +462,292 @@ export default function AdminSettingsPage() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        {/* INTERLUDIO 1 */}
+        <section className="bg-charcoal border border-graphite p-8">
+          <h2 className="text-sm font-serif text-champagne uppercase tracking-[0.15em] border-b border-graphite pb-4 mb-6">
+            Pausa Editorial 1 (Entre Portada y Portafolio)
+          </h2>
+          <p className="text-[10px] text-mist/25 font-sans mb-6">
+            Esta sección muestra una frase editorial de gran impacto acompañada de una fotografía o video en bucle de Vimeo con efecto parallax.
+          </p>
+
+          <div className="mb-6">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={settings.interlude_1_enabled ?? true}
+                onChange={(e) => setSettings({ ...settings, interlude_1_enabled: e.target.checked })}
+                className="w-4 h-4 accent-champagne cursor-pointer"
+              />
+              <span className="font-sans uppercase text-[10px] tracking-[0.2em] text-mist/60 group-hover:text-ivory transition-colors">
+                Mostrar Interludio 1 en la página
+              </span>
+            </label>
+          </div>
+
+          <div className={`space-y-6 transition-opacity duration-400 ${settings.interlude_1_enabled === false ? 'opacity-30 pointer-events-none' : ''}`}>
+            <div>
+              <label className={labelClass}>Frase Principal (Cita Editorial)</label>
+              <textarea
+                name="interlude_1_quote"
+                value={settings.interlude_1_quote || ''}
+                onChange={handleInputChange}
+                rows={3}
+                placeholder="Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno."
+                className={`${inputClass} resize-none font-serif text-base italic`}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className={labelClass}>Subtítulo / Firma</label>
+                <input
+                  type="text"
+                  name="interlude_1_subtitle"
+                  value={settings.interlude_1_subtitle || ''}
+                  onChange={handleInputChange}
+                  placeholder="— Filosofía Oniria"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Palabra de Acento (Dorado Champagne)</label>
+                <input
+                  type="text"
+                  name="interlude_1_accent"
+                  value={settings.interlude_1_accent || ''}
+                  onChange={handleInputChange}
+                  placeholder="eterno"
+                  className={inputClass}
+                />
+                <p className="text-[10px] text-mist/25 mt-2 font-sans">
+                  Esta palabra se resaltará en dorado dentro de la frase.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-graphite/50 pt-6">
+              <label className={labelClass}>Multimedia Lateral (Parallax)</label>
+              <div className="flex gap-6 mb-4">
+                <label className="flex items-center gap-2 cursor-pointer font-sans uppercase text-[10px] tracking-wider text-mist/60">
+                  <input
+                    type="radio"
+                    name="interlude_1_media_type"
+                    value="image"
+                    checked={settings.interlude_1_media_type !== 'video'}
+                    onChange={() => setSettings({ ...settings, interlude_1_media_type: 'image' })}
+                    className="w-3 h-3 accent-champagne"
+                  />
+                  Imagen Estática
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer font-sans uppercase text-[10px] tracking-wider text-mist/60">
+                  <input
+                    type="radio"
+                    name="interlude_1_media_type"
+                    value="video"
+                    checked={settings.interlude_1_media_type === 'video'}
+                    onChange={() => setSettings({ ...settings, interlude_1_media_type: 'video' })}
+                    className="w-3 h-3 accent-champagne"
+                  />
+                  Video Vimeo
+                </label>
+              </div>
+
+              {settings.interlude_1_media_type !== 'video' ? (
+                <div>
+                  {!interlude1BgPreview ? (
+                    <div className="relative border border-dashed border-graphite bg-obsidian p-6 text-center cursor-pointer hover:border-champagne/30 transition-colors duration-400">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleInterlude1BgChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <UploadCloud size={20} className="mx-auto mb-2 text-mist/30" />
+                      <p className="font-sans uppercase tracking-[0.15em] text-[10px] text-mist/40">
+                        Subir Imagen (JPG/PNG/WEBP)
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="relative aspect-video bg-graphite border border-graphite flex items-center justify-center p-0 group overflow-hidden max-w-sm">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={interlude1BgPreview} alt="Interludio 1" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInterlude1BgFile(null);
+                          setInterlude1BgPreview(null);
+                          setSettings({ ...settings, interlude_1_media_url: null });
+                        }}
+                        className="absolute top-2 right-2 bg-obsidian/80 border border-graphite w-8 h-8 flex items-center justify-center text-mist/60 hover:text-champagne transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <input
+                    type="url"
+                    name="interlude_1_media_url"
+                    value={settings.interlude_1_media_url || ''}
+                    onChange={handleInputChange}
+                    placeholder="Ej: https://vimeo.com/76979871"
+                    className={inputClass}
+                  />
+                  <p className="text-[10px] text-mist/25 mt-2 font-sans">
+                    Pega la URL del video de Vimeo. Se reproducirá en bucle, silenciado y con efecto parallax.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* INTERLUDIO 2 */}
+        <section className="bg-charcoal border border-graphite p-8">
+          <h2 className="text-sm font-serif text-champagne uppercase tracking-[0.15em] border-b border-graphite pb-4 mb-6">
+            Pausa Editorial 2 (Entre Portafolio y Contacto)
+          </h2>
+          <p className="text-[10px] text-mist/25 font-sans mb-6">
+            Esta sección sirve como transición emocional entre la galería de historias y el llamado a la acción / contacto.
+          </p>
+
+          <div className="mb-6">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={settings.interlude_2_enabled ?? true}
+                onChange={(e) => setSettings({ ...settings, interlude_2_enabled: e.target.checked })}
+                className="w-4 h-4 accent-champagne cursor-pointer"
+              />
+              <span className="font-sans uppercase text-[10px] tracking-[0.2em] text-mist/60 group-hover:text-ivory transition-colors">
+                Mostrar Interludio 2 en la página
+              </span>
+            </label>
+          </div>
+
+          <div className={`space-y-6 transition-opacity duration-400 ${settings.interlude_2_enabled === false ? 'opacity-30 pointer-events-none' : ''}`}>
+            <div>
+              <label className={labelClass}>Frase Principal (Cita Editorial)</label>
+              <textarea
+                name="interlude_2_quote"
+                value={settings.interlude_2_quote || ''}
+                onChange={handleInputChange}
+                rows={3}
+                placeholder="No capturamos momentos. Creamos fragmentos de eternidad que respirarán por siempre."
+                className={`${inputClass} resize-none font-serif text-base italic`}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className={labelClass}>Subtítulo / Firma</label>
+                <input
+                  type="text"
+                  name="interlude_2_subtitle"
+                  value={settings.interlude_2_subtitle || ''}
+                  onChange={handleInputChange}
+                  placeholder="— El Arte de Recordar"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Palabra de Acento (Dorado Champagne)</label>
+                <input
+                  type="text"
+                  name="interlude_2_accent"
+                  value={settings.interlude_2_accent || ''}
+                  onChange={handleInputChange}
+                  placeholder="eternidad"
+                  className={inputClass}
+                />
+                <p className="text-[10px] text-mist/25 mt-2 font-sans">
+                  Esta palabra se resaltará en dorado dentro de la frase.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-graphite/50 pt-6">
+              <label className={labelClass}>Multimedia Lateral (Parallax)</label>
+              <div className="flex gap-6 mb-4">
+                <label className="flex items-center gap-2 cursor-pointer font-sans uppercase text-[10px] tracking-wider text-mist/60">
+                  <input
+                    type="radio"
+                    name="interlude_2_media_type"
+                    value="image"
+                    checked={settings.interlude_2_media_type !== 'video'}
+                    onChange={() => setSettings({ ...settings, interlude_2_media_type: 'image' })}
+                    className="w-3 h-3 accent-champagne"
+                  />
+                  Imagen Estática
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer font-sans uppercase text-[10px] tracking-wider text-mist/60">
+                  <input
+                    type="radio"
+                    name="interlude_2_media_type"
+                    value="video"
+                    checked={settings.interlude_2_media_type === 'video'}
+                    onChange={() => setSettings({ ...settings, interlude_2_media_type: 'video' })}
+                    className="w-3 h-3 accent-champagne"
+                  />
+                  Video Vimeo
+                </label>
+              </div>
+
+              {settings.interlude_2_media_type !== 'video' ? (
+                <div>
+                  {!interlude2BgPreview ? (
+                    <div className="relative border border-dashed border-graphite bg-obsidian p-6 text-center cursor-pointer hover:border-champagne/30 transition-colors duration-400">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleInterlude2BgChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <UploadCloud size={20} className="mx-auto mb-2 text-mist/30" />
+                      <p className="font-sans uppercase tracking-[0.15em] text-[10px] text-mist/40">
+                        Subir Imagen (JPG/PNG/WEBP)
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="relative aspect-video bg-graphite border border-graphite flex items-center justify-center p-0 group overflow-hidden max-w-sm">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={interlude2BgPreview} alt="Interludio 2" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInterlude2BgFile(null);
+                          setInterlude2BgPreview(null);
+                          setSettings({ ...settings, interlude_2_media_url: null });
+                        }}
+                        className="absolute top-2 right-2 bg-obsidian/80 border border-graphite w-8 h-8 flex items-center justify-center text-mist/60 hover:text-champagne transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <input
+                    type="url"
+                    name="interlude_2_media_url"
+                    value={settings.interlude_2_media_url || ''}
+                    onChange={handleInputChange}
+                    placeholder="Ej: https://vimeo.com/76979871"
+                    className={inputClass}
+                  />
+                  <p className="text-[10px] text-mist/25 mt-2 font-sans">
+                    Pega la URL del video de Vimeo. Se reproducirá en bucle, silenciado y con efecto parallax.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 

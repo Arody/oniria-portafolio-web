@@ -2,6 +2,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 import { getSettings } from '@/core/services/settingsService'
+import { SettingsRealtimeListener } from '@/ui/components/SettingsRealtimeListener'
 import '../globals.css'
 import { i18n, type Locale } from '@/i18n.config'
 
@@ -91,6 +92,7 @@ export default async function RootLayout({
       </head>
       <body className={`${ttTsars.variable} ${inter.variable} antialiased bg-obsidian text-ivory`}>
         {children}
+        <SettingsRealtimeListener />
       </body>
     </html>
   )

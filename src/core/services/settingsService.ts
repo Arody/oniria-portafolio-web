@@ -19,6 +19,18 @@ export type GlobalSettings = {
   philosophy_phrase_2: string | null;
   philosophy_phrase_3: string | null;
   philosophy_enabled: boolean;
+  interlude_1_enabled?: boolean;
+  interlude_1_quote?: string | null;
+  interlude_1_subtitle?: string | null;
+  interlude_1_accent?: string | null;
+  interlude_1_media_type?: 'image' | 'video';
+  interlude_1_media_url?: string | null;
+  interlude_2_enabled?: boolean;
+  interlude_2_quote?: string | null;
+  interlude_2_subtitle?: string | null;
+  interlude_2_accent?: string | null;
+  interlude_2_media_type?: 'image' | 'video';
+  interlude_2_media_url?: string | null;
   updated_at: string;
 };
 
@@ -55,10 +67,36 @@ export const getSettings = cache(async (): Promise<GlobalSettings> => {
       philosophy_phrase_2: 'Cada encuadre es una decisión emocional. Buscamos la verdad en lo efímero, la belleza en lo invisible.',
       philosophy_phrase_3: 'Creamos relatos visuales que se sienten como recuerdos propios — íntimos, eternos, irrepetibles.',
       philosophy_enabled: true,
+      interlude_1_enabled: true,
+      interlude_1_quote: 'Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.',
+      interlude_1_subtitle: '— Filosofía Oniria',
+      interlude_1_accent: 'eterno',
+      interlude_1_media_type: 'image',
+      interlude_1_media_url: '/interludes/hands.png',
+      interlude_2_enabled: true,
+      interlude_2_quote: 'No capturamos momentos. Creamos fragmentos de eternidad que respirarán por siempre.',
+      interlude_2_subtitle: '— El Arte de Recordar',
+      interlude_2_accent: 'eternidad',
+      interlude_2_media_type: 'image',
+      interlude_2_media_url: '/interludes/veil.png',
       updated_at: new Date().toISOString()
     };
   }
   
-  return data as GlobalSettings;
+  return {
+    ...data,
+    interlude_1_enabled: data.interlude_1_enabled ?? true,
+    interlude_1_quote: data.interlude_1_quote || 'Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.',
+    interlude_1_subtitle: data.interlude_1_subtitle ?? '— Filosofía Oniria',
+    interlude_1_accent: data.interlude_1_accent || 'eterno',
+    interlude_1_media_type: data.interlude_1_media_type || 'image',
+    interlude_1_media_url: data.interlude_1_media_url || '/interludes/hands.png',
+    interlude_2_enabled: data.interlude_2_enabled ?? true,
+    interlude_2_quote: data.interlude_2_quote || 'No capturamos momentos. Creamos fragmentos de eternidad que respirarán por siempre.',
+    interlude_2_subtitle: data.interlude_2_subtitle ?? '— El Arte de Recordar',
+    interlude_2_accent: data.interlude_2_accent || 'eternidad',
+    interlude_2_media_type: data.interlude_2_media_type || 'image',
+    interlude_2_media_url: data.interlude_2_media_url || '/interludes/veil.png',
+  } as GlobalSettings;
 });
 

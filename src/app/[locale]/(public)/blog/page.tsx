@@ -40,12 +40,17 @@ export default async function PublicBlogPage({ params }: Props) {
             
             {/* Header */}
             <div className="mb-20 text-center">
-              <div className="w-12 h-px bg-champagne mx-auto mb-8 origin-center animate-line-grow" />
+              <span className="text-[10px] font-sans uppercase tracking-[0.3em] text-champagne block mb-4 animate-fade-up">
+                {dict.blog.subtitle || 'Historias & Inspiración'}
+              </span>
               <h1 className="text-5xl md:text-7xl font-serif font-light uppercase tracking-[0.08em] text-ivory mb-6 animate-blur-up animation-delay-200">
-                Nuestro Blog
+                {dict.blog.title || 'Blog'}
               </h1>
-              <p className="text-base md:text-lg font-sans text-mist/50 max-w-2xl mx-auto animate-fade-up animation-delay-400">
-                Léenos y descubre cómo hacer de tu boda un evento épico.
+              <div className="w-12 h-px bg-champagne mx-auto mb-6 origin-center animate-line-grow" />
+              <p className="text-base md:text-lg font-sans text-mist/50 max-w-2xl mx-auto animate-fade-up animation-delay-400 font-light">
+                {locale === 'en'
+                  ? 'Stories, wedding inspiration, and perspectives behind the lens.'
+                  : 'Historias, inspiración nupcial y perspectivas detrás de nuestro lente.'}
               </p>
             </div>
 
@@ -66,7 +71,9 @@ export default async function PublicBlogPage({ params }: Props) {
                       />
                     ) : (
                         <div className="w-full h-full bg-graphite flex items-center justify-center">
-                          <span className="font-sans uppercase text-mist/20 tracking-[0.2em] text-[10px]">Sin Portada</span>
+                          <span className="font-sans uppercase text-mist/20 tracking-[0.2em] text-[10px]">
+                            {dict.blog.no_cover || 'Sin Portada'}
+                          </span>
                       </div>
                     )}
                   </div>
@@ -99,7 +106,7 @@ export default async function PublicBlogPage({ params }: Props) {
                 </div>
               )) : (
                   <div className="col-span-1 md:col-span-2 lg:col-span-3 py-20 text-center text-mist/30 font-sans tracking-[0.15em] border border-dashed border-graphite uppercase text-sm">
-                  Próximamente publicaremos artículos increíbles aquí.
+                  {dict.blog.empty || 'Próximamente publicaremos artículos increíbles aquí.'}
                 </div>
               )}
             </ScrollReveal>

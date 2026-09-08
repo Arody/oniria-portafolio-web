@@ -23,6 +23,20 @@ interface EditorialInterludeProps {
   accentWord?: string;
 }
 
+function buildVimeoEmbedUrl(raw: string): string {
+  const idMatch = raw.match(/(?:vimeo\.com\/(?:video\/)?)(\d+)/);
+  const videoId = idMatch?.[1];
+  if (!videoId) return raw;
+
+  const hashFromParam = raw.match(/[?&]h=([a-f0-9]+)/)?.[1];
+  const hashFromPath = raw.match(new RegExp(`${videoId}/([a-f0-9]+)`))?.[1];
+  const hash = hashFromParam || hashFromPath;
+
+  let url = `https://player.vimeo.com/video/${videoId}?background=1&autoplay=1&loop=1&byline=0&title=0&muted=1`;
+  if (hash) url += `&h=${hash}`;
+  return url;
+}
+
 export function EditorialInterlude({
   quote,
   subtitle,
@@ -181,8 +195,8 @@ export function EditorialInterlude({
 
       words.push(
         <span
-          key={i}
-          className="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em]"
+          key={`word-${i}`}
+          className="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em] mr-[0.28em]"
         >
           <span className="quote-word inline-block will-change-transform">
             {lead}
@@ -191,7 +205,6 @@ export function EditorialInterlude({
           </span>
         </span>
       );
-      words.push(' ');
     });
     return words;
   };
@@ -231,6 +244,8 @@ export function EditorialInterlude({
     </div>
   );
 
+  const isVimeo = mediaType === 'video' && mediaUrl.includes('vimeo.com');
+
   const mediaContent = (
     <div
       ref={mediaWrapRef}
@@ -238,17 +253,28 @@ export function EditorialInterlude({
     >
       <div
         ref={mediaInnerRef}
-        className="absolute inset-0"
+        className="absolute inset-0 overflow-hidden"
       >
         {mediaType === 'video' ? (
-          <video
-            src={mediaUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-          />
+          isVimeo ? (
+            <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+              <iframe
+                src={buildVimeoEmbedUrl(mediaUrl)}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full"
+                frameBorder="0"
+                allow="autoplay; fullscreen"
+              />
+            </div>
+          ) : (
+            <video
+              src={mediaUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          )
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img

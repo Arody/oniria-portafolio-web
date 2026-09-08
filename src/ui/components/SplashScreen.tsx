@@ -86,12 +86,13 @@ export function SplashScreen({ logoImageUrl, logoText, headingFont }: SplashScre
     };
   }, { scope: containerRef });
 
-  if (done) return null;
-
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-obsidian"
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-obsidian ${
+        done ? 'hidden pointer-events-none' : ''
+      }`}
+      aria-hidden={done}
     >
       {/* Ambient glow behind logo */}
       <div
