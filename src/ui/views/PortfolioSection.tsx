@@ -188,12 +188,12 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
 
                   {/* Content overlay */}
                   <div className="absolute inset-0 flex flex-col justify-end p-5">
-                    <p className="text-champagne text-[11px] tracking-[0.3em] uppercase font-sans mb-1.5">
+                    <h3 className="text-ivory font-serif font-light tracking-[0.08em] uppercase leading-tight text-2xl lg:text-3xl mb-2 break-words">
                       {project.couple_name}
-                    </p>
-                    <h3 className="text-ivory font-serif font-light tracking-[0.08em] uppercase leading-tight text-lg xl:text-xl">
-                      {project.title}
                     </h3>
+                    <p className="text-champagne text-[11px] tracking-[0.3em] uppercase font-sans">
+                      {project.title}
+                    </p>
 
                     {/* Location + Date */}
                     {(project.location || project.event_date) && (
