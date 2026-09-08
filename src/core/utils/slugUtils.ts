@@ -1,8 +1,9 @@
 import slugify from 'slugify';
+import type { createClient } from '@/lib/supabase/client';
 
 // Generar slug único
-export async function generateUniqueSlug(supabase: any, title: string, currentId?: string): Promise<string> {
-  const baseSlug = slugify(title, { lower: true, strict: true });
+export async function generateUniqueSlug(supabase: ReturnType<typeof createClient>, title: string, currentId?: string): Promise<string> {
+  const baseSlug = slugify(title, { lower: true, strict: true }) || crypto.randomUUID();
   let newSlug = baseSlug;
   let counter = 1;
   let isUnique = false;
@@ -12,7 +13,8 @@ export async function generateUniqueSlug(supabase: any, title: string, currentId
     if (currentId) {
       query.neq('id', currentId);
     }
-    const { data } = await query.single();
+    const { data, error } = await query.maybeSingle();
+    if (error) throw error;
 
     if (!data) {
       isUnique = true;

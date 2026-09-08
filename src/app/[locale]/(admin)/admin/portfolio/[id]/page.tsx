@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import imageCompression from 'browser-image-compression';
-import { Loader2, UploadCloud, X } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { PortfolioCoverInput } from '@/ui/components/PortfolioCoverInput';
 import { use } from 'react';
 
 export default function AdminEditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const { locale } = useParams<{ locale: string }>();
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -56,8 +58,8 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
           });
           setCoverImagePreview(data.cover_image_url);
         }
-      } catch (err: any) {
-        setError('Error al cargar el proyecto: ' + err.message);
+      } catch (err: unknown) {
+        setError('Error al cargar el proyecto: ' + (err instanceof Error ? err.message : 'No se pudo completar la operación'));
       } finally {
         setIsFetching(false);
       }
@@ -80,12 +82,15 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setCoverImage(file);
-      setCoverImagePreview(URL.createObjectURL(file));
-    }
+  useEffect(() => {
+    return () => {
+      if (coverImagePreview?.startsWith('blob:')) URL.revokeObjectURL(coverImagePreview);
+    };
+  }, [coverImagePreview]);
+
+  const handleImageChange = (file: File | null) => {
+    setCoverImage(file);
+    setCoverImagePreview(file ? URL.createObjectURL(file) : null);
   };
 
   const compressImage = async (file: File) => {
@@ -144,15 +149,15 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
           display_order: Number(formData.display_order),
           cover_image_url: final_cover_image_url,
         })
-        .eq('id', resolvedParams.id);
+        .eq('id', resolvedParams.id).select('id').single();
 
       if (dbError) throw new Error(`Error al actualizar en base de datos: ${dbError.message}`);
 
-      router.push('/admin/portfolio');
+      router.push(`/${locale}/admin/portfolio`);
       router.refresh();
 
-    } catch (err: any) {
-      setError(err.message || 'Ocurrió un error inesperado');
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : 'No se pudo completar la operación') || 'Ocurrió un error inesperado');
     } finally {
       setIsLoading(false);
     }
@@ -222,7 +227,7 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
 
             <div>
               <label className={labelClass}>URL del Video (Vimeo / YouTube) *</label>
-              <input required type="text" name="video_url" value={formData.video_url} onChange={handleInputChange} placeholder="Pega el link o el <iframe> completo de Vimeo..." className={inputClass} />
+              <input type="text" name="video_url" value={formData.video_url} onChange={handleInputChange} placeholder="Pega el link o el <iframe> completo de Vimeo..." className={inputClass} />
               <p className="text-[10px] text-mist/30 mt-2 font-sans tracking-wider">Puedes pegar el enlace directo, o el código completo del {`<iframe />`}.</p>
             </div>
 
@@ -233,28 +238,12 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
           </div>
 
           <div className="lg:col-span-5 space-y-8">
-            <div>
-              <h3 className="text-xs font-sans uppercase tracking-[0.2em] text-champagne mb-4">Imagen de Portada</h3>
-              
-              {!coverImagePreview ? (
-                <div className="relative border border-dashed border-graphite bg-charcoal p-12 text-center cursor-pointer hover:border-champagne/30 transition-colors duration-400 flex flex-col items-center justify-center">
-                  <input type="file" accept="image/*" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                  <UploadCloud size={36} className="text-mist/30 mb-4" />
-                  <p className="font-sans uppercase tracking-[0.15em] text-[10px] text-mist/50">Selecciona la imagen</p>
-                </div>
-              ) : (
-                  <div className="relative aspect-video bg-graphite border border-graphite group overflow-hidden">
-                  <img src={coverImagePreview} alt="Preview" className="w-full h-full object-cover" />
-                  <button 
-                    type="button"
-                    onClick={() => { setCoverImage(null); setCoverImagePreview(null); }}
-                      className="absolute top-2 right-2 bg-obsidian/80 border border-graphite w-8 h-8 flex items-center justify-center text-mist/60 hover:text-champagne hover:border-champagne/50 transition-all duration-300"
-                  >
-                      <X size={14} />
-                  </button>
-                </div>
-              )}
-            </div>
+            <PortfolioCoverInput
+              preview={coverImagePreview}
+              onChange={handleImageChange}
+              disabled={isLoading}
+              locale={locale}
+            />
 
             <div className="h-px bg-graphite" />
 

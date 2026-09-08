@@ -53,6 +53,7 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
     .from('blog_posts')
     .select('*')
     .eq('slug', slug)
+    .eq('status', 'published')
     .single();
 
   if (error) {

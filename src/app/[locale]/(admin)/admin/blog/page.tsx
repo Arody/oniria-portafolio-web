@@ -2,7 +2,8 @@ import { getAllBlogPosts } from '@/core/services/blogService';
 import Link from 'next/link';
 import { DeleteBlogButton } from '@/ui/components/DeleteBlogButton';
 
-export default async function AdminBlogPage() {
+export default async function AdminBlogPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const posts = await getAllBlogPosts();
 
   return (
@@ -13,7 +14,7 @@ export default async function AdminBlogPage() {
           <h1 className="text-3xl font-serif font-light text-ivory uppercase tracking-[0.1em]">Artículos de Blog</h1>
         </div>
         <Link 
-          href="/admin/blog/new" 
+          href={`/${locale}/admin/blog/new`}
           className="bg-champagne text-obsidian px-6 py-3 font-sans uppercase tracking-[0.2em] text-xs hover:bg-gold-dust transition-colors duration-400 text-center"
         >
           + Escribir Artículo
@@ -53,7 +54,7 @@ export default async function AdminBlogPage() {
                     {new Date(post.created_at).toLocaleDateString('es-MX')}
                   </td>
                   <td className="p-4 text-right space-x-2">
-                    <Link href={`/admin/blog/${post.id}`} className="px-3 py-1 font-sans uppercase text-[10px] tracking-[0.15em] border border-graphite text-mist/60 hover:border-champagne/50 hover:text-champagne transition-all duration-300">Editar</Link>
+                    <Link href={`/${locale}/admin/blog/${post.id}`} className="px-3 py-1 font-sans uppercase text-[10px] tracking-[0.15em] border border-graphite text-mist/60 hover:border-champagne/50 hover:text-champagne transition-all duration-300">Editar</Link>
                     <DeleteBlogButton id={post.id} />
                   </td>
                 </tr>

@@ -25,3 +25,10 @@ export async function getRecentMessages(limit = 5): Promise<ContactMessage[]> {
   }
   return data as ContactMessage[];
 }
+
+export async function getUnreadMessageCount() {
+  const supabase = await createClient();
+  const { count, error } = await supabase.from('messages').select('id', { count: 'exact', head: true }).eq('is_read', false);
+  if (error) throw error;
+  return count ?? 0;
+}

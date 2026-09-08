@@ -17,12 +17,12 @@ export function DeleteProjectButton({ id }: { id: string }) {
 
     setIsDeleting(true);
     try {
-      const { error } = await supabase.from('portfolio_projects').delete().eq('id', id);
+      const { error } = await supabase.from('portfolio_projects').delete().eq('id', id).select('id').single();
       if (error) throw error;
       
       router.refresh();
-    } catch (err: any) {
-      alert(`Error al eliminar: ${err.message}`);
+    } catch (err: unknown) {
+      alert(`Error al eliminar: ${err instanceof Error ? err.message : 'No se pudo eliminar'}`);
     } finally {
       setIsDeleting(false);
     }

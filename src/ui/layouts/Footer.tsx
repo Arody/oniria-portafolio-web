@@ -23,8 +23,8 @@ export async function Footer({ dict, locale, navDict }: FooterProps) {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-champagne/30 to-transparent" />
 
       <ScrollReveal y={28} start="top 95%" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-          <div className="mb-8 md:mb-0 flex-shrink-0 flex items-center">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-x-8 mb-12">
+          <div className="mb-8 lg:mb-0 flex-shrink-0 flex items-center">
             {logoImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -43,22 +43,23 @@ export async function Footer({ dict, locale, navDict }: FooterProps) {
             )}
           </div>
 
-          <div className="flex space-x-10 mb-8 md:mb-0">
+          <div className="flex space-x-10 mb-8 lg:mb-0">
             <Link href={`/${locale}`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
               {navDict?.home || 'Inicio'}
             </Link>
-            <Link href={`/${locale}#portafolio`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
-              {navDict?.our_work || 'Portafolio'}
+            <Link href={`/${locale}/films`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
+              {navDict?.our_work || 'Films'}
             </Link>
             <Link href={`/${locale}/blog`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
               {navDict?.blog || 'Blog'}
             </Link>
-            <Link href={`/${locale}#contacto`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
+            <Link href={`/${locale}/contact`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
               {navDict?.contact || 'Contacto'}
             </Link>
           </div>
 
-          <div className="flex space-x-8">
+          <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3">
+            <a href="mailto:hello@oniriaweddings.com" className="text-mist/40 hover:text-champagne text-[10px] tracking-[0.1em] font-sans transition-colors duration-400">hello@oniriaweddings.com</a>
             <a href="https://instagram.com/oniriaweddingfilms" target="_blank" rel="noopener noreferrer" className="text-mist/40 hover:text-champagne text-[10px] uppercase tracking-[0.2em] font-sans transition-colors duration-400">Instagram</a>
           </div>
         </div>

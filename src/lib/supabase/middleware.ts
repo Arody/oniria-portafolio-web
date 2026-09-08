@@ -1,85 +1,46 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
+import { canAccessAdmin, isAdminRole } from '@/lib/auth';
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
-
+  let response = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       db: { schema: 'oniria' },
       cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+        getAll: () => request.cookies.getAll(),
+        setAll(cookies) {
+          cookies.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          cookies.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
-    }
-  )
+    },
+  );
+  const { data: { user } } = await supabase.auth.getUser();
+  const [, locale, ...segments] = request.nextUrl.pathname.split('/');
+  const path = '/' + segments.join('/');
+  const isAdmin = path === '/admin' || path.startsWith('/admin/');
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Protect Admin Routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!user) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/login'
-      return NextResponse.redirect(url)
-    }
-
-    // Role check fetching user_roles
-    const { data: userRole } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    const role = userRole?.role
-    // Allow super_admin, admin, and editor
-    if (!role || !['super_admin', 'admin', 'editor'].includes(role)) {
-      // If not authorized to see admin, redirect home
-      const url = request.nextUrl.clone()
-      url.pathname = '/'
-      return NextResponse.redirect(url)
-    }
+  function redirect(pathname: string) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale}${pathname}`;
+    url.search = '';
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach(cookie => redirectResponse.cookies.set(cookie));
+    return redirectResponse;
   }
 
-  // Prevent logged in users from visiting the login page
-  if (request.nextUrl.pathname === '/login' && user) {
-     const url = request.nextUrl.clone()
-     url.pathname = '/admin/dashboard'
-     return NextResponse.redirect(url)
+  if (isAdmin && !user) return redirect('/login');
+  if (user && (isAdmin || path === '/login')) {
+    const { data } = await supabase.from('user_roles').select('role').eq('id', user.id).maybeSingle();
+    if (isAdmin && !isAdminRole(data?.role)) return redirect('/login');
+    if (isAdmin && !canAccessAdmin(data?.role, path)) return redirect('/admin/blog');
+    if (path === '/login' && isAdminRole(data?.role)) {
+      return redirect(data.role === 'editor' ? '/admin/blog' : '/admin/dashboard');
+    }
   }
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
-  return supabaseResponse
+  return response;
 }

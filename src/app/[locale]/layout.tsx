@@ -1,10 +1,11 @@
-import type { Metadata, ResolvingMetadata } from 'next'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 import { getSettings } from '@/core/services/settingsService'
 import { SettingsRealtimeListener } from '@/ui/components/SettingsRealtimeListener'
 import '../globals.css'
-import { i18n, type Locale } from '@/i18n.config'
+import { notFound } from 'next/navigation'
+import { i18n } from '@/i18n.config'
 
 const ttTsars = localFont({
   src: [
@@ -44,10 +45,8 @@ type Props = {
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+
 ): Promise<Metadata> {
-  const { locale } = await params;
   const settings = await getSettings();
   
   return {
@@ -69,6 +68,7 @@ export default async function RootLayout({
 }: Props) {
   const settings = await getSettings();
   const { locale } = await params;
+  if (!i18n.locales.some(value => value === locale)) notFound();
 
   return (
     <html lang={locale} className="dark">

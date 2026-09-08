@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import imageCompression from 'browser-image-compression';
 import { Loader2, UploadCloud, X } from 'lucide-react';
@@ -10,6 +10,7 @@ import { generateUniqueSlug } from '@/core/utils/slugUtils';
 
 export default function AdminNewBlogPostPage() {
   const router = useRouter();
+  const { locale } = useParams<{ locale: string }>();
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -101,11 +102,11 @@ export default function AdminNewBlogPostPage() {
 
       if (dbError) throw new Error(`Error guardando en base de datos: ${dbError.message}`);
 
-      router.push('/admin/blog');
+      router.push(`/${locale}/admin/blog`);
       router.refresh();
 
-    } catch (err: any) {
-      setError(err.message || 'Ocurrió un error inesperado');
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : 'No se pudo completar la operación') || 'Ocurrió un error inesperado');
     } finally {
       setIsLoading(false);
     }
@@ -164,6 +165,7 @@ export default function AdminNewBlogPostPage() {
                 </div>
               ) : (
                   <div className="relative aspect-video bg-graphite border border-graphite group overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={coverImagePreview} alt="Preview" className="w-full h-full object-cover" />
                   <button 
                     type="button"

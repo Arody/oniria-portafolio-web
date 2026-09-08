@@ -25,7 +25,8 @@ export async function getPublishedProjects(): Promise<PortfolioProject[]> {
     .select('*')
     .eq('status', 'published')
     .order('display_order', { ascending: true })
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: true });
 
   if (error) {
     console.error('Error fetching published projects:', error);
@@ -40,7 +41,9 @@ export async function getAllProjects(): Promise<PortfolioProject[]> {
   const { data, error } = await supabase
     .from('portfolio_projects')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: true });
 
   if (error) {
     console.error('Error fetching all projects:', error);

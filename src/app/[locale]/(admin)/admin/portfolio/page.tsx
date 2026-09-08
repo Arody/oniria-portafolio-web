@@ -1,8 +1,12 @@
 import { getAllProjects } from '@/core/services/portfolioService';
+import { getDictionary } from '@/lib/dictionaries';
+import type { Locale } from '@/i18n.config';
 import Link from 'next/link';
 import { DeleteProjectButton } from '@/ui/components/DeleteProjectButton';
 
-export default async function AdminPortfolioPage() {
+export default async function AdminPortfolioPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const dict = await getDictionary(locale as Locale);
   const projects = await getAllProjects();
 
   return (
@@ -10,7 +14,7 @@ export default async function AdminPortfolioPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <h1 className="text-3xl font-serif font-light text-ivory uppercase tracking-[0.1em]">Gestión de Portafolio</h1>
-        <Link href="/admin/portfolio/new" className="bg-champagne text-obsidian px-8 py-3 font-sans uppercase tracking-[0.2em] text-xs hover:bg-gold-dust transition-colors duration-400 whitespace-nowrap text-center">
+        <Link href={`/${locale}/admin/portfolio/new`} className="bg-champagne text-obsidian px-8 py-3 font-sans uppercase tracking-[0.2em] text-xs hover:bg-gold-dust transition-colors duration-400 whitespace-nowrap text-center">
           Nuevo Proyecto +
         </Link>
       </div>
@@ -42,6 +46,7 @@ export default async function AdminPortfolioPage() {
           <thead>
             <tr className="border-b border-graphite bg-graphite/30">
               <th className="p-4 w-16"></th>
+              <th className="p-4 font-sans uppercase text-[10px] tracking-[0.2em] text-mist/50">{dict.portfolio_cover.order}</th>
               <th className="p-4 font-sans uppercase text-[10px] tracking-[0.2em] text-mist/50">Título</th>
               <th className="p-4 font-sans uppercase text-[10px] tracking-[0.2em] text-mist/50">Pareja</th>
               <th className="p-4 font-sans uppercase text-[10px] tracking-[0.2em] text-mist/50">Ubicación</th>
@@ -62,6 +67,7 @@ export default async function AdminPortfolioPage() {
                     )}
                   </div>
                 </td>
+                <td className="p-4 font-sans text-sm text-champagne">{project.display_order ?? 0}</td>
                 <td className="p-4 font-sans text-sm text-ivory">{project.title}</td>
                 <td className="p-4 font-sans text-sm text-ivory">{project.couple_name}</td>
                 <td className="p-4 text-sm font-sans text-mist/60">{project.location ?? '-'}</td>
@@ -74,14 +80,14 @@ export default async function AdminPortfolioPage() {
                    </span>
                 </td>
                 <td className="p-4 text-right space-x-2">
-                  <Link href={`/admin/portfolio/${project.id}`} className="px-3 py-1 font-sans uppercase text-[10px] tracking-[0.15em] border border-graphite text-mist/60 hover:border-champagne/50 hover:text-champagne transition-all duration-300">Editar</Link>
+                  <Link href={`/${locale}/admin/portfolio/${project.id}`} className="px-3 py-1 font-sans uppercase text-[10px] tracking-[0.15em] border border-graphite text-mist/60 hover:border-champagne/50 hover:text-champagne transition-all duration-300">Editar</Link>
                   <DeleteProjectButton id={project.id} />
                 </td>
               </tr>
             ))}
             {projects.length === 0 && (
                 <tr>
-                <td colSpan={8} className="p-8 text-center text-mist/30 font-sans text-sm uppercase tracking-[0.15em]">
+                <td colSpan={9} className="p-8 text-center text-mist/30 font-sans text-sm uppercase tracking-[0.15em]">
                         No hay proyectos registrados en el portafolio.
                     </td>
                 </tr>

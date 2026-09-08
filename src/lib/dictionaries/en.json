@@ -1,7 +1,7 @@
 {
   "navigation": {
     "home": "HOME",
-    "our_work": "STORIES",
+    "our_work": "FILMS",
     "blog": "BLOG",
     "contact": "CONTACT",
     "admin": "Admin"
@@ -13,7 +13,13 @@
       "We don't photograph weddings. We immortalize the way they look at each other when they think no one is watching.",
       "Every frame is an emotional decision. We seek truth in the fleeting, beauty in the invisible.",
       "We craft visual narratives that feel like your own memories — intimate, eternal, unrepeatable."
-    ]
+    ],
+    "controls": {
+      "show_text": "Show header text and lines",
+      "show_text_hint": "Uncheck to hide the title, subtitle, gold lines and animated phrases. Your text is kept so you can show it again.",
+      "overlay": "Overlay opacity",
+      "overlay_hint": "0%: undimmed video. 100%: black background. Increase opacity to give the text more contrast."
+    }
   },
   "interludes": {
     "1_quote": "Every love story deserves to be told with the delicacy of a whisper and the strength of eternity.",
@@ -28,7 +34,7 @@
   },
   "portfolio": {
     "subtitle": "OUR WORK",
-    "title": "STORIES",
+    "title": "FILMS",
     "categories": {
       "all": "All",
       "weddings": "Weddings",
@@ -37,7 +43,13 @@
       "reception": "Reception"
     },
     "no_cover": "No Cover",
-    "empty": "No projects in this category."
+    "empty": "No projects in this category.",
+    "view_story": "View film",
+    "view_all": "View all films",
+    "close": "Close film",
+    "previous": "Previous films",
+    "next": "Next films",
+    "carousel": "Film gallery"
   },
   "blog": {
     "subtitle": "STORIES & INSPIRATION",
@@ -48,18 +60,83 @@
     "view_all": "View all stories"
   },
   "contact": {
-    "subtitle": "LET'S CREATE",
+    "subtitle": "LET’S TELL YOUR STORY",
     "title": "CONTACT",
     "form": {
-      "name": "Names",
-      "email": "Email Address",
-      "phone": "Phone Number",
-      "date": "Estimated Date (optional)",
-      "message": "Message",
-      "submit": "SEND MESSAGE"
-    }
+      "name": "Your name and your partner’s name",
+      "date": "Wedding date",
+      "planner": "Wedding planner",
+      "planner_hint": "Name or “We don’t have one yet”",
+      "venue": "Wedding city and venue",
+      "guests": "Number of guests",
+      "email": "Email address",
+      "phone": "Phone number",
+      "otherContact": "Other ways to contact you (optional)",
+      "other_contact_hint": "Instagram, WhatsApp…",
+      "vision": "How do you imagine your wedding? Tell us about your creative vision, aesthetic and the details you have in mind.",
+      "highlights": "Which moments of your wedding are you most excited about, and why?",
+      "answer_hint": "Up to 2,000 characters.",
+      "submit": "SEND INQUIRY",
+      "sending": "Sending…"
+    },
+    "success_title": "Message received!",
+    "success_message": "Thank you for contacting us. Your inquiry has been saved and our team will reply soon.",
+    "invalid": "Check the required fields, email, wedding date and number of guests.",
+    "error": "We could not save your message. Please try again.",
+    "rate": "You have sent several inquiries. Please wait a few minutes before trying again.",
+    "description": "We would love to get to know you and hear how you imagine your wedding. Share the details that will make it yours so we can create a proposal around your plans.",
+    "required_note": "Fields marked * are required.",
+    "worldwide": "Available worldwide",
+    "error_title": "Unable to send"
   },
   "footer": {
     "rights": "All rights reserved."
+  },
+  "messages": {
+    "title": "Messages",
+    "read": "Read",
+    "unread": "New",
+    "event_date": "Event date",
+    "mark_unread": "Mark unread",
+    "mark_read": "Mark read",
+    "empty": "No messages.",
+    "pagination": "Message pages",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "portfolio_cover": {
+    "title": "Cover image",
+    "select": "Select cover",
+    "change": "Change cover",
+    "remove": "Remove cover",
+    "hint": "Changes apply when you save the project.",
+    "order": "Order"
+  },
+  "editorial_collage": {
+    "title": "TOMORROW’S MEMORIES",
+    "text_1": "With intention",
+    "text_2": "Storytellers",
+    "text_3": "What stays with us",
+    "text_4": "Like a treasure",
+    "text_5": "The memory",
+    "text_6": "Beyond time",
+    "signature": "CREATING TIMELESS MEMORIES",
+    "image_1_alt": "An intimate wedding moment",
+    "image_2_alt": "An editorial bridal portrait",
+    "admin": {
+      "title": "Editorial collage",
+      "description": "After the hero: two overlapping photographs on a white background. Edit the images and every piece of text in the composition.",
+      "image_1": "Background image (left)",
+      "image_2": "Overlapping image (right)",
+      "image_hint": "JPG, PNG, WEBP, GIF or AVIF. Up to 10 MB.",
+      "grayscale_enabled": "Show images in black and white",
+      "restore_image": "Use default image",
+      "vertical_title": "Vertical title",
+      "caption": "Text",
+      "signature": "Stamp signature",
+      "preview": "Preview",
+      "save_hint": "Changes are published when you save the settings. Leave text empty to hide it.",
+      "invalid_image": "Choose a JPG, PNG, WEBP, GIF or AVIF image up to 10 MB."
+    }
   }
 }

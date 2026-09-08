@@ -1,129 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ONIRIA CMS
 
-## Getting Started
+CMS de fotografía y video de bodas: Next.js App Router, TypeScript y Supabase
+alojado en `api-supabase.arody.cloud`. Español e inglés mediante `/es` y `/en`.
 
-First, run the development server (configured on port 3017):
+## Desarrollo
 
-```bash
-pnpm dev -p 3017
+```sh
+npm ci
+cp .env.example .env.local
+# Completar NEXT_PUBLIC_SUPABASE_ANON_KEY.
+npm run dev
 ```
 
-Open [http://localhost:3017](http://localhost:3017) with your browser to see the result.
+La clave pública corresponde a esta instancia autoalojada. Nunca colocar una
+clave `service_role` en variables `NEXT_PUBLIC_*`.
 
----
-
-## Despliegue en VPS (PM2 + Nginx)
-
-Esta guía detalla la configuración necesaria para desplegar la aplicación en producción en un servidor VPS usando **PM2** (gestor de procesos) y **Nginx** (servidor web/proxy inverso) escuchando en el puerto **3017**.
-
-### 1. Preparación en el Servidor VPS
-
-Asegúrate de tener instalado Node.js, pnpm (o tu gestor de paquetes de preferencia), PM2 y Nginx.
-
-```bash
-# Instalar PM2 globalmente (si no está instalado)
-npm install -g pm2
+```sh
+npm run lint
+npm test                    # Node 22.6+ para ejecutar TypeScript nativo
+npm run build
 ```
 
-### 2. Configurar PM2
+## Administración
 
-Para iniciar y mantener la aplicación corriendo en segundo plano en el puerto `3017`, puedes crear un archivo de configuración para PM2 llamado `ecosystem.config.js` en la raíz del proyecto, o ejecutarlo directamente desde la consola:
+Entrar en `/es/login`. Las cuentas deben existir en Supabase Auth y tener un rol
+asignado explícitamente en `oniria.user_roles`:
 
-#### Opción A: Archivo `ecosystem.config.js` (Recomendada)
-Crea el archivo [ecosystem.config.js](file:///Users/arodyparedesfajardo/Documents/GitHub/oniria-portafolio-web/ecosystem.config.js) en la raíz con el siguiente contenido:
+- `super_admin`: contenido, ajustes, consultas y asignación de roles.
+- `admin`: contenido, ajustes y consultas.
+- `editor`: blog y archivos de la carpeta `blog`.
 
-```javascript
-module.exports = {
-  apps: [
-    {
-      name: 'oniria-web',
-      script: 'node_modules/next/dist/bin/next',
-      args: 'start',
-      instances: 'max',
-      exec_mode: 'cluster',
-      env: {
-        PORT: 3017,
-        NODE_ENV: 'production'
-      }
-    }
-  ]
-};
-```
+Ser usuario de otro proyecto en esta instancia compartida no concede acceso a
+ONIRIA. El Proxy, la verificación del servidor y las políticas RLS aplican el
+control de acceso. Los permisos de otros esquemas y buckets se conservan.
 
-Luego, construye e inicia la aplicación con:
-```bash
-# Construir la aplicación para producción
-pnpm build
+Los proyectos y artículos admiten borradores y publicación. Los proyectos pueden
+tener solo fotografías o video Vimeo. Los ajustes se sincronizan por Realtime.
+Las consultas aparecen en `/es/admin/messages` con paginación y estado leído.
 
-# Iniciar con PM2
-pm2 start ecosystem.config.js
+## Base de datos
 
-# Guardar la lista de procesos para que se reinicien con el sistema
-pm2 save
-pm2 startup
-```
+La instancia existente contiene `oniria.settings`, `portfolio_projects`,
+`blog_posts`, `messages` y `user_roles`, y el bucket público `oniria`.
 
-#### Opción B: Ejecución directa por consola
-Si prefieres no usar el archivo de configuración:
-```bash
-pnpm build
-PORT=3017 pm2 start pnpm --name "oniria-web" -- start
-pm2 save
-```
+`supabase/migrations/20260908202635_harden_oniria_cms.sql` corrige los permisos de
+esta instalación existente. `init_oniria.sql` es el esquema inicial histórico;
+no volver a ejecutarlo sobre producción. `enable_realtime_settings.sql` solo
+habilita Realtime y no modifica roles ni relaja las políticas.
 
----
+`supabase/tests/cms_permissions.sql` comprueba permisos reales de anónimo,
+usuario sin rol, editor y administrador. Puede ejecutarse con `psql` o el MCP;
+revierte todas sus escrituras mediante `ROLLBACK`.
 
-### 3. Configuración de Nginx (Proxy Inverso)
+Antes de la reparación se respaldaron los datos de ONIRIA, el esquema Storage y
+la configuración PM2 en `/root/oniria-cms-backup-20260908` del VPS.
 
-Para mapear las solicitudes públicas (puerto 80 / 443) al puerto local `3017` de Next.js, crea o edita la configuración de tu sitio en Nginx:
+## Contacto y correo
 
-```bash
-sudo nano /etc/nginx/sites-available/oniria-portafolio
-```
+Cada envío se valida y guarda antes de intentar notificar por Resend. Un reintento
+del mismo formulario no duplica mensajes; un fallo de correo no pierde consultas.
+Se limita el envío por IP y proceso (cinco solicitudes cada diez minutos), por lo
+que la configuración PM2 mantiene un único proceso. Nginx debe sobrescribir
+`X-Real-IP` y el servidor Next debe escuchar solamente en loopback.
 
-Pega la siguiente configuración (reemplaza `tu-dominio.com` por el tuyo):
+La notificación utiliza `RESEND_API_KEY`, `RESEND_FROM_EMAIL` y el destinatario de
+Ajustes. El correo de respuesta es el del visitante. Configuración pendiente y
+registros DNS: [docs/RESEND_SETUP.md](docs/RESEND_SETUP.md).
 
-```nginx
-server {
-    listen 80;
-    server_name tu-dominio.com www.tu-dominio.com;
+## VPS y MCP
 
-    location / {
-        proxy_pass http://127.0.0.1:3017;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        
-        # Cabeceras para conservar IPs reales de los usuarios
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
+PM2 usa `ecosystem.config.js`, proceso `oniria-weddings`, puerto local `3017`.
+Nginx publica `oniriaweddings.com`. Antes de activar una versión, ejecutar
+`npm ci` y `npm run build` en su directorio y conservar la versión anterior.
 
-Habilita el sitio y reinicia Nginx:
-```bash
-# Crear enlace simbólico para activar la configuración
-sudo ln -s /etc/nginx/sites-available/oniria-portafolio /etc/nginx/sites-enabled/
+El MCP de Codex es exclusivo de este proyecto: [.codex/README.md](.codex/README.md).
 
-# Verificar la sintaxis de Nginx
-sudo nginx -t
-
-# Reiniciar Nginx
-sudo systemctl restart nginx
-```
-
-### 4. Configurar SSL con Certbot (Let's Encrypt)
-
-Para configurar HTTPS de manera rápida y gratuita:
-
-```bash
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d tu-dominio.com -d www.tu-dominio.com
-```
-
-Certbot actualizará automáticamente la configuración de Nginx para redirigir todo el tráfico HTTP a HTTPS de manera segura.
-
+Versión activa después de esta revisión:
+`/var/www/oniria-releases/20260908-cms`. La instalación anterior permanece en
+`/var/www/oniria-portafolio-web` como respaldo; ya no es el directorio activo de
+PM2. Para actualizar la versión activa, usar su directorio o preparar otra
+versión, compilarla y actualizar únicamente el proceso `oniria-weddings`.

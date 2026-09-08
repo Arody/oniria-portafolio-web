@@ -2,21 +2,25 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Image as ImageIcon, FileText, MessageSquare, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Image as ImageIcon, FileText, MessageSquare, Settings } from 'lucide-react';
 
-export function AdminSidebar() {
+import { LogoutButton } from '@/ui/components/LogoutButton';
+import type { AdminRole } from '@/lib/auth';
+
+export function AdminSidebar({ role }: { role: AdminRole }) {
   const pathname = usePathname();
 
+  const locale = pathname.split('/')[1];
   const links = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Portafolio', href: '/admin/portfolio', icon: ImageIcon },
     { name: 'Blog', href: '/admin/blog', icon: FileText },
     { name: 'Mensajes', href: '/admin/messages', icon: MessageSquare },
     { name: 'Configuración', href: '/admin/settings', icon: Settings },
-  ];
+  ].filter(link => role !== 'editor' || link.href === '/admin/blog').map(link => ({ ...link, href: `/${locale}${link.href}` }));
 
   return (
-    <aside className="fixed top-0 left-0 w-64 h-screen bg-charcoal text-ivory flex flex-col border-r border-graphite z-50">
+    <aside className="hidden md:flex fixed top-0 left-0 w-64 h-screen bg-charcoal text-ivory flex flex-col border-r border-graphite z-50">
       <div className="p-6 border-b border-graphite">
         <h1 className="text-sm font-serif font-light uppercase tracking-[0.25em] text-ivory">
           ONIRIA <span className="text-champagne">Admin</span>
@@ -47,10 +51,7 @@ export function AdminSidebar() {
       </nav>
 
       <div className="p-4 border-t border-graphite">
-        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 font-sans uppercase text-[11px] tracking-[0.15em] text-red-400/70 border border-red-400/20 hover:bg-red-400/10 hover:text-red-400 hover:border-red-400/40 transition-all duration-300">
-          <LogOut className="w-4 h-4" />
-          Cerrar Sesión
-        </button>
+        <LogoutButton />
       </div>
     </aside>
   );

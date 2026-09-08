@@ -1,3 +1,4 @@
+import { sanitizeBlogHtml } from '@/core/utils/html';
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
 import { getBlogPostBySlug } from "@/core/services/blogService";
@@ -43,7 +44,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
-      <Navbar dict={dict.navigation} locale={resolvedParams.locale as any} />
+      <Navbar dict={dict.navigation} locale={resolvedParams.locale as Locale} />
       <main className="flex-grow pt-32">
         <article className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
           
@@ -92,7 +93,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <div 
               className="prose prose-invert prose-lg md:prose-xl max-w-none tiptap-oniria-reader animate-fade-up"
               style={{ animationDelay: '400ms' }}
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(post.content) }}
             />
           ) : (
               <div className="py-20 text-center border border-graphite bg-charcoal">
@@ -117,7 +118,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         .tiptap-oniria-reader a:hover { border-bottom-color: #C6A56E; }
       `}} />
 
-      <Footer dict={dict.footer} navDict={dict.navigation} locale={resolvedParams.locale as any} />
+      <Footer dict={dict.footer} navDict={dict.navigation} locale={resolvedParams.locale as Locale} />
     </div>
   );
 }

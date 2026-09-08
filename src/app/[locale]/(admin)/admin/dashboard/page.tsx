@@ -1,12 +1,15 @@
 import { getAllProjects } from '@/core/services/portfolioService';
-import { getPublishedBlogPosts } from '@/core/services/blogService';
-import { getRecentMessages } from '@/core/services/messageService';
+import { getAllBlogPosts } from '@/core/services/blogService';
+import Link from 'next/link';
+import { getRecentMessages, getUnreadMessageCount } from '@/core/services/messageService';
 
-export default async function AdminDashboardPage() {
-  const [projects, posts, messages] = await Promise.all([
+export default async function AdminDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const [projects, posts, messages, unreadCount] = await Promise.all([
     getAllProjects(),
-    getPublishedBlogPosts(),
-    getRecentMessages(5)
+    getAllBlogPosts(),
+    getRecentMessages(5),
+    getUnreadMessageCount()
   ]);
 
   const publishedProjectsCount = projects.filter(p => p.status === 'published').length;
@@ -14,7 +17,7 @@ export default async function AdminDashboardPage() {
   const stats = [
     { label: 'Proyectos Publicados', value: publishedProjectsCount.toString() },
     { label: 'Artículos del Blog', value: posts.length.toString() },
-    { label: 'Mensajes Nuevos', value: messages.filter(m => !m.is_read).length.toString() },
+    { label: 'Mensajes Nuevos', value: unreadCount.toString() },
     { label: 'Total Proyectos', value: projects.length.toString() },
   ];
 
@@ -79,7 +82,7 @@ export default async function AdminDashboardPage() {
                    <span className="text-[10px] text-mist/40 font-sans tracking-wider">{new Date(msg.created_at).toLocaleDateString()}</span>
                  </div>
                  <p className="text-sm text-mist/50 font-sans truncate">{msg.message}</p>
-                 <button className="mt-3 text-[10px] font-sans uppercase tracking-[0.2em] text-champagne hover:text-ivory transition-colors duration-300">Leer mensaje →</button>
+                 <Link href={`/${locale}/admin/messages#${msg.id}`} className="mt-3 text-[10px] font-sans uppercase tracking-[0.2em] text-champagne hover:text-ivory transition-colors duration-300">Leer mensaje →</Link>
                </div>
              ))}
              {messages.length === 0 && (

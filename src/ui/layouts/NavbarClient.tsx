@@ -28,9 +28,9 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
   const loc = locale || 'es';
   const navLinks = [
     { href: `/${loc}`, label: dict?.home || 'Inicio' },
-    { href: `/${loc}#portafolio`, label: dict?.our_work || 'Portafolio' },
+    { href: `/${loc}/films`, label: dict?.our_work || 'Films' },
     { href: `/${loc}/blog`, label: dict?.blog || 'Blog' },
-    { href: `/${loc}#contacto`, label: dict?.contact || 'Contacto' },
+    { href: `/${loc}/contact`, label: dict?.contact || 'Contacto' },
   ];
 
   // Dynamic logo size — shrink when contracted

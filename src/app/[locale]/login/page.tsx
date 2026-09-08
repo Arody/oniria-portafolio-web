@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 
 export default function LoginPage() {
@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   
   const router = useRouter();
+  const { locale } = useParams<{ locale: string }>();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +35,15 @@ export default function LoginPage() {
     }
 
     // Redirect to admin dashboard
-    router.push('/admin/dashboard');
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: role } = await supabase.from('user_roles').select('role').eq('id', user!.id).maybeSingle();
+    if (!role || !['super_admin', 'admin', 'editor'].includes(role.role)) {
+      await supabase.auth.signOut({ scope: 'local' });
+      setError('Tu cuenta no tiene acceso al administrador de ONIRIA.');
+      setIsLoading(false);
+      return;
+    }
+    router.replace(`/${locale}/admin/${role.role === 'editor' ? 'blog' : 'dashboard'}`);
     router.refresh(); // Refresh the router to ensure navbar and middleware state updates
   };
 
@@ -70,6 +79,7 @@ export default function LoginPage() {
               </label>
               <input
                 id="email"
+                autoComplete="username"
                 type="email"
                 required
                 className="w-full bg-obsidian border border-graphite p-4 text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
@@ -87,6 +97,7 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   id="password"
+                  autoComplete="current-password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   className="w-full bg-obsidian border border-graphite p-4 pr-12 text-ivory font-sans text-sm placeholder:text-mist/20 focus:outline-none focus:border-champagne/50 transition-colors duration-400"
@@ -96,6 +107,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                 />
                 <button
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-mist/30 hover:text-champagne transition-colors duration-300"

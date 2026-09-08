@@ -1,76 +1,51 @@
 'use server';
 
+import { headers } from 'next/headers';
+import { allowContact } from '@/core/utils/contactRateLimit';
 import { Resend } from 'resend';
+import { createClient } from '@/lib/supabase/server';
+import { getSettings } from '@/core/services/settingsService';
+import { formatContactMessage, validateContact } from '@/core/utils/contactValidation';
+import { getDictionary } from '@/lib/dictionaries';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-interface ContactFormData {
-  name: string;
-  email: string;
-  phone: string;
-  date: string;
-  message: string;
-}
-
-export async function sendContactEmails(formData: ContactFormData) {
+export async function submitContactMessage(input: unknown) {
+  let data;
+  let message;
   try {
-    // 1. Email para los administradores de Oniria Weddings
-    const adminEmail = await resend.emails.send({
-      from: 'Oniria Weddings <onboarding@resend.dev>', // Usar dominio verificado de Resend en prod
-      to: 'ing.fajardo89@gmail.com', // Cambiado temporalmente para pruebas Sandbox
-      subject: `Nueva Consulta de Boda: ${formData.name}`,
-      html: `
-        <div style="font-family: sans-serif; color: #000; padding: 20px; border: 4px solid #000;">
-          <h1 style="text-transform: uppercase; font-weight: 900; border-bottom: 2px solid #000; padding-bottom: 10px;">Nuevo Mensaje Recibido</h1>
-          <p><strong>Nombre:</strong> ${formData.name}</p>
-          <p><strong>Email:</strong> ${formData.email}</p>
-          <p><strong>Teléfono:</strong> ${formData.phone || 'No proporcionado'}</p>
-          <p><strong>Fecha del Evento:</strong> ${formData.date || 'No proporcionada'}</p>
-          <div style="margin-top: 20px; padding: 15px; background-color: #f3f4f6; border: 2px solid #000;">
-            <p><strong>Mensaje:</strong></p>
-            <p style="white-space: pre-wrap;">${formData.message}</p>
-          </div>
-        </div>
-      `,
-    });
-
-    if (adminEmail.error) {
-      console.error('Error al enviar email al admin:', adminEmail.error);
-      return { success: false, error: 'Hubo un error al notificar al equipo.' };
-    }
-
-    // 2. Email de confirmación para el cliente
-    const clientEmail = await resend.emails.send({
-      from: 'Oniria Weddings <onboarding@resend.dev>', // Usar dominio verificado de Resend en prod
-      to: 'ing.fajardo89@gmail.com', // Cambiado temporalmente para pruebas Sandbox
-      subject: 'Hemos recibido tu mensaje - Oniria Weddings',
-      html: `
-        <div style="font-family: sans-serif; color: #000; padding: 20px; border: 4px solid #000; max-width: 600px; margin: 0 auto;">
-          <h1 style="text-transform: uppercase; font-weight: 900;">¡HOLA ${formData.name.toUpperCase()}!</h1>
-          <p>Gracias por contactar a <strong>ONIRIA WEDDINGS</strong>.</p>
-          <p>Hemos recibido tu solicitud exitosamente. Nuestro equipo está revisando los detalles de tu boda y nos pondremos en contacto contigo lo antes posible, generalmente dentro de las próximas 24-48 horas.</p>
-          <br/>
-          <p>Mientras tanto, te invitamos a seguir explorando nuestro <a href="https://oniria-weddings.com/portafolio" style="color: #000; font-weight: bold;">portafolio</a>.</p>
-          <br/>
-          <hr style="border: 1px solid #000;" />
-          <p style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-top: 20px;">
-            ONIRIA WEDDINGS<br/>
-            Mérida, Yucatán, México
-          </p>
-        </div>
-      `,
-    });
-
-    if (clientEmail.error) {
-      console.error('Error al enviar email al cliente:', clientEmail.error);
-      // Even if client email fails, admin got it, but we let the UI know.
-      return { success: true, warning: 'Mensaje enviado, pero no se pudo enviar la confirmación a tu correo.' };
-    }
-
-    return { success: true };
-
-  } catch (error) {
-    console.error('Error in sendContactEmails Server Action:', error);
-    return { success: false, error: 'Ocurrió un error inesperado.' };
+    data = validateContact(input);
+    message = formatContactMessage(data, (await getDictionary('es')).contact.form);
   }
+  catch { return { success: false, error: 'invalid' as const }; }
+  if (data.website) return { success: true };
+  const ip = (await headers()).get('x-real-ip') || 'local';
+  if (!allowContact(ip)) return { success: false, error: 'rate' as const };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from('messages').insert({
+    id: data.id, full_name: data.name, email: data.email,
+    phone: data.phone, event_date: data.date, message,
+    is_read: false,
+  });
+  // Retries of the same form cannot create duplicate messages or emails.
+  if (error?.code === '23505') return { success: true };
+  if (error) {
+    console.error('Contact could not be saved:', error.code);
+    return { success: false, error: 'save' as const };
+  }
+
+  try {
+    const settings = await getSettings();
+    const from = process.env.RESEND_FROM_EMAIL;
+    if (process.env.RESEND_API_KEY && from && settings.contact_email) {
+      const { error: emailError } = await new Resend(process.env.RESEND_API_KEY).emails.send({
+        from, to: settings.contact_email, replyTo: data.email,
+        subject: `Consulta ONIRIA: ${data.name}`,
+        text: `Nombre: ${data.name}\nEmail: ${data.email}\nTeléfono: ${data.phone}\nFecha: ${data.date}\n\n${message}`,
+      }, { idempotencyKey: `contact/${data.id}` });
+      if (emailError) console.error('Contact saved; email notification failed:', emailError.message);
+    }
+  } catch (error) {
+    console.error('Contact saved; email notification unavailable:', error instanceof Error ? error.message : 'Unknown error');
+  }
+  return { success: true };
 }

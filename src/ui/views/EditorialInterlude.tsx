@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { prefersReducedMotion } from '@/lib/motion';
+import { ParallaxMedia } from '@/ui/components/ParallaxMedia';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,32 +49,12 @@ export function EditorialInterlude({
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const mediaWrapRef = useRef<HTMLDivElement>(null);
-  const mediaInnerRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
   const subtitleRefEl = useRef<HTMLParagraphElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     if (prefersReducedMotion()) return;
-
-    /* ── Media parallax ── */
-    if (mediaInnerRef.current) {
-      gsap.fromTo(
-        mediaInnerRef.current,
-        { y: 60, scale: 1.15 },
-        {
-          y: -60,
-          scale: 1.15,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1.2,
-          },
-        }
-      );
-    }
 
     /* ── Text drift ── */
     if (textRef.current) {
@@ -251,16 +232,13 @@ export function EditorialInterlude({
       ref={mediaWrapRef}
       className="relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]"
     >
-      <div
-        ref={mediaInnerRef}
-        className="absolute inset-0 overflow-hidden"
-      >
+      <ParallaxMedia>
         {mediaType === 'video' ? (
           isVimeo ? (
             <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
               <iframe
                 src={buildVimeoEmbedUrl(mediaUrl)}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[max(100cqw,177.78cqh)] h-[max(100cqh,56.25cqw)]"
                 frameBorder="0"
                 allow="autoplay; fullscreen"
               />
@@ -283,7 +261,7 @@ export function EditorialInterlude({
             className="w-full h-full object-cover"
           />
         )}
-      </div>
+      </ParallaxMedia>
 
       {/* Strong gradient blend toward text side */}
       <div

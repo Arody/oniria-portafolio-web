@@ -33,7 +33,7 @@ export default async function PublicBlogPage({ params }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
-      <Navbar dict={dict.navigation} locale={locale as any} />
+      <Navbar dict={dict.navigation} locale={locale as Locale} />
       <main className="flex-grow pt-32">
         <section className="py-24 min-h-[50vh]">
           <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -114,7 +114,7 @@ export default async function PublicBlogPage({ params }: Props) {
           </div>
         </section>
       </main>
-      <Footer dict={dict.footer} navDict={dict.navigation} locale={locale as any} />
+      <Footer dict={dict.footer} navDict={dict.navigation} locale={locale as Locale} />
     </div>
   );
 }

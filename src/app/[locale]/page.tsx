@@ -2,9 +2,8 @@ import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
 import { HeroSection } from "@/ui/views/HeroSection";
 import { PortfolioSection } from "@/ui/views/PortfolioSection";
-import { ContactSection } from "@/ui/views/ContactSection";
+import { EditorialCollage } from "@/ui/views/EditorialCollage";
 import { EditorialInterlude } from "@/ui/views/EditorialInterlude";
-import { LogoutButton } from "@/ui/components/LogoutButton";
 import { SplashScreen } from "@/ui/components/SplashScreen";
 import { HeroPhilosophy } from "@/ui/views/HeroPhilosophy";
 
@@ -38,7 +37,7 @@ export default async function Home({ params }: Props) {
       />
       <Navbar dict={dict.navigation} locale={locale} />
       <main className="flex-grow">
-        {settings.philosophy_enabled !== false ? (
+        {settings.hero_text_enabled !== false && settings.philosophy_enabled !== false ? (
           <HeroPhilosophy
             phrases={[
               settings.philosophy_phrase_1 || dict.hero.philosophy[0],
@@ -52,6 +51,8 @@ export default async function Home({ params }: Props) {
           <HeroSection />
         )}
 
+        <EditorialCollage settings={settings} dict={dict.editorial_collage} />
+
         {/* Interlude 1 — Between Hero and Portfolio */}
         {settings.interlude_1_enabled !== false && (
           <EditorialInterlude
@@ -64,9 +65,9 @@ export default async function Home({ params }: Props) {
           />
         )}
 
-        <PortfolioSection projects={projects} dict={dict.portfolio} />
+        <PortfolioSection projects={projects.slice(0, 6)} dict={dict.portfolio} filmsHref={`/${locale}/films`} />
 
-        {/* Interlude 2 — Between Portfolio and Contact */}
+        {/* Interlude 2 — Between Portfolio and Footer */}
         {settings.interlude_2_enabled !== false && (
           <EditorialInterlude
             quote={settings.interlude_2_quote || dict.interludes['2_quote']}
@@ -78,8 +79,6 @@ export default async function Home({ params }: Props) {
           />
         )}
 
-        <ContactSection dict={dict.contact} />
-        <LogoutButton />
       </main>
       <Footer dict={dict.footer} navDict={dict.navigation} locale={locale} />
     </div>

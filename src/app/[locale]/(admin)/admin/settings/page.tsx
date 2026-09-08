@@ -1,15 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import imageCompression from 'browser-image-compression';
 import { Loader2, UploadCloud, X } from 'lucide-react';
 import type { GlobalSettings } from '@/core/services/settingsService';
 import { revalidateGlobalSettings } from '@/core/actions/settingsActions';
+import { EditorialCollage } from '@/ui/views/EditorialCollage';
+import es from '@/lib/dictionaries/es.json';
+import en from '@/lib/dictionaries/en.json';
 
 export default function AdminSettingsPage() {
   const router = useRouter();
+  const { locale } = useParams<{ locale: string }>();
+  const collageDict = (locale === 'en' ? en : es).editorial_collage;
+  const heroDict = (locale === 'en' ? en : es).hero.controls;
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +36,14 @@ export default function AdminSettingsPage() {
 
   const [interlude2BgPreview, setInterlude2BgPreview] = useState<string | null>(null);
   const [interlude2BgFile, setInterlude2BgFile] = useState<File | null>(null);
+
+  const [collage1File, setCollage1File] = useState<File | null>(null);
+  const [collage2File, setCollage2File] = useState<File | null>(null);
+  const [collage1Preview, setCollage1Preview] = useState<string | null>(null);
+  const [collage2Preview, setCollage2Preview] = useState<string | null>(null);
+
+  useEffect(() => () => { if (collage1Preview) URL.revokeObjectURL(collage1Preview); }, [collage1Preview]);
+  useEffect(() => () => { if (collage2Preview) URL.revokeObjectURL(collage2Preview); }, [collage2Preview]);
 
   useEffect(() => {
     async function loadSettings() {
@@ -91,8 +105,8 @@ export default function AdminSettingsPage() {
                  updated_at: ''
              });
         }
-      } catch (err: any) {
-        setError('Error al cargar configuración: ' + err.message);
+      } catch (err: unknown) {
+        setError('Error al cargar configuración: ' + (err instanceof Error ? err.message : 'No se pudo completar la operación'));
       } finally {
         setIsFetching(false);
       }
@@ -143,6 +157,22 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const handleCollageImageChange = (file: File | undefined, index: number) => {
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      setError(collageDict.admin.invalid_image);
+      return;
+    }
+    setError(null);
+    if (index === 0) {
+      setCollage1File(file);
+      setCollage1Preview(URL.createObjectURL(file));
+    } else {
+      setCollage2File(file);
+      setCollage2Preview(URL.createObjectURL(file));
+    }
+  };
+
   const compressImage = async (file: File, isLogo: boolean = false) => {
     const options = {
       maxSizeMB: isLogo ? 0.05 : 0.5,
@@ -169,34 +199,72 @@ export default function AdminSettingsPage() {
 
       if (logoFile) {
         const compressedLogo = await compressImage(logoFile, true);
-        const fileName = `logo-${Date.now()}.${compressedLogo.name.split('.').pop()}`;
-        const { error: uploadError } = await supabase.storage.from('oniria').upload(`settings/${fileName}`, compressedLogo);
-        if (uploadError) throw uploadError;
+        const ext = compressedLogo.name.split('.').pop()?.toLowerCase() || 'png';
+        const fileName = `logo-${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(
+          `settings/${fileName}`,
+          compressedLogo,
+          { upsert: true, contentType: compressedLogo.type || 'image/png' }
+        );
+        if (uploadError) {
+          throw new Error(`Error al subir Logo a Supabase Storage: ${uploadError.message}. Verifica los permisos de tu cuenta.`);
+        }
         final_logo_url = supabase.storage.from('oniria').getPublicUrl(`settings/${fileName}`).data.publicUrl;
       }
 
       if (heroBgFile && settings.hero_background_type === 'image') {
         const compressedBg = await compressImage(heroBgFile, false);
-        const fileName = `hero-bg-${Date.now()}.${compressedBg.name.split('.').pop()}`;
-        const { error: uploadError } = await supabase.storage.from('oniria').upload(`settings/${fileName}`, compressedBg);
-        if (uploadError) throw uploadError;
+        const ext = compressedBg.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `hero-bg-${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(
+          `settings/${fileName}`,
+          compressedBg,
+          { upsert: true, contentType: compressedBg.type || 'image/jpeg' }
+        );
+        if (uploadError) {
+          throw new Error(`Error al subir Fondo Hero a Supabase Storage: ${uploadError.message}. Verifica los permisos de tu cuenta.`);
+        }
         final_hero_bg_url = supabase.storage.from('oniria').getPublicUrl(`settings/${fileName}`).data.publicUrl;
       }
 
       if (interlude1BgFile && settings.interlude_1_media_type !== 'video') {
         const compressed = await compressImage(interlude1BgFile, false);
-        const fileName = `interlude-1-${Date.now()}.${compressed.name.split('.').pop()}`;
-        const { error: uploadError } = await supabase.storage.from('oniria').upload(`settings/${fileName}`, compressed);
-        if (uploadError) throw uploadError;
+        const ext = compressed.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `interlude-1-${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(
+          `settings/${fileName}`,
+          compressed,
+          { upsert: true, contentType: compressed.type || 'image/jpeg' }
+        );
+        if (uploadError) {
+          throw new Error(`Error al subir Imagen de Interludio 1 a Supabase Storage: ${uploadError.message}. Verifica los permisos de tu cuenta.`);
+        }
         final_interlude1_url = supabase.storage.from('oniria').getPublicUrl(`settings/${fileName}`).data.publicUrl;
       }
 
       if (interlude2BgFile && settings.interlude_2_media_type !== 'video') {
         const compressed = await compressImage(interlude2BgFile, false);
-        const fileName = `interlude-2-${Date.now()}.${compressed.name.split('.').pop()}`;
-        const { error: uploadError } = await supabase.storage.from('oniria').upload(`settings/${fileName}`, compressed);
-        if (uploadError) throw uploadError;
+        const ext = compressed.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `interlude-2-${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(
+          `settings/${fileName}`,
+          compressed,
+          { upsert: true, contentType: compressed.type || 'image/jpeg' }
+        );
+        if (uploadError) {
+          throw new Error(`Error al subir Imagen de Interludio 2 a Supabase Storage: ${uploadError.message}. Verifica los permisos de tu cuenta.`);
+        }
         final_interlude2_url = supabase.storage.from('oniria').getPublicUrl(`settings/${fileName}`).data.publicUrl;
+      }
+
+      const collageUrls = [settings.collage_image_1_url, settings.collage_image_2_url];
+      for (const [index, file] of [collage1File, collage2File].entries()) {
+        if (!file) continue;
+        const compressed = await compressImage(file);
+        const path = `settings/collage-${index + 1}-${crypto.randomUUID()}.${compressed.name.split('.').pop()?.toLowerCase() || 'jpg'}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(path, compressed, { contentType: compressed.type });
+        if (uploadError) throw uploadError;
+        collageUrls[index] = supabase.storage.from('oniria').getPublicUrl(path).data.publicUrl;
       }
 
       const updatePayload = {
@@ -209,6 +277,8 @@ export default function AdminSettingsPage() {
           body_font: settings.body_font,
           hero_title: settings.hero_title,
           hero_subtitle: settings.hero_subtitle,
+          hero_text_enabled: settings.hero_text_enabled ?? true,
+          hero_overlay_opacity: settings.hero_overlay_opacity ?? 50,
           hero_background_type: settings.hero_background_type,
           hero_background_url: final_hero_bg_url,
           contact_email: settings.contact_email,
@@ -228,28 +298,54 @@ export default function AdminSettingsPage() {
           interlude_2_accent: settings.interlude_2_accent,
           interlude_2_media_type: settings.interlude_2_media_type || 'image',
           interlude_2_media_url: final_interlude2_url,
+          collage_image_1_url: collageUrls[0] ?? null,
+          collage_image_2_url: collageUrls[1] ?? null,
+          collage_grayscale_enabled: settings.collage_grayscale_enabled ?? true,
+          collage_title: settings.collage_title ?? null,
+          collage_text_1: settings.collage_text_1 ?? null,
+          collage_text_2: settings.collage_text_2 ?? null,
+          collage_text_3: settings.collage_text_3 ?? null,
+          collage_text_4: settings.collage_text_4 ?? null,
+          collage_text_5: settings.collage_text_5 ?? null,
+          collage_text_6: settings.collage_text_6 ?? null,
+          collage_signature: settings.collage_signature ?? null,
           updated_at: new Date().toISOString()
       };
 
       const { data: updatedRows, error: dbError } = await supabase
         .from('settings')
-        .update(updatePayload)
-        .eq('id', settings.id)
+        .upsert({ ...updatePayload, ...(settings.id === 'default' ? {} : { id: settings.id }), is_singleton: true }, { onConflict: 'is_singleton' })
         .select();
 
       if (dbError) throw dbError;
 
       if (!updatedRows || updatedRows.length === 0) {
-        throw new Error("No se pudo actualizar la configuración en la base de datos (0 filas afectadas). Ejecuta el script 'enable_realtime_settings.sql' en el SQL Editor de Supabase para habilitar los permisos RLS.");
+        throw new Error("No se pudo actualizar la configuración en la base de datos (0 filas afectadas). Verifica los permisos de tu cuenta.");
       }
 
+      setSettings(updatedRows[0] as GlobalSettings);
+      setLogoPreview(updatedRows[0].logo_image_url);
+      setHeroBgPreview(updatedRows[0].hero_background_url);
+      setInterlude1BgPreview(updatedRows[0].interlude_1_media_url);
+      setInterlude2BgPreview(updatedRows[0].interlude_2_media_url);
       await revalidateGlobalSettings();
+
+      // Limpiar archivos en memoria tras subida exitosa
+      setLogoFile(null);
+      setHeroBgFile(null);
+      setInterlude1BgFile(null);
+      setInterlude2BgFile(null);
+      setCollage1File(null);
+      setCollage2File(null);
+      setCollage1Preview(null);
+      setCollage2Preview(null);
 
       setSuccessMsg("Configuración global guardada y sincronizada en tiempo real.");
       router.refresh();
 
-    } catch (err: any) {
-      setError(err.message || 'Ocurrió un error al guardar la configuración');
+    } catch (err: unknown) {
+      console.error('Error al guardar configuración:', err);
+      setError((err instanceof Error ? err.message : 'No se pudo completar la operación') || 'Ocurrió un error al guardar la configuración');
     } finally {
       setIsLoading(false);
     }
@@ -267,7 +363,7 @@ export default function AdminSettingsPage() {
     );
   }
 
-  if (!settings) return null;
+  if (!settings) return <p role="alert" className="text-red-400">{error}</p>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-32">
@@ -360,9 +456,24 @@ export default function AdminSettingsPage() {
         </section>
 
         {/* HERO SECTION */}
-        <section className="bg-charcoal border border-graphite p-8">
+        <section id="hero-settings" className="bg-charcoal border border-graphite p-8">
           <h2 className="text-sm font-serif text-champagne uppercase tracking-[0.15em] border-b border-graphite pb-4 mb-6">Portada Principal (Hero)</h2>
             <div className="space-y-6">
+              <div>
+                <label className="flex items-center gap-3 text-sm text-mist cursor-pointer">
+                  <input type="checkbox" name="hero_text_enabled" checked={settings.hero_text_enabled ?? true} disabled={isLoading} onChange={event => setSettings({ ...settings, hero_text_enabled: event.target.checked })} className="w-4 h-4 accent-champagne" aria-describedby="hero-text-hint" />
+                  {heroDict.show_text}
+                </label>
+                <p id="hero-text-hint" className="text-xs text-mist/60 mt-3">{heroDict.show_text_hint}</p>
+              </div>
+              <div>
+                <label htmlFor="hero-overlay-opacity" className={labelClass}>{heroDict.overlay}</label>
+                <div className="flex items-center gap-4">
+                  <input id="hero-overlay-opacity" name="hero_overlay_opacity" type="range" min={0} max={100} step={1} value={settings.hero_overlay_opacity ?? 50} disabled={isLoading} onChange={event => setSettings({ ...settings, hero_overlay_opacity: Number(event.target.value) })} aria-describedby="hero-overlay-hint" className="flex-1 min-w-0 accent-champagne cursor-pointer" />
+                  <output htmlFor="hero-overlay-opacity" className="w-14 text-right text-sm tabular-nums text-ivory">{settings.hero_overlay_opacity ?? 50}%</output>
+                </div>
+                <p id="hero-overlay-hint" className="text-xs text-mist/60 mt-3">{heroDict.overlay_hint}</p>
+              </div>
                 <div>
               <label className={labelClass}>Título Principal</label>
               <input type="text" name="hero_title" value={settings.hero_title || ''} onChange={handleInputChange} className={`${inputClass} text-lg font-serif`} />
@@ -463,6 +574,51 @@ export default function AdminSettingsPage() {
               );
             })}
           </div>
+        </section>
+
+        <section id="collage-settings" className="bg-charcoal border border-graphite p-8" aria-labelledby="collage-settings-title">
+          <h2 id="collage-settings-title" className="text-sm font-serif text-champagne uppercase tracking-[0.15em] border-b border-graphite pb-4 mb-6">{collageDict.admin.title}</h2>
+          <p className="text-sm text-mist/60 mb-6">{collageDict.admin.description}</p>
+          <fieldset disabled={isLoading} className="space-y-6">
+            <label className="flex items-center gap-3 text-sm text-ivory cursor-pointer">
+              <input type="checkbox" checked={settings.collage_grayscale_enabled ?? true} onChange={event => setSettings({ ...settings, collage_grayscale_enabled: event.target.checked })} className="w-4 h-4 accent-champagne" />
+              {collageDict.admin.grayscale_enabled}
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[collageDict.admin.image_1, collageDict.admin.image_2].map((label, index) => (
+                <div key={index}>
+                  <label className={labelClass}>
+                    {label}
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" className={`${inputClass} mt-3 text-xs`} onChange={event => {
+                      handleCollageImageChange(event.target.files?.[0], index);
+                      event.target.value = '';
+                    }} />
+                  </label>
+                  <button type="button" className="text-xs text-champagne underline underline-offset-4" onClick={() => {
+                    if (index === 0) { setCollage1File(null); setCollage1Preview(null); }
+                    else { setCollage2File(null); setCollage2Preview(null); }
+                    setSettings({ ...settings, [index === 0 ? 'collage_image_1_url' : 'collage_image_2_url']: null });
+                  }}>{collageDict.admin.restore_image}</button>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-mist/60">{collageDict.admin.image_hint}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {([
+                { key: 'collage_title', label: collageDict.admin.vertical_title, fallback: collageDict.title, limit: 48 },
+                ...([1, 2, 3, 4, 5, 6] as const).map(number => ({ key: `collage_text_${number}` as const, label: `${collageDict.admin.caption} ${number}`, fallback: collageDict[`text_${number}`], limit: 80 })),
+                { key: 'collage_signature', label: collageDict.admin.signature, fallback: collageDict.signature, limit: 80 },
+              ] as const).map(({ key, label, fallback, limit }) => (
+                <label key={key} className={labelClass}>
+                  {label}
+                  <input type="text" name={key} maxLength={limit} value={settings[key] ?? fallback} onChange={handleInputChange} className={`${inputClass} mt-3`} />
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <p className="text-xs text-mist/60 mb-6">{collageDict.admin.save_hint}</p>
+          <h3 className={labelClass}>{collageDict.admin.preview}</h3>
+          <EditorialCollage settings={{ ...settings, collage_image_1_url: collage1Preview ?? settings.collage_image_1_url, collage_image_2_url: collage2Preview ?? settings.collage_image_2_url }} dict={collageDict} />
         </section>
 
         {/* INTERLUDIO 1 */}
@@ -756,8 +912,8 @@ export default function AdminSettingsPage() {
           <h2 className="text-sm font-serif text-champagne uppercase tracking-[0.15em] border-b border-graphite pb-4 mb-6">Contacto y Enrutamiento</h2>
             <div>
             <label className={labelClass}>Email de Contacto (Opcional)</label>
-            <input type="email" name="contact_email" value={settings.contact_email || ''} onChange={handleInputChange} placeholder="ing.fajardo89@gmail.com" className={inputClass} />
-            <p className="text-[10px] text-mist/25 mt-2 font-sans">Si lo dejas vacío, los mensajes se enviarán al configurado en el código fuente.</p>
+            <input type="email" name="contact_email" value={settings.contact_email || ''} onChange={handleInputChange} placeholder="hello@oniriaweddings.com" className={inputClass} />
+            <p className="text-[10px] text-mist/25 mt-2 font-sans">Si lo dejas vacío, las consultas se guardarán en Mensajes sin notificación por correo.</p>
             </div>
         </section>
 

@@ -1,27 +1,26 @@
 'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { Bold, Italic, Heading1, Heading2, List, ListOrdered, Quote, Image as ImageIcon } from 'lucide-react';
-import { useCallback } from 'react';
 
 interface RichTextEditorProps {
   content: string;
   onChange: (html: string) => void;
 }
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
     return null;
   }
 
-  const addImage = useCallback(() => {
+  const addImage = () => {
     const url = window.prompt('URL de la imagen:');
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
     }
-  }, [editor]);
+  };
 
   const buttonClass = (isActive: boolean) => 
     `p-2 border transition-all duration-300 ${isActive ? 'bg-champagne/20 text-champagne border-champagne/40' : 'bg-transparent text-mist/50 border-graphite hover:text-ivory hover:border-mist/30'}`;

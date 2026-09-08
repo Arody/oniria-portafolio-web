@@ -1,7 +1,7 @@
 {
   "navigation": {
     "home": "INICIO",
-    "our_work": "HISTORIAS",
+    "our_work": "FILMS",
     "blog": "BLOG",
     "contact": "CONTACTO",
     "admin": "Admin"
@@ -13,7 +13,13 @@
       "No fotografiamos bodas. Inmortalizamos la forma en que se miran cuando creen que nadie los ve.",
       "Cada encuadre es una decisión emocional. Buscamos la verdad en lo efímero, la belleza en lo invisible.",
       "Creamos relatos visuales que se sienten como recuerdos propios — íntimos, eternos, irrepetibles."
-    ]
+    ],
+    "controls": {
+      "show_text": "Mostrar textos y líneas del header",
+      "show_text_hint": "Al desmarcar, se ocultan el título, el subtítulo, las líneas amarillas y las frases animadas. Tus textos se conservan para volver a mostrarlos.",
+      "overlay": "Opacidad del overlay",
+      "overlay_hint": "0 %: video sin oscurecer. 100 %: fondo negro. Aumenta la opacidad para dar más contraste a los textos."
+    }
   },
   "interludes": {
     "1_quote": "Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.",
@@ -28,7 +34,7 @@
   },
   "portfolio": {
     "subtitle": "OUR WORK",
-    "title": "HISTORIAS",
+    "title": "FILMS",
     "categories": {
       "all": "Todas",
       "weddings": "Bodas",
@@ -37,7 +43,13 @@
       "reception": "Recepción"
     },
     "no_cover": "Sin Portada",
-    "empty": "No hay proyectos para esta categoría."
+    "empty": "No hay proyectos para esta categoría.",
+    "view_story": "Ver film",
+    "view_all": "Ver todos los films",
+    "close": "Cerrar film",
+    "previous": "Films anteriores",
+    "next": "Siguientes films",
+    "carousel": "Galería de films"
   },
   "blog": {
     "subtitle": "STORIES & INSPIRATION",
@@ -48,18 +60,83 @@
     "view_all": "Ver todas las historias"
   },
   "contact": {
-    "subtitle": "LET'S CREATE",
+    "subtitle": "CONTEMOS SU HISTORIA",
     "title": "CONTACTO",
     "form": {
-      "name": "Nombres",
-      "email": "Correo Electrónico",
+      "name": "Tu nombre y el de tu pareja",
+      "date": "Fecha de la boda",
+      "planner": "Wedding planner",
+      "planner_hint": "Nombre o «Aún no tenemos»",
+      "venue": "Ciudad y lugar de la celebración",
+      "guests": "Número de invitados",
+      "email": "Correo electrónico",
       "phone": "Teléfono",
-      "date": "Fecha Estimada (opcional)",
-      "message": "Mensaje",
-      "submit": "ENVIAR MENSAJE"
-    }
+      "otherContact": "Otras formas de contacto (opcional)",
+      "other_contact_hint": "Instagram, WhatsApp…",
+      "vision": "¿Cómo imaginan su boda? Cuéntennos la visión creativa, la estética y los detalles que tienen en mente.",
+      "highlights": "¿Qué momentos de su boda les ilusionan más y por qué?",
+      "answer_hint": "Hasta 2,000 caracteres.",
+      "submit": "ENVIAR CONSULTA",
+      "sending": "Enviando…"
+    },
+    "success_title": "¡Mensaje recibido!",
+    "success_message": "Gracias por contactarnos. Tu consulta quedó guardada y nuestro equipo te responderá pronto.",
+    "invalid": "Revisa los campos obligatorios, el correo, la fecha y el número de invitados.",
+    "error": "No pudimos guardar tu mensaje. Inténtalo de nuevo.",
+    "rate": "Has enviado varias consultas. Espera unos minutos antes de intentarlo de nuevo.",
+    "description": "Queremos conocerlos y descubrir cómo imaginan su boda. Compartan los detalles que la harán única para preparar una propuesta a su medida.",
+    "required_note": "Los campos con * son obligatorios.",
+    "worldwide": "Disponibles en todo el mundo",
+    "error_title": "No se pudo enviar"
   },
   "footer": {
     "rights": "Todos los derechos reservados."
+  },
+  "messages": {
+    "title": "Mensajes",
+    "read": "Leído",
+    "unread": "Nuevo",
+    "event_date": "Fecha del evento",
+    "mark_unread": "Marcar como no leído",
+    "mark_read": "Marcar como leído",
+    "empty": "No hay mensajes.",
+    "pagination": "Páginas de mensajes",
+    "previous": "Anterior",
+    "next": "Siguiente"
+  },
+  "portfolio_cover": {
+    "title": "Imagen de portada",
+    "select": "Seleccionar portada",
+    "change": "Cambiar portada",
+    "remove": "Quitar portada",
+    "hint": "Los cambios se aplican al guardar el proyecto.",
+    "order": "Orden"
+  },
+  "editorial_collage": {
+    "title": "RECUERDOS DEL MAÑANA",
+    "text_1": "Con intención",
+    "text_2": "Contadores de historias",
+    "text_3": "Lo que permanece",
+    "text_4": "Como un tesoro",
+    "text_5": "La memoria",
+    "text_6": "Más allá del tiempo",
+    "signature": "CREAMOS RECUERDOS ATEMPORALES",
+    "image_1_alt": "Un instante íntimo de una boda",
+    "image_2_alt": "Retrato editorial de una novia",
+    "admin": {
+      "title": "Collage editorial",
+      "description": "Después de la portada: dos fotografías superpuestas sobre fondo blanco. Edita las imágenes y cada texto de la composición.",
+      "image_1": "Imagen de fondo (izquierda)",
+      "image_2": "Imagen superpuesta (derecha)",
+      "image_hint": "JPG, PNG, WEBP, GIF o AVIF. Máximo 10 MB.",
+      "grayscale_enabled": "Mostrar imágenes en blanco y negro",
+      "restore_image": "Usar imagen inicial",
+      "vertical_title": "Título vertical",
+      "caption": "Texto",
+      "signature": "Firma del sello",
+      "preview": "Vista previa",
+      "save_hint": "Los cambios se publican al guardar los ajustes. Deja un texto vacío para ocultarlo.",
+      "invalid_image": "Selecciona una imagen JPG, PNG, WEBP, GIF o AVIF de hasta 10 MB."
+    }
   }
 }

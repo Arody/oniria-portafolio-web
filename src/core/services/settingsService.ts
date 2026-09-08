@@ -12,6 +12,8 @@ export type GlobalSettings = {
   body_font: string | null;
   hero_title: string | null;
   hero_subtitle: string | null;
+  hero_text_enabled?: boolean;
+  hero_overlay_opacity?: number;
   hero_background_type: 'image' | 'video';
   hero_background_url: string | null;
   contact_email: string | null;
@@ -31,6 +33,17 @@ export type GlobalSettings = {
   interlude_2_accent?: string | null;
   interlude_2_media_type?: 'image' | 'video';
   interlude_2_media_url?: string | null;
+  collage_image_1_url?: string | null;
+  collage_image_2_url?: string | null;
+  collage_grayscale_enabled?: boolean;
+  collage_title?: string | null;
+  collage_text_1?: string | null;
+  collage_text_2?: string | null;
+  collage_text_3?: string | null;
+  collage_text_4?: string | null;
+  collage_text_5?: string | null;
+  collage_text_6?: string | null;
+  collage_signature?: string | null;
   updated_at: string;
 };
 
@@ -99,4 +112,3 @@ export const getSettings = cache(async (): Promise<GlobalSettings> => {
     interlude_2_media_url: data.interlude_2_media_url || '/interludes/veil.png',
   } as GlobalSettings;
 });
-
