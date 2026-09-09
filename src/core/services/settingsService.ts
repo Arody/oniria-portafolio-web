@@ -1,8 +1,10 @@
+import { localizeContent, SETTINGS_TEXT_FIELDS, type Translations } from '@/core/utils/localization';
 import { createClient } from '@/lib/supabase/server';
 import { cache } from 'react';
 import type { AboutTextSettings } from '@/core/utils/aboutContent';
 
 export type GlobalSettings = {
+  translations?: Translations;
   id: string; // usually '1'
   site_title: string;
   site_description: string | null;
@@ -54,7 +56,7 @@ export type GlobalSettings = {
 // Fetch current settings
 // We use .limit(1).single() because it's a singleton table
 // We also wrap it in React's cache so calling it multiple times in one render pass only hits the DB once
-export const getSettings = cache(async (): Promise<GlobalSettings> => {
+export const getSettings = cache(async (locale?: string): Promise<GlobalSettings> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .schema('oniria')
@@ -100,7 +102,7 @@ export const getSettings = cache(async (): Promise<GlobalSettings> => {
     };
   }
   
-  return {
+  return localizeContent({
     ...data,
     interlude_1_enabled: data.interlude_1_enabled ?? true,
     interlude_1_quote: data.interlude_1_quote || 'Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.',
@@ -114,5 +116,5 @@ export const getSettings = cache(async (): Promise<GlobalSettings> => {
     interlude_2_accent: data.interlude_2_accent || 'eternidad',
     interlude_2_media_type: data.interlude_2_media_type || 'image',
     interlude_2_media_url: data.interlude_2_media_url || '/interludes/veil.png',
-  } as GlobalSettings;
+  } as GlobalSettings, locale, SETTINGS_TEXT_FIELDS);
 });

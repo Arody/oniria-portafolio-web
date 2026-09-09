@@ -1,6 +1,8 @@
+import { localizeContent, PROJECT_TEXT_FIELDS, type Translations } from '@/core/utils/localization';
 import { createClient } from '@/lib/supabase/server';
 
 export type PortfolioProject = {
+  translations?: Translations;
   id: string;
   title: string;
   couple_name: string;
@@ -18,7 +20,7 @@ export type PortfolioProject = {
 };
 
 // Fetch published projects for public landing page
-export async function getPublishedProjects(): Promise<PortfolioProject[]> {
+export async function getPublishedProjects(locale?: string): Promise<PortfolioProject[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('portfolio_projects')
@@ -32,7 +34,7 @@ export async function getPublishedProjects(): Promise<PortfolioProject[]> {
     console.error('Error fetching published projects:', error);
     return [];
   }
-  return data as PortfolioProject[];
+  return (data as PortfolioProject[]).map(record => localizeContent(record, locale, PROJECT_TEXT_FIELDS));
 }
 
 // Fetch all projects for admin dashboard

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { getFilmLoopSize, getFilmScrollTarget, wrapFilmScroll } from '../src/core/utils/filmScroll.ts';
@@ -47,6 +48,7 @@ test('film arrows advance, clamp and loop in both directions', () => {
 
 test('home previews six films on every screen; Films preserves the full published order', async () => {
   for (const locale of ['es', 'en']) {
+    const dict = JSON.parse(readFileSync(new URL(`../src/lib/dictionaries/${locale}.json`, import.meta.url), 'utf8'));
     const responses = await Promise.all([fetch(`${base}/${locale}`), fetch(`${base}/${locale}/films`)]);
     responses.forEach(response => assert.equal(response.status, 200));
     const [home, films] = await Promise.all(responses.map(response => response.text()));
@@ -63,41 +65,40 @@ test('home previews six films on every screen; Films preserves the full publishe
     assert.match(films, /grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4/);
     assert.equal((films.match(/data-film-cycle/g) || []).length, 3);
     assert.match(films, /aspect-video/);
-    assert.doesNotMatch(films, /grid-flow-col|aria-controls=/);
+    assert.doesNotMatch(films, /grid-flow-col/);
     assert.match(films, /<h1[^>]*aria-label="FILMS"/);
     assert.ok(home.includes(`href="/${locale}/films"`));
-    assert.match(home, /View all films/);
+    assert.ok(home.includes(dict.portfolio.view_all));
     assert.match(home, /id="about"/);
     const aboutResponse = await fetch(`${base}/${locale}/about`);
     assert.equal(aboutResponse.status, 200);
     const about = await aboutResponse.text();
     for (const html of [home, films, about]) {
-      for (const label of ['HOME', 'ABOUT', 'FILMS', 'BLOG', 'CONTACT']) {
+      for (const label of ['home', 'about', 'our_work', 'blog', 'contact'].map(key => dict.navigation[key])) {
         assert.match(html, new RegExp(`>${label}<`));
       }
       assert.ok(html.includes(`href="/${locale}/about"`));
-      assert.doesNotMatch(html, />INICIO<|>CONTACTO<|Ver todos los films/);
+
     }
-    assert.match(about, /Our way of seeing\./);
-    assert.match(about, /Your story starts here\./);
+    assert.ok(about.includes(dict.about.approach_title));
+    assert.ok(about.includes(dict.about.closing_title));
   }
 });
 
-test('contact uses English fields, hints and footer even for Spanish visitors', async () => {
-  const { readFileSync } = await import('node:fs');
-  const dict = JSON.parse(readFileSync(new URL('../src/lib/dictionaries/en.json', import.meta.url), 'utf8'));
+test('contact follows the selected URL language, including fields, hints and footer', async () => {
   for (const locale of ['es', 'en']) {
+    const dict = JSON.parse(readFileSync(new URL(`../src/lib/dictionaries/${locale}.json`, import.meta.url), 'utf8'));
     const response = await fetch(`${base}/${locale}/contact`, { headers: { 'Accept-Language': 'es-MX,es;q=0.9' } });
     assert.equal(response.status, 200);
     const html = (await response.text()).replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
     const text = html.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"');
     for (const field of ['name', 'date', 'planner', 'venue', 'guests', 'phone', 'email', 'otherContact', 'vision', 'highlights', 'answer_hint', 'submit']) {
-      assert.ok(text.includes(dict.contact.form[field]), `Missing English field: ${field} (${locale})`);
+      assert.ok(text.includes(dict.contact.form[field]), `Missing localized field: ${field} (${locale})`);
     }
     for (const key of ['subtitle', 'description', 'required_note', 'worldwide']) assert.ok(text.includes(dict.contact[key]));
     assert.ok(text.includes(dict.footer.rights));
-    assert.match(html, /<div lang="en"/);
-    assert.ok(html.includes(`href="/${locale}/films"`), 'English copy must preserve locale-based navigation');
+    assert.ok(html.includes(`<div lang="${locale}"`));
+    assert.ok(html.includes(`href="/${locale}/films"`), 'Navigation must preserve the selected locale');
   }
 });
 

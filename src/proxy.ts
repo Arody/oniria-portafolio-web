@@ -10,7 +10,8 @@ export async function proxy(request: NextRequest) {
   if (!hasLocale) {
     const locales = [...i18n.locales];
     const languages = new Negotiator({ headers: { 'accept-language': request.headers.get('accept-language') || '' } }).languages(locales);
-    const locale = match(languages, locales, i18n.defaultLocale);
+    const preference = request.cookies.get('oniria_locale')?.value;
+    const locale = i18n.locales.includes(preference as typeof i18n.defaultLocale) ? preference : match(languages, locales, i18n.defaultLocale);
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}${pathname}`;
     return NextResponse.redirect(url);

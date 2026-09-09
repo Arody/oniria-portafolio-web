@@ -76,9 +76,9 @@ Nginx publica `oniriaweddings.com`. Antes de activar una versión, ejecutar
 El MCP de Codex es exclusivo de este proyecto: [.codex/README.md](.codex/README.md).
 
 Versión activa desde el despliegue del 8 de septiembre de 2026:
-`/var/www/oniria-releases/20260909-films-loop`.
-Incluye la galería Films con entrada escalonada por columnas y scroll vertical infinito.
-La versión anterior está en `/var/www/oniria-releases/20260909-contact-en`. La instalación anterior permanece en
+`/var/www/oniria-releases/20260909-language-codes`.
+Incluye imágenes OG JPG locales en `public/og`, de 1200 × 630, y el icono de ONIRIA.
+La versión anterior está en `/var/www/oniria-releases/20260909-bilingual`. La instalación anterior permanece en
 `/var/www/oniria-portafolio-web` como respaldo; ya no es el directorio activo de
 PM2. Para actualizar la versión activa, usar su directorio o preparar otra
 versión, compilarla y actualizar únicamente el proceso `oniria-weddings`.
@@ -87,9 +87,44 @@ Para restaurar la versión anterior, ejecutar por SSH como `arody`:
 
 ```sh
 pm2 delete oniria-weddings
-pm2 start /var/www/oniria-releases/20260909-contact-en/ecosystem.config.js --only oniria-weddings
+pm2 start /var/www/oniria-releases/20260909-bilingual/ecosystem.config.js --only oniria-weddings
 pm2 save
 ```
 
 Despliegue verificado con lint, pruebas CMS, compilación y `test:films` contra
 HTTPS en producción. Nginx y `pm2-arody` tienen inicio automático habilitado.
+
+## Vistas previas al compartir
+
+Home, About, Films, Blog, Contact y los artículos publicados incluyen Open Graph,
+Twitter Cards y su URL canónica en ambos idiomas. Las imágenes se toman del CMS:
+Home usa la primera imagen del collage; About su imagen; Films la primera portada;
+Contact la segunda imagen del collage; Blog la portada de un artículo publicado.
+Cada artículo usa su propia portada y extracto, con imagen de respaldo cuando falta.
+El icono cuadrado reutiliza el símbolo del logotipo original.
+
+Comprobar con `METADATA_TEST_URL=https://oniriaweddings.com npm run test:metadata`.
+Las redes pueden conservar vistas previas en caché; el diseño final depende de cada aplicación.
+
+Las imágenes OG se descargan del CMS únicamente al compilar (`prebuild` ejecuta
+`npm run sync:og`). Se guardan como JPG de 1200 × 630 en `public/og`, con nombres
+que cambian si cambia la imagen. Los rastreadores solo solicitan archivos estáticos
+a `oniriaweddings.com/og/`; nunca descargan las portadas de Supabase.
+Tras cambiar una portada en el CMS, recompilar y desplegar para actualizar su copia OG.
+Hasta entonces, una portada nueva utiliza la imagen local de respaldo.
+
+## Sitio bilingüe
+
+El selector es / en aparece entre Blog y Contacto, también en el menú
+móvil. Conserva la ruta, los parámetros y el ancla, y recuerda la elección durante
+un año para los enlaces sin idioma. El idioma de la URL siempre tiene prioridad.
+
+Los textos públicos y las vistas previas sociales usan el idioma seleccionado.
+Ajustes, films y artículos tienen una sección «Traducciones · Español / English»
+para editar los textos de ambos idiomas. Las traducciones tienen prioridad sobre
+el texto original; «Usar original» elimina la traducción. Los nombres, las URLs,
+las portadas y los videos son compartidos. El panel de administración conserva
+su interfaz de edición actual. El contenido nuevo requiere su traducción en el CMS.
+
+Migración aplicada: `supabase/migrations/20260909033110_bilingual_content.sql`.
+Comprobación: `I18N_TEST_URL=https://oniriaweddings.com npm run test:i18n`.

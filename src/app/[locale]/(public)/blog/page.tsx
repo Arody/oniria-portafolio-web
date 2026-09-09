@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/metadata';
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
 import { ScrollReveal } from "@/ui/components/ScrollReveal";
@@ -15,21 +16,14 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const dict = await getDictionary(locale as Locale);
-  return {
-    title: dict.blog.title + ' | Oniria',
-    description: dict.blog.subtitle,
-    openGraph: {
-      title: dict.blog.title + ' | Oniria',
-      description: dict.blog.subtitle,
-      type: 'website',
-    }
-  };
+  const posts = await getPublishedBlogPosts(locale);
+  return pageMetadata({ locale, path: '/blog', title: `${dict.blog.title} | ONIRIA`, description: dict.blog.subtitle, image: posts.find(post => post.cover_image_url)?.cover_image_url || '/interludes/toast.png' });
 }
 
 export default async function PublicBlogPage({ params }: Props) {
   const { locale } = await params;
   const dict = await getDictionary(locale as Locale);
-  const posts = await getPublishedBlogPosts();
+  const posts = await getPublishedBlogPosts(locale);
 
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">

@@ -24,9 +24,10 @@ interface PortfolioSectionProps {
   projects: PortfolioProject[];
   dict: Dictionary['portfolio'];
   filmsHref?: string;
+  locale?: string;
 }
 
-export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSectionProps) {
+export function PortfolioSection({ projects, dict, filmsHref, locale = "es" }: PortfolioSectionProps) {
   const isCarousel = Boolean(filmsHref);
   const Heading = filmsHref ? 'h2' : 'h1';
   const carouselId = useId();
@@ -164,7 +165,7 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
               )}
               {project.event_date && (
                 <span className="text-mist/30 text-[10px] font-sans tracking-[0.15em]">
-                  {new Date(project.event_date).toLocaleDateString('es-MX', {
+                  {new Date(project.event_date).toLocaleDateString(locale === 'es' ? 'es-MX' : 'en-US', {
                     year: 'numeric',
                     month: 'short',
                   }).toUpperCase()}
@@ -331,7 +332,7 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
                     {activeProjectData.event_date && (
                       <p className="text-mist/20 text-[10px] font-sans tracking-[0.15em] mt-1">
                         {new Date(activeProjectData.event_date)
-                          .toLocaleDateString('es-MX', { year: 'numeric', month: 'long' })
+                          .toLocaleDateString(locale === 'es' ? 'es-MX' : 'en-US', { year: 'numeric', month: 'long' })
                           .toUpperCase()}
                       </p>
                     )}

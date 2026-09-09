@@ -5,7 +5,10 @@
     "our_work": "FILMS",
     "blog": "BLOG",
     "contact": "CONTACT",
-    "admin": "Admin"
+    "admin": "Admin",
+    "language": "Language",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu"
   },
   "hero": {
     "scroll": "SCROLL DOWN",
@@ -34,6 +37,7 @@
     "3_signature": "— We Believe in the Unforgettable"
   },
   "portfolio": {
+    "description": "Wedding films filled with real emotion. Explore the love stories captured by ONIRIA in Mexico and beyond.",
     "subtitle": "OUR WORK",
     "title": "FILMS",
     "categories": {
@@ -59,7 +63,9 @@
     "read_more": "Read more →",
     "no_cover": "No Cover",
     "empty": "No articles published yet.",
-    "view_all": "View all stories"
+    "view_all": "View all stories",
+    "back": "Back to blog",
+    "empty_content": "This article does not have any content yet."
   },
   "contact": {
     "subtitle": "LET’S TELL YOUR STORY",

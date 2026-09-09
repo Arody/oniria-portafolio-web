@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/metadata';
 import { sanitizeBlogHtml } from '@/core/utils/html';
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
@@ -13,29 +14,23 @@ import { getDictionary } from "@/lib/dictionaries";
 // Genera la metadata SSR dinámica extraida de la base de datos para SEO
 export async function generateMetadata({ params }: { params: Promise<{ slug: string, locale: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const post = await getBlogPostBySlug(resolvedParams.slug);
+  const post = await getBlogPostBySlug(resolvedParams.slug, resolvedParams.locale);
 
   if (!post || post.status !== 'published') {
-    return { title: 'Artículo no encontrado | Oniria' };
+    notFound();
   }
 
-  return {
-    title: `${post.title} | Oniria Blog`,
-    description: post.excerpt || `Lee sobre ${post.title} en el blog de bodas de Oniria.`,
-    openGraph: {
-      title: post.title,
-      description: post.excerpt || `Lee sobre ${post.title} en el blog de bodas de Oniria.`,
-      images: post.cover_image_url ? [post.cover_image_url] : [],
-      type: 'article',
-      publishedTime: post.created_at,
-      authors: ['Oniria Studio'],
-    }
-  };
+  return pageMetadata({
+    locale: resolvedParams.locale, path: `/blog/${encodeURIComponent(post.slug)}`,
+    title: `${post.title} | ONIRIA`,
+    description: post.excerpt || (resolvedParams.locale === 'es' ? `Lee sobre ${post.title} en el blog de ONIRIA.` : `Read ${post.title} on the ONIRIA journal.`),
+    image: post.cover_image_url, publishedTime: post.created_at,
+  });
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string, locale: string }> }) {
   const resolvedParams = await params;
-  const post = await getBlogPostBySlug(resolvedParams.slug);
+  const post = await getBlogPostBySlug(resolvedParams.slug, resolvedParams.locale);
   const dict = await getDictionary(resolvedParams.locale as Locale);
 
   if (!post || post.status !== 'published') {
@@ -49,7 +44,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <article className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
           
           <Link href={`/${resolvedParams.locale}/blog`} className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.2em] text-[10px] text-mist/40 hover:text-champagne transition-colors duration-300 mb-12">
-            <ArrowLeft size={14} /> {resolvedParams.locale === 'es' ? 'Volver al Blog' : 'Back to Blog'}
+            <ArrowLeft size={14} /> {dict.blog.back}
           </Link>
 
           {/* Header */}
@@ -82,7 +77,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={post.cover_image_url} 
-                alt={`Imagen principal de ${post.title}`}
+                alt={post.title}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -97,7 +92,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             />
           ) : (
               <div className="py-20 text-center border border-graphite bg-charcoal">
-                <p className="font-sans uppercase tracking-[0.15em] text-mist/30 text-sm">El contenido de este artículo está vacío.</p>
+                <p className="font-sans uppercase tracking-[0.15em] text-mist/30 text-sm">{dict.blog.empty_content}</p>
             </div>
           )}
 

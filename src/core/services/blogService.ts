@@ -1,6 +1,8 @@
+import { localizeContent, BLOG_TEXT_FIELDS, type Translations } from '@/core/utils/localization';
 import { createClient } from '@/lib/supabase/server';
 
 export type BlogPost = {
+  translations?: Translations;
   id: string;
   title: string;
   slug: string;
@@ -14,7 +16,7 @@ export type BlogPost = {
   updated_at: string;
 };
 
-export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
+export async function getPublishedBlogPosts(locale?: string): Promise<BlogPost[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('blog_posts')
@@ -26,7 +28,7 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
     console.error('Error fetching published blog posts:', error);
     return [];
   }
-  return data as BlogPost[];
+  return (data as BlogPost[]).map(record => localizeContent(record, locale, BLOG_TEXT_FIELDS));
 }
 
 
@@ -47,7 +49,7 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
 }
 
 // Fetch single post by slug (for public view)
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+export async function getBlogPostBySlug(slug: string, locale?: string): Promise<BlogPost | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('blog_posts')
@@ -60,7 +62,7 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
     console.error(`Error fetching blog post with slug ${slug}:`, error);
     return null;
   }
-  return data as BlogPost;
+  return localizeContent(data as BlogPost, locale, BLOG_TEXT_FIELDS);
 }
 
 // Fetch single post by id (for admin edit)

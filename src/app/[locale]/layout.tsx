@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/metadata'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
@@ -50,6 +51,8 @@ export async function generateMetadata(
   const settings = await getSettings();
   
   return {
+    metadataBase: new URL(SITE_URL),
+    icons: { icon: '/api/icon', shortcut: '/api/icon', apple: '/api/icon' },
     title: settings.site_title || 'Oniria Weddings',
     description: settings.site_description || 'Fotografía y planificación de bodas que capturan cada momento único.',
     alternates: {

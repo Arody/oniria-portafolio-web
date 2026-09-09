@@ -1,7 +1,9 @@
 'use client';
 
+import { LanguageSelector } from '@/ui/components/LanguageSelector';
+
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import type { Dictionary } from '@/lib/dictionaries';
 import type { Locale } from '@/i18n.config';
@@ -79,8 +81,10 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
           </div>
 
           {/* Desktop Nav Links */}
-          <div className={`hidden md:flex items-center transition-all duration-700 ${scrolled ? 'space-x-4 lg:space-x-5' : 'space-x-6 lg:space-x-10'}`}>
-            {navLinks.map((link) => (
+          <div className={`hidden lg:flex items-center transition-all duration-700 ${scrolled ? 'space-x-4 lg:space-x-5' : 'space-x-6 lg:space-x-10'}`}>
+            {navLinks.map((link, i) => (
+              <Fragment key={link.href}>
+              {i === 4 && <LanguageSelector locale={loc} label={dict?.language || "Idioma / Language"} />}
               <Link
                 key={link.href}
                 href={link.href}
@@ -93,15 +97,18 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
                 {/* Underline draws in from the left, exits to the right */}
                 <span className="absolute -bottom-1 left-0 w-full h-px bg-champagne scale-x-0 origin-right group-hover:scale-x-100 group-hover:origin-left transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" />
               </Link>
+              </Fragment>
             ))}
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
-            className={`md:hidden transition-all duration-500 ${scrolled ? 'text-ivory/70 hover:text-champagne' : 'text-ivory hover:text-champagne'
+            className={`lg:hidden transition-all duration-500 ${scrolled ? 'text-ivory/70 hover:text-champagne' : 'text-ivory hover:text-champagne'
               }`}
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
+            aria-label={menuOpen ? dict?.close_menu : dict?.open_menu}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
           >
             {menuOpen ? <X size={scrolled ? 20 : 24} /> : <Menu size={scrolled ? 20 : 24} />}
           </button>
@@ -109,8 +116,8 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
       </div>
 
       {/* Mobile Menu — drops below the island */}
-      <div
-        className={`md:hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] overflow-hidden ${menuOpen ? 'max-h-80 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
+      <div id="mobile-navigation" inert={!menuOpen}
+        className={`lg:hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] overflow-hidden ${menuOpen ? 'max-h-[28rem] opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
         }`}
       >
         <div
@@ -118,6 +125,8 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
             }`}
         >
           {navLinks.map((link, i) => (
+            <Fragment key={link.href}>
+            {i === 4 && <LanguageSelector locale={loc} label={dict?.language || "Idioma / Language"} />}
             <Link
               key={link.href}
               href={link.href}
@@ -129,6 +138,7 @@ export function NavbarClient({ logoText, logoImageUrl, logoSize, headingFont, di
             >
               {link.label}
             </Link>
+            </Fragment>
           ))}
         </div>
       </div>

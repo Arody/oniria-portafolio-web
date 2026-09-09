@@ -1,5 +1,8 @@
 'use client';
 
+import { ContentTranslations } from '@/ui/components/ContentTranslations';
+import { SETTINGS_TEXT_FIELDS } from '@/core/utils/localization';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -290,6 +293,7 @@ export default function AdminSettingsPage() {
       }
 
       const updatePayload = {
+          translations: settings.translations ?? {},
           ...Object.fromEntries((Object.keys(ABOUT_TEXT_LIMITS) as AboutTextKey[]).map(key => [`about_${key}`, settings[`about_${key}`] ?? null])),
           about_media_type: settings.about_media_type ?? 'image',
           about_image_url: settings.about_image_url?.trim() || null,
@@ -967,6 +971,7 @@ export default function AdminSettingsPage() {
             {isLoading ? <><Loader2 size={14} className="animate-spin" /> Guardando Ajustes...</> : 'Guardar y Publicar Ajustes'}
             </button>
         </div>
+        <ContentTranslations value={settings.translations} onChange={translations => setSettings({ ...settings, translations })} fields={SETTINGS_TEXT_FIELDS} base={settings} />
       </form>
     </div>
   );

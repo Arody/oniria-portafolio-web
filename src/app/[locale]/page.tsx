@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/metadata';
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
 import { HeroSection } from "@/ui/views/HeroSection";
@@ -20,13 +21,19 @@ type Props = {
   params: Promise<{ locale: Locale }>;
 }
 
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params;
+  const settings = await getSettings(locale);
+  return pageMetadata({ locale, title: settings.site_title || 'ONIRIA Wedding Films', description: settings.site_description || 'Timeless wedding films, made to feel like you.', image: settings.collage_image_1_url || (settings.hero_background_type === 'image' ? settings.hero_background_url : null) });
+}
+
 export default async function Home({ params }: Props) {
   const { locale } = await params;
   const dict = await getDictionary(locale);
   
   const [projects, settings] = await Promise.all([
-    getPublishedProjects(),
-    getSettings(),
+    getPublishedProjects(locale),
+    getSettings(locale),
   ]);
 
   return (
@@ -46,10 +53,10 @@ export default async function Home({ params }: Props) {
               settings.philosophy_phrase_3 || dict.hero.philosophy[2],
             ].filter(Boolean)}
           >
-            <HeroSection />
+            <HeroSection locale={locale} />
           </HeroPhilosophy>
         ) : (
-          <HeroSection />
+          <HeroSection locale={locale} />
         )}
 
         <EditorialCollage settings={settings} dict={dict.editorial_collage} />
@@ -67,7 +74,7 @@ export default async function Home({ params }: Props) {
           />
         )}
 
-        <PortfolioSection projects={projects.slice(0, 6)} dict={dict.portfolio} filmsHref={`/${locale}/films`} />
+        <PortfolioSection projects={projects.slice(0, 6)} dict={dict.portfolio} locale={locale} filmsHref={`/${locale}/films`} />
 
         <AboutSection dict={dict.about} locale={locale} settings={settings} />
 

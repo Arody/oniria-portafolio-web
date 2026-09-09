@@ -23,8 +23,8 @@ function buildVimeoEmbedUrl(raw: string): string {
   return url;
 }
 
-export async function HeroSection() {
-  const settings = await getSettings();
+export async function HeroSection({ locale }: { locale: string }) {
+  const settings = await getSettings(locale);
   const showText = settings.hero_text_enabled !== false;
 
   return (

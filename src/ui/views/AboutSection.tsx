@@ -21,7 +21,7 @@ export function AboutSection({ dict, locale, settings, fullPage = false }: {
           <AboutMedia type={settings.about_media_type} imageUrl={settings.about_image_url} videoUrl={settings.about_video_url} alt={content.image_alt} />
           <ScrollReveal y={0}>
             <p className="text-xs tracking-[0.3em] font-sans mb-8">{content.label}</p>
-            <Heading className="font-serif text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-8">{content.title || <span className="sr-only">About ONIRIA</span>}</Heading>
+            <Heading className="font-serif text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-8">{content.title || <span className="sr-only">{dict.label}</span>}</Heading>
             <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6">{content.intro}</p>
             <p className="whitespace-pre-line text-sm md:text-base text-obsidian/65 leading-relaxed max-w-lg">{content.body}</p>
             {!fullPage && content.more && <Link href={`/${locale}/about`} className="inline-block mt-10 pb-2 border-b border-gold-dust text-xs uppercase tracking-[0.2em] hover:text-gold-dust transition-colors">{content.more}</Link>}

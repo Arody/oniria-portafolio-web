@@ -1,3 +1,4 @@
+import { pageMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n.config';
 import { getDictionary } from '@/lib/dictionaries';
@@ -12,13 +13,13 @@ type Props = { params: Promise<{ locale: Locale }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const [dict, settings] = await Promise.all([getDictionary(locale), getSettings()]);
-  return { title: 'About | ONIRIA', description: getAboutContent(settings, dict.about).intro };
+  const [dict, settings] = await Promise.all([getDictionary(locale), getSettings(locale)]);
+  return pageMetadata({ locale, path: '/about', title: `${dict.navigation.about} | ONIRIA`, description: getAboutContent(settings, dict.about).intro, image: settings.about_image_url || settings.collage_image_2_url });
 }
 
 export default async function AboutPage({ params }: Props) {
   const { locale } = await params;
-  const [dict, settings] = await Promise.all([getDictionary(locale), getSettings()]);
+  const [dict, settings] = await Promise.all([getDictionary(locale), getSettings(locale)]);
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
       <Navbar dict={dict.navigation} locale={locale} />

@@ -1,5 +1,8 @@
 'use client';
 
+import { ContentTranslations } from '@/ui/components/ContentTranslations';
+import { BLOG_TEXT_FIELDS, type Translations } from '@/core/utils/localization';
+
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -14,6 +17,7 @@ export default function AdminNewBlogPostPage() {
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [translations, setTranslations] = useState<Translations>({});
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
@@ -90,6 +94,7 @@ export default function AdminNewBlogPostPage() {
       const { error: dbError } = await supabase
         .from('blog_posts')
         .insert({
+          translations,
           title: formData.title,
           slug: uniqueSlug,
           excerpt: formData.excerpt || null,
@@ -218,6 +223,7 @@ export default function AdminNewBlogPostPage() {
             {isLoading ? <><Loader2 size={14} className="animate-spin" /> Procesando...</> : 'Publicar Artículo'}
             </button>
         </div>
+        <ContentTranslations value={translations} onChange={setTranslations} fields={BLOG_TEXT_FIELDS} base={{ ...formData, content }} />
       </form>
     </div>
   );

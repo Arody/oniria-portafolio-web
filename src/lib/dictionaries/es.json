@@ -1,15 +1,18 @@
 {
   "navigation": {
-    "home": "HOME",
-    "about": "ABOUT",
+    "home": "INICIO",
+    "about": "NOSOTROS",
     "our_work": "FILMS",
     "blog": "BLOG",
-    "contact": "CONTACT",
-    "admin": "Admin"
+    "contact": "CONTACTO",
+    "admin": "Admin",
+    "language": "Idioma",
+    "open_menu": "Abrir menú",
+    "close_menu": "Cerrar menú"
   },
   "hero": {
     "scroll": "HACER SCROLL",
-    "subtitle": "CAPTURING LOVE",
+    "subtitle": "CAPTURANDO EL AMOR",
     "philosophy": [
       "No fotografiamos bodas. Inmortalizamos la forma en que se miran cuando creen que nadie los ve.",
       "Cada encuadre es una decisión emocional. Buscamos la verdad en lo efímero, la belleza en lo invisible.",
@@ -34,7 +37,8 @@
     "3_signature": "— Creemos en lo Inolvidable"
   },
   "portfolio": {
-    "subtitle": "OUR WORK",
+    "description": "Films de boda llenos de emociones reales. Descubre las historias de amor que ONIRIA ha capturado en México y más allá.",
+    "subtitle": "NUESTRO TRABAJO",
     "title": "FILMS",
     "categories": {
       "all": "Todas",
@@ -46,20 +50,22 @@
     "no_cover": "Sin Portada",
     "empty": "No hay proyectos para esta categoría.",
     "view_story": "Ver film",
-    "view_all": "View all films",
+    "view_all": "Ver todos los films",
     "close": "Cerrar film",
     "previous": "Films anteriores",
     "next": "Siguientes films",
     "carousel": "Galería de films",
-    "loop_hint": "Scroll to explore · Keep going, the stories continue"
+    "loop_hint": "Desliza para explorar · Las historias continúan"
   },
   "blog": {
-    "subtitle": "STORIES & INSPIRATION",
+    "subtitle": "HISTORIAS E INSPIRACIÓN",
     "title": "BLOG",
     "read_more": "Leer más →",
     "no_cover": "Sin Portada",
     "empty": "No hay artículos publicados aún.",
-    "view_all": "Ver todas las historias"
+    "view_all": "Ver todas las historias",
+    "back": "Volver al blog",
+    "empty_content": "Este artículo todavía no tiene contenido."
   },
   "contact": {
     "subtitle": "CONTEMOS SU HISTORIA",
@@ -67,7 +73,7 @@
     "form": {
       "name": "Tu nombre y el de tu pareja",
       "date": "Fecha de la boda",
-      "planner": "Wedding planner",
+      "planner": "Organizador de la boda",
       "planner_hint": "Nombre o «Aún no tenemos»",
       "venue": "Ciudad y lugar de la celebración",
       "guests": "Número de invitados",
@@ -92,7 +98,7 @@
     "error_title": "No se pudo enviar"
   },
   "footer": {
-    "rights": "All rights reserved."
+    "rights": "Todos los derechos reservados."
   },
   "messages": {
     "title": "Mensajes",
@@ -142,31 +148,31 @@
     }
   },
   "about": {
-    "label": "ABOUT ONIRIA",
-    "title": "The way it felt.",
-    "intro": "Wedding films shaped by emotion, light and the moments that make a story yours.",
-    "body": "A glance across the room. A hand held a little tighter. The voices of the people you love. We are drawn to the details that bring you back to a feeling, long after the day has passed.",
-    "more": "More about us",
-    "image_alt": "An intimate moment from an ONIRIA wedding story",
-    "approach_title": "Our way of seeing.",
+    "label": "SOBRE ONIRIA",
+    "title": "Así se sintió.",
+    "intro": "Films de boda que nacen de las emociones, la luz y los momentos que hacen única su historia.",
+    "body": "Una mirada que cruza la habitación. Una mano que aprieta un poco más fuerte. Las voces de las personas que aman. Nos inspiran esos detalles que los devuelven a una emoción, mucho después de que el día haya terminado.",
+    "more": "Conoce más de nosotros",
+    "image_alt": "Un instante íntimo de una boda contado por ONIRIA",
+    "approach_title": "Nuestra forma de mirar.",
     "approach": [
       {
-        "title": "Emotion first",
-        "text": "We look for the moments that feel true to you: the quiet anticipation, the unexpected laughter and everything in between."
+        "title": "Primero, la emoción",
+        "text": "Buscamos los momentos que los representan: la espera silenciosa, una risa inesperada y todo lo que sucede entre ambos."
       },
       {
-        "title": "An editorial eye",
-        "text": "Light, composition and rhythm give each film its own language. Beauty lives in the smallest details as much as in the grandest moments."
+        "title": "Una mirada editorial",
+        "text": "La luz, la composición y el ritmo dan a cada film su propio lenguaje. La belleza vive tanto en los detalles más pequeños como en los grandes momentos."
       },
       {
-        "title": "A memory to return to",
-        "text": "Our intention is to make films you can step back into, with the voices, gestures and atmosphere that made your wedding yours."
+        "title": "Un recuerdo al que volver",
+        "text": "Creamos films a los que puedan regresar, con las voces, los gestos y la atmósfera que hicieron suya esa boda."
       }
     ],
-    "closing_title": "Your story starts here.",
-    "closing_text": "Tell us what you are imagining. We would love to hear about your day.",
-    "contact": "Contact",
-    "films": "View our films"
+    "closing_title": "Su historia empieza aquí.",
+    "closing_text": "Cuéntennos lo que imaginan. Nos encantará conocer los planes para su día.",
+    "contact": "Contacto",
+    "films": "Ver nuestros films"
   },
   "about_admin": {
     "title": "About — Home y página completa",

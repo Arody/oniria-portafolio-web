@@ -1,5 +1,8 @@
 'use client';
 
+import { ContentTranslations } from '@/ui/components/ContentTranslations';
+import { PROJECT_TEXT_FIELDS, type Translations } from '@/core/utils/localization';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -13,6 +16,7 @@ export default function AdminNewProjectPage() {
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [translations, setTranslations] = useState<Translations>({});
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
@@ -106,6 +110,7 @@ export default function AdminNewProjectPage() {
 
       const { error: dbError } = await supabase.from('portfolio_projects').insert([
         {
+          translations,
           title: formData.title,
           couple_name: formData.couple_name,
           location: formData.location || null,
@@ -248,6 +253,7 @@ export default function AdminNewProjectPage() {
             {isLoading ? <><Loader2 size={14} className="animate-spin" /> Procesando...</> : 'Guardar y Publicar'}
           </button>
         </div>
+        <ContentTranslations value={translations} onChange={setTranslations} fields={PROJECT_TEXT_FIELDS} base={formData} />
       </form>
     </div>
   );

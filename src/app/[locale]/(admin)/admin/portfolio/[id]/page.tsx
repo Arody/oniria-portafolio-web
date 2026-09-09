@@ -1,5 +1,8 @@
 'use client';
 
+import { ContentTranslations } from '@/ui/components/ContentTranslations';
+import { PROJECT_TEXT_FIELDS, type Translations } from '@/core/utils/localization';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -15,6 +18,7 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [translations, setTranslations] = useState<Translations>({});
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,6 +49,7 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
         if (error) throw error;
 
         if (data) {
+          setTranslations(data.translations ?? {});
           setFormData({
             title: data.title || '',
             couple_name: data.couple_name || '',
@@ -138,6 +143,7 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
       const { error: dbError } = await supabase
         .from('portfolio_projects')
         .update({
+          translations,
           title: formData.title,
           couple_name: formData.couple_name,
           location: formData.location || null,
@@ -284,6 +290,7 @@ export default function AdminEditProjectPage({ params }: { params: Promise<{ id:
             {isLoading ? <><Loader2 size={14} className="animate-spin" /> Procesando...</> : 'Actualizar Proyecto'}
             </button>
         </div>
+        <ContentTranslations value={translations} onChange={setTranslations} fields={PROJECT_TEXT_FIELDS} base={formData} />
       </form>
     </div>
   );

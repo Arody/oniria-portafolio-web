@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --experimental-strip-types --test tests/cms.test.ts",
-    "test:films": "node --experimental-strip-types --test tests/films.test.ts"
+    "test:films": "node --experimental-strip-types --test tests/films.test.ts",
+    "test:metadata": "node --experimental-strip-types --test tests/metadata.test.ts",
+    "sync:og": "node scripts/sync-og.mjs",
+    "prebuild": "npm run sync:og",
+    "test:i18n": "node --experimental-strip-types --test tests/localization.test.ts"
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.8.1",

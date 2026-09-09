@@ -1,5 +1,8 @@
 'use client';
 
+import { ContentTranslations } from '@/ui/components/ContentTranslations';
+import { BLOG_TEXT_FIELDS, type Translations } from '@/core/utils/localization';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -16,6 +19,7 @@ export default function AdminEditBlogPostPage({ params }: { params: Promise<{ id
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [translations, setTranslations] = useState<Translations>({});
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,6 +49,7 @@ export default function AdminEditBlogPostPage({ params }: { params: Promise<{ id
         if (error) throw error;
 
         if (data) {
+          setTranslations(data.translations ?? {});
           setFormData({
             title: data.title || '',
             excerpt: data.excerpt || '',
@@ -129,6 +134,7 @@ export default function AdminEditBlogPostPage({ params }: { params: Promise<{ id
       const { error: dbError } = await supabase
         .from('blog_posts')
         .update({
+          translations,
           title: formData.title,
           slug: final_slug,
           excerpt: formData.excerpt || null,
@@ -271,6 +277,7 @@ export default function AdminEditBlogPostPage({ params }: { params: Promise<{ id
             {isLoading ? <><Loader2 size={14} className="animate-spin" /> Procesando...</> : 'Actualizar Artículo'}
             </button>
         </div>
+        <ContentTranslations value={translations} onChange={setTranslations} fields={BLOG_TEXT_FIELDS} base={{ ...formData, content }} />
       </form>
     </div>
   );
