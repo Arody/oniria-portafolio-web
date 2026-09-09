@@ -11,6 +11,7 @@ import type { PortfolioProject } from '@/core/services/portfolioService';
 import type { Dictionary } from '@/lib/dictionaries';
 import { prefersReducedMotion } from '@/lib/motion';
 import { getFilmScrollTarget } from '@/core/utils/filmScroll';
+import { InfiniteFilmGrid } from '@/ui/components/InfiniteFilmGrid';
 import { createFilmPreview } from '@/core/utils/filmPreview';
 
 // Register GSAP plugins
@@ -84,16 +85,115 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
     });
   }, { scope: sectionRef });
 
+  const renderFilm = (project: PortfolioProject, index: number, duplicate = false) => {
+    const Card = duplicate ? 'div' : 'button';
+    return (
+      <Card
+        type={duplicate ? undefined : "button"}
+        key={index}
+        aria-hidden={duplicate || undefined}
+        aria-label={duplicate ? undefined : `${dict.view_story}: ${project.couple_name} — ${project.title}`}
+        className="block relative group w-full min-w-0 aspect-video snap-start bg-charcoal cursor-pointer overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-champagne"
+        onPointerEnter={event => {
+          if (event.pointerType !== 'touch' && project.video_url && !activeProjectData) filmPreview.start(String(index));
+        }}
+        onPointerLeave={filmPreview.stop}
+        onPointerCancel={filmPreview.stop}
+        onClick={() => {
+          filmPreview.stop();
+          setActiveVideo(project.video_url);
+          setActiveProjectData(project);
+        }}
+      >
+        {/* Image */}
+        <div className="absolute inset-0 overflow-hidden">
+          {project.cover_image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={project.cover_image_url}
+              alt={`${project.title} — ${project.couple_name}`}
+              className="w-full h-full object-cover transition-[filter] duration-700 group-hover:brightness-[0.35] group-focus-visible:brightness-[0.35]"
+            />
+          ) : (
+            <div className="w-full h-full bg-graphite flex items-center justify-center">
+              <span className="font-sans uppercase text-mist/40 tracking-[0.2em] text-xs">
+                {dict.no_cover}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {previewId === String(index) && project.video_url && (
+          <div inert aria-hidden="true" className="absolute inset-0 pointer-events-none animate-fade-in">
+            <Vimeo
+              video={project.video_url}
+              autoplay
+              muted
+              loop
+              background
+              controls={false}
+              responsive
+              onError={filmPreview.stop}
+              className="absolute inset-0 w-full h-full [&>div]:w-full [&>div]:h-full [&>div]:p-0! [&_iframe]:w-full [&_iframe]:h-full"
+            />
+          </div>
+        )}
+
+        {/* Bottom gradient */}
+        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-obsidian/90 via-obsidian/40 to-transparent pointer-events-none" />
+
+        {/* Content overlay */}
+        <div className="absolute inset-0 flex flex-col justify-end p-5">
+          <h3 className="text-ivory font-serif font-light tracking-[0.08em] uppercase leading-tight text-2xl lg:text-3xl mb-2 break-words">
+            {project.couple_name}
+          </h3>
+          <p className="text-champagne text-[11px] tracking-[0.3em] uppercase font-sans">
+            {project.title}
+          </p>
+
+          {/* Location + Date */}
+          {(project.location || project.event_date) && (
+            <div className="flex flex-wrap items-center gap-3 mt-2">
+              {project.location && (
+                <span className="text-mist/40 text-[10px] font-sans uppercase tracking-[0.15em]">
+                  {project.location}
+                </span>
+              )}
+              {project.location && project.event_date && (
+                <span className="w-3 h-px bg-champagne/30" />
+              )}
+              {project.event_date && (
+                <span className="text-mist/30 text-[10px] font-sans tracking-[0.15em]">
+                  {new Date(project.event_date).toLocaleDateString('es-MX', {
+                    year: 'numeric',
+                    month: 'short',
+                  }).toUpperCase()}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Play button for video projects */}
+          {project.video_url && previewId !== String(index) && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 border border-champagne/40 flex items-center justify-center text-champagne opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 backdrop-blur-sm bg-obsidian/20 rounded-full">
+              <Play size={20} className="ml-0.5" />
+            </div>
+          )}
+        </div>
+      </Card>
+    );
+  };
+
   return (
     <section
       ref={sectionRef}
       id="portafolio"
-      className={`${isCarousel ? 'py-28' : 'pt-12'} bg-obsidian relative overflow-hidden`}
+      className={`${isCarousel ? 'py-28' : 'pt-4'} bg-obsidian relative overflow-hidden`}
     >
-      <div className={isCarousel ? 'max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12' : 'w-full'}>
+      <div className={isCarousel ? 'max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12' : 'w-full px-4 md:px-6'}>
 
         {/* ── Animated Header ── */}
-        <div ref={headerRef} className={`${isCarousel ? 'mb-24' : 'mb-12 px-4'} text-center`}>
+        <div ref={headerRef} className={`${isCarousel ? 'mb-24' : 'mb-6 px-4'} text-center`}>
           <p
             className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4"
           >
@@ -110,8 +210,12 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
           />
         </div>
 
-        {/* Carousel on the homepage; full-width grid on the Films page. */}
-        {projects.length > 0 ? (
+        {/* Homepage carousel; vertically looping gallery on the Films page. */}
+        {projects.length > 0 ? (!isCarousel ? (
+          <InfiniteFilmGrid count={projects.length} label={dict.carousel} hint={dict.loop_hint}>
+            {(index, duplicate) => renderFilm(projects[index % projects.length], index, duplicate)}
+          </InfiniteFilmGrid>
+        ) : (
           <div className="relative">
             {isCarousel && projects.length > 1 && (
               <button type="button" aria-label={dict.previous} aria-controls={carouselId} onClick={() => scrollFilms(-1)} className={`${arrowClass} -left-4 md:-left-6`}>
@@ -133,100 +237,7 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
               }}
               className={isCarousel ? 'grid grid-flow-col auto-cols-[92%] md:auto-cols-[50%] gap-0 overflow-x-auto overscroll-x-contain snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-champagne' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-0'}
             >
-              {projects.map(project => (
-                <button
-                  type="button"
-                  key={project.id}
-                  aria-label={`${dict.view_story}: ${project.couple_name} — ${project.title}`}
-                  className="relative group w-full min-w-0 aspect-video snap-start bg-charcoal cursor-pointer overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-champagne"
-                  onPointerEnter={event => {
-                    if (event.pointerType !== 'touch' && project.video_url && !activeProjectData) filmPreview.start(project.id);
-                  }}
-                  onPointerLeave={filmPreview.stop}
-                  onPointerCancel={filmPreview.stop}
-                  onClick={() => {
-                    filmPreview.stop();
-                    setActiveVideo(project.video_url);
-                    setActiveProjectData(project);
-                  }}
-                >
-                  {/* Image */}
-                  <div className="absolute inset-0 overflow-hidden">
-                    {project.cover_image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={project.cover_image_url}
-                        alt={`${project.title} — ${project.couple_name}`}
-                        className="w-full h-full object-cover transition-[filter] duration-700 group-hover:brightness-[0.35] group-focus-visible:brightness-[0.35]"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-graphite flex items-center justify-center">
-                        <span className="font-sans uppercase text-mist/40 tracking-[0.2em] text-xs">
-                          {dict.no_cover}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {previewId === project.id && project.video_url && (
-                    <div inert aria-hidden="true" className="absolute inset-0 pointer-events-none animate-fade-in">
-                      <Vimeo
-                        video={project.video_url}
-                        autoplay
-                        muted
-                        loop
-                        background
-                        controls={false}
-                        responsive
-                        onError={filmPreview.stop}
-                        className="absolute inset-0 w-full h-full [&>div]:w-full [&>div]:h-full [&>div]:p-0! [&_iframe]:w-full [&_iframe]:h-full"
-                      />
-                    </div>
-                  )}
-
-                  {/* Bottom gradient */}
-                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-obsidian/90 via-obsidian/40 to-transparent pointer-events-none" />
-
-                  {/* Content overlay */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-5">
-                    <h3 className="text-ivory font-serif font-light tracking-[0.08em] uppercase leading-tight text-2xl lg:text-3xl mb-2 break-words">
-                      {project.couple_name}
-                    </h3>
-                    <p className="text-champagne text-[11px] tracking-[0.3em] uppercase font-sans">
-                      {project.title}
-                    </p>
-
-                    {/* Location + Date */}
-                    {(project.location || project.event_date) && (
-                      <div className="flex flex-wrap items-center gap-3 mt-2">
-                        {project.location && (
-                          <span className="text-mist/40 text-[10px] font-sans uppercase tracking-[0.15em]">
-                            {project.location}
-                          </span>
-                        )}
-                        {project.location && project.event_date && (
-                          <span className="w-3 h-px bg-champagne/30" />
-                        )}
-                        {project.event_date && (
-                          <span className="text-mist/30 text-[10px] font-sans tracking-[0.15em]">
-                            {new Date(project.event_date).toLocaleDateString('es-MX', {
-                              year: 'numeric',
-                              month: 'short',
-                            }).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Play button for video projects */}
-                    {project.video_url && previewId !== project.id && (
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 border border-champagne/40 flex items-center justify-center text-champagne opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-500 backdrop-blur-sm bg-obsidian/20 rounded-full">
-                        <Play size={20} className="ml-0.5" />
-                      </div>
-                    )}
-                  </div>
-                </button>
-              ))}
+              {projects.map((project, index) => renderFilm(project, index))}
             </div>
             {isCarousel && projects.length > 1 && (
               <button type="button" aria-label={dict.next} aria-controls={carouselId} onClick={() => scrollFilms(1)} className={`${arrowClass} -right-4 md:-right-6`}>
@@ -234,7 +245,7 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
               </button>
             )}
           </div>
-        ) : (
+        )) : (
           <div className="py-20 text-center border border-graphite">
             <p className="font-sans text-mist/40 uppercase tracking-[0.2em] text-sm">
               {dict.empty}

@@ -50,7 +50,8 @@
     "close": "Cerrar film",
     "previous": "Films anteriores",
     "next": "Siguientes films",
-    "carousel": "Galería de films"
+    "carousel": "Galería de films",
+    "loop_hint": "Scroll to explore · Keep going, the stories continue"
   },
   "blog": {
     "subtitle": "STORIES & INSPIRATION",

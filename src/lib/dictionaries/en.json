@@ -50,7 +50,8 @@
     "close": "Close film",
     "previous": "Previous films",
     "next": "Next films",
-    "carousel": "Film gallery"
+    "carousel": "Film gallery",
+    "loop_hint": "Scroll to explore · Keep going, the stories continue"
   },
   "blog": {
     "subtitle": "STORIES & INSPIRATION",

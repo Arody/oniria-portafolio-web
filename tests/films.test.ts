@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getFilmScrollTarget } from '../src/core/utils/filmScroll.ts';
+import { getFilmLoopSize, getFilmScrollTarget, wrapFilmScroll } from '../src/core/utils/filmScroll.ts';
 import { createFilmPreview } from '../src/core/utils/filmPreview.ts';
 
 test('film previews wait 250 ms, cancel on exit and reset when moving between cards', context => {
@@ -59,7 +59,9 @@ test('home previews six films on every screen; Films preserves the full publishe
     assert.match(home, /overflow-x-auto/);
     assert.match(home, /snap-x/);
     assert.match(home, /aria-controls=/);
-    assert.match(films, /grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-0/);
+    assert.match(films, /data-film-loop/);
+    assert.match(films, /grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4/);
+    assert.equal((films.match(/data-film-cycle/g) || []).length, 3);
     assert.match(films, /aspect-video/);
     assert.doesNotMatch(films, /grid-flow-col|aria-controls=/);
     assert.match(films, /<h1[^>]*aria-label="FILMS"/);
@@ -97,4 +99,25 @@ test('contact uses English fields, hints and footer even for Spanish visitors', 
     assert.match(html, /<div lang="en"/);
     assert.ok(html.includes(`href="/${locale}/films"`), 'English copy must preserve locale-based navigation');
   }
+});
+
+
+test('infinite films keep complete rows and preserve position across both loop boundaries', () => {
+  for (const count of [1, 2, 7, 8, 24]) {
+    for (const columns of [1, 2, 3]) {
+      const size = getFilmLoopSize(count, columns, 4);
+      assert.equal(size % count, 0, 'Every cycle must end at the end of the film sequence');
+      assert.equal(size % columns, 0, 'Every cycle must end with a complete row');
+      assert.ok(size >= columns * 5, 'A cycle must exceed the viewport');
+    }
+  }
+  assert.equal(getFilmLoopSize(0, 3, 4), 0);
+  for (const top of [-4000, -1, 0, 999.5, 1000, 1999.5, 2000, 4500]) {
+    const wrapped = wrapFilmScroll(top, 1000);
+    assert.ok(wrapped >= 1000 && wrapped < 2000);
+    assert.ok((wrapped - top) % 1000 === 0);
+  }
+  assert.equal(wrapFilmScroll(999.5, 1000), 1999.5);
+  assert.equal(wrapFilmScroll(2000, 1000), 1000);
+  assert.equal(wrapFilmScroll(25, 0), 0);
 });
