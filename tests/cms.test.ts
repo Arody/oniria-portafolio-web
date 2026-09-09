@@ -4,6 +4,21 @@ import { readFileSync } from 'node:fs';
 import { canAccessAdmin, isAdminRole } from '../src/lib/auth.ts';
 import { formatContactMessage, validateContact } from '../src/core/utils/contactValidation.ts';
 import { sanitizeBlogHtml } from '../src/core/utils/html.ts';
+import { ABOUT_TEXT_LIMITS, getAboutContent, isAboutVimeoUrl, type AboutTextKey } from '../src/core/utils/aboutContent.ts';
+
+test('About edits preserve defaults, intentional blanks and every text field; Vimeo URLs stay on Vimeo', () => {
+  const dict = JSON.parse(readFileSync(new URL('../src/lib/dictionaries/en.json', import.meta.url), 'utf8')).about;
+  const defaults = getAboutContent({}, dict);
+  assert.equal(defaults.title, dict.title);
+  assert.equal(defaults.approach_3_text, dict.approach[2].text);
+  const edits = Object.fromEntries((Object.keys(ABOUT_TEXT_LIMITS) as AboutTextKey[]).map(key => [`about_${key}`, `Edited ${key}`]));
+  const content = getAboutContent(edits, dict);
+  for (const key of Object.keys(ABOUT_TEXT_LIMITS) as AboutTextKey[]) assert.equal(content[key], `Edited ${key}`);
+  assert.equal(getAboutContent({ about_body: '', about_title: null }, dict).body, '');
+  assert.equal(getAboutContent({ about_title: null }, dict).title, dict.title);
+  for (const url of ['https://vimeo.com/123456', 'https://vimeo.com/123456/abcdef?share=copy', 'https://player.vimeo.com/video/123456?h=abcdef']) assert.ok(isAboutVimeoUrl(url));
+  for (const url of ['', 'javascript:alert(1)', 'https://vimeo.com.evil.test/123', 'https://evil.test/123', 'https://vimeo.com/channels/test']) assert.equal(isAboutVimeoUrl(url), false);
+});
 
 test('admin access follows the ONIRIA role, not merely an authenticated session', () => {
   assert.equal(isAdminRole('authenticated'), false);
@@ -56,17 +71,4 @@ test('contact throttle bounds repeated submissions and expires', () => {
   assert.equal(allowContact('test-ip', 100), false);
   assert.equal(allowContact('other-ip', 100), true);
   assert.equal(allowContact('test-ip', 600101), true);
-});
-
-import { getParallaxOffset } from '../src/lib/motion.ts';
-
-test('strong parallax scales with the frame and keeps media covering both edges', () => {
-  for (const height of [320, 700, 1080, 1440]) {
-    const travel = getParallaxOffset(height);
-    assert.ok(travel >= height * 0.25, 'The motion must remain pronounced at every viewport size');
-    for (const y of [-travel, 0, travel]) {
-      assert.ok(-height * 0.35 + y <= 0, 'The top edge must stay covered');
-      assert.ok(height * 1.35 + y >= height, 'The bottom edge must stay covered');
-    }
-  }
 });

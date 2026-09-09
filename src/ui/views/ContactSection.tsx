@@ -25,13 +25,17 @@ export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
 
     try {
       const result = await submitContactMessage(data);
-      if (!result.success) throw new Error(result.error === 'invalid' ? dict.invalid : result.error === 'rate' ? dict.rate : dict.error);
+      if (!result.success) {
+        setStatus('error');
+        setErrorMessage(result.error === 'invalid' ? dict.invalid : result.error === 'rate' ? dict.rate : dict.error);
+        return;
+      }
       setStatus('success');
       form.reset();
       submissionId.current = null;
-    } catch (err: unknown) {
+    } catch {
       setStatus('error');
-      setErrorMessage(err instanceof Error ? err.message : dict.error);
+      setErrorMessage(dict.error);
     } finally {
       submitting.current = false;
     }
@@ -62,7 +66,12 @@ export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} aria-busy={status === 'loading'}>
+          <form
+            onSubmit={handleSubmit}
+            aria-busy={status === 'loading'}
+            onInvalidCapture={event => (event.target as HTMLInputElement | HTMLTextAreaElement).setCustomValidity(dict.invalid)}
+            onInputCapture={event => (event.target as HTMLInputElement | HTMLTextAreaElement).setCustomValidity('')}
+          >
             <div hidden aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
             <p className="text-xs text-mist/60 mb-8">{dict.required_note}</p>
             <fieldset disabled={status === 'loading'} className="grid grid-cols-1 sm:grid-cols-2 gap-6">

@@ -1,6 +1,7 @@
 {
   "navigation": {
     "home": "HOME",
+    "about": "ABOUT",
     "our_work": "FILMS",
     "blog": "BLOG",
     "contact": "CONTACT",
@@ -137,6 +138,67 @@
       "preview": "Preview",
       "save_hint": "Changes are published when you save the settings. Leave text empty to hide it.",
       "invalid_image": "Choose a JPG, PNG, WEBP, GIF or AVIF image up to 10 MB."
+    }
+  },
+  "about": {
+    "label": "ABOUT ONIRIA",
+    "title": "The way it felt.",
+    "intro": "Wedding films shaped by emotion, light and the moments that make a story yours.",
+    "body": "A glance across the room. A hand held a little tighter. The voices of the people you love. We are drawn to the details that bring you back to a feeling, long after the day has passed.",
+    "more": "More about us",
+    "image_alt": "An intimate moment from an ONIRIA wedding story",
+    "approach_title": "Our way of seeing.",
+    "approach": [
+      {
+        "title": "Emotion first",
+        "text": "We look for the moments that feel true to you: the quiet anticipation, the unexpected laughter and everything in between."
+      },
+      {
+        "title": "An editorial eye",
+        "text": "Light, composition and rhythm give each film its own language. Beauty lives in the smallest details as much as in the grandest moments."
+      },
+      {
+        "title": "A memory to return to",
+        "text": "Our intention is to make films you can step back into, with the voices, gestures and atmosphere that made your wedding yours."
+      }
+    ],
+    "closing_title": "Your story starts here.",
+    "closing_text": "Tell us what you are imagining. We would love to hear about your day.",
+    "contact": "Contact",
+    "films": "View our films"
+  },
+  "about_admin": {
+    "title": "About — Home and full page",
+    "description": "The introduction and media are shared by Home and About. The approach and closing appear on the full page. Changes are published when you save settings.",
+    "image": "Photo",
+    "video": "Vimeo video",
+    "image_url": "Photo URL",
+    "upload": "Upload photo",
+    "restore": "Use default photo",
+    "video_url": "Vimeo URL",
+    "video_hint": "The video is displayed horizontally, muted and looping. Use the player controls to pause or enable sound.",
+    "invalid_video": "Enter a valid Vimeo URL (https://vimeo.com/...).",
+    "shared": "Shared introduction",
+    "page": "Full page",
+    "preview": "About page preview",
+    "fields": {
+      "label": "Eyebrow",
+      "title": "Main title",
+      "intro": "Introduction",
+      "body": "Presentation text",
+      "more": "Home button",
+      "image_alt": "Image description",
+      "approach_title": "Approach heading",
+      "approach_1_title": "Approach 1: title",
+      "approach_1_text": "Approach 1: text",
+      "approach_2_title": "Approach 2: title",
+      "approach_2_text": "Approach 2: text",
+      "approach_3_title": "Approach 3: title",
+      "approach_3_text": "Approach 3: text",
+      "closing_title": "Closing title",
+      "closing_text": "Closing text",
+      "contact": "Contact button",
+      "films": "Films button"
     }
   }
 }

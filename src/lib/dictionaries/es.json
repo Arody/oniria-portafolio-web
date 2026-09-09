@@ -1,9 +1,10 @@
 {
   "navigation": {
-    "home": "INICIO",
+    "home": "HOME",
+    "about": "ABOUT",
     "our_work": "FILMS",
     "blog": "BLOG",
-    "contact": "CONTACTO",
+    "contact": "CONTACT",
     "admin": "Admin"
   },
   "hero": {
@@ -45,7 +46,7 @@
     "no_cover": "Sin Portada",
     "empty": "No hay proyectos para esta categoría.",
     "view_story": "Ver film",
-    "view_all": "Ver todos los films",
+    "view_all": "View all films",
     "close": "Cerrar film",
     "previous": "Films anteriores",
     "next": "Siguientes films",
@@ -90,7 +91,7 @@
     "error_title": "No se pudo enviar"
   },
   "footer": {
-    "rights": "Todos los derechos reservados."
+    "rights": "All rights reserved."
   },
   "messages": {
     "title": "Mensajes",
@@ -137,6 +138,67 @@
       "preview": "Vista previa",
       "save_hint": "Los cambios se publican al guardar los ajustes. Deja un texto vacío para ocultarlo.",
       "invalid_image": "Selecciona una imagen JPG, PNG, WEBP, GIF o AVIF de hasta 10 MB."
+    }
+  },
+  "about": {
+    "label": "ABOUT ONIRIA",
+    "title": "The way it felt.",
+    "intro": "Wedding films shaped by emotion, light and the moments that make a story yours.",
+    "body": "A glance across the room. A hand held a little tighter. The voices of the people you love. We are drawn to the details that bring you back to a feeling, long after the day has passed.",
+    "more": "More about us",
+    "image_alt": "An intimate moment from an ONIRIA wedding story",
+    "approach_title": "Our way of seeing.",
+    "approach": [
+      {
+        "title": "Emotion first",
+        "text": "We look for the moments that feel true to you: the quiet anticipation, the unexpected laughter and everything in between."
+      },
+      {
+        "title": "An editorial eye",
+        "text": "Light, composition and rhythm give each film its own language. Beauty lives in the smallest details as much as in the grandest moments."
+      },
+      {
+        "title": "A memory to return to",
+        "text": "Our intention is to make films you can step back into, with the voices, gestures and atmosphere that made your wedding yours."
+      }
+    ],
+    "closing_title": "Your story starts here.",
+    "closing_text": "Tell us what you are imagining. We would love to hear about your day.",
+    "contact": "Contact",
+    "films": "View our films"
+  },
+  "about_admin": {
+    "title": "About — Home y página completa",
+    "description": "La presentación y el medio se comparten en Home y About. El enfoque y el cierre aparecen en la página completa. Los cambios se publican al guardar los ajustes.",
+    "image": "Foto",
+    "video": "Video de Vimeo",
+    "image_url": "URL de la foto",
+    "upload": "Subir foto",
+    "restore": "Usar foto inicial",
+    "video_url": "URL de Vimeo",
+    "video_hint": "El video se muestra horizontal, silenciado y en bucle. Puedes pausar o activar el sonido con los controles.",
+    "invalid_video": "Introduce una URL válida de Vimeo (https://vimeo.com/...).",
+    "shared": "Presentación compartida",
+    "page": "Página completa",
+    "preview": "Vista previa de la página About",
+    "fields": {
+      "label": "Etiqueta superior",
+      "title": "Título principal",
+      "intro": "Introducción",
+      "body": "Texto de presentación",
+      "more": "Botón del Home",
+      "image_alt": "Descripción de la imagen",
+      "approach_title": "Título del enfoque",
+      "approach_1_title": "Enfoque 1: título",
+      "approach_1_text": "Enfoque 1: texto",
+      "approach_2_title": "Enfoque 2: título",
+      "approach_2_text": "Enfoque 2: texto",
+      "approach_3_title": "Enfoque 3: título",
+      "approach_3_text": "Enfoque 3: texto",
+      "closing_title": "Título del cierre",
+      "closing_text": "Texto del cierre",
+      "contact": "Botón Contact",
+      "films": "Botón Films"
     }
   }
 }

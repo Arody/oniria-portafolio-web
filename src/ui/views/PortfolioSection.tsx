@@ -26,6 +26,7 @@ interface PortfolioSectionProps {
 }
 
 export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSectionProps) {
+  const isCarousel = Boolean(filmsHref);
   const Heading = filmsHref ? 'h2' : 'h1';
   const carouselId = useId();
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -87,12 +88,12 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
     <section
       ref={sectionRef}
       id="portafolio"
-      className="py-28 bg-obsidian relative overflow-hidden"
+      className={`${isCarousel ? 'py-28' : 'pt-12'} bg-obsidian relative overflow-hidden`}
     >
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
+      <div className={isCarousel ? 'max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12' : 'w-full'}>
 
         {/* ── Animated Header ── */}
-        <div ref={headerRef} className="mb-24 text-center">
+        <div ref={headerRef} className={`${isCarousel ? 'mb-24' : 'mb-12 px-4'} text-center`}>
           <p
             className="text-champagne text-xs font-sans uppercase tracking-[0.3em] mb-4"
           >
@@ -109,10 +110,10 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
           />
         </div>
 
-        {/* Horizontal film strip with native touch and trackpad scrolling */}
+        {/* Carousel on the homepage; full-width grid on the Films page. */}
         {projects.length > 0 ? (
           <div className="relative">
-            {projects.length > 1 && (
+            {isCarousel && projects.length > 1 && (
               <button type="button" aria-label={dict.previous} aria-controls={carouselId} onClick={() => scrollFilms(-1)} className={`${arrowClass} -left-4 md:-left-6`}>
                 <ChevronLeft size={24} aria-hidden="true" />
               </button>
@@ -122,15 +123,15 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
               ref={carouselRef}
               role="region"
               aria-label={dict.carousel}
-              tabIndex={0}
+              tabIndex={isCarousel ? 0 : undefined}
               onKeyDown={event => {
-                if (event.target !== event.currentTarget) return;
+                if (!isCarousel || event.target !== event.currentTarget) return;
                 if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
                   event.preventDefault();
                   scrollFilms(event.key === 'ArrowLeft' ? -1 : 1);
                 }
               }}
-              className="grid grid-flow-col auto-cols-[92%] md:auto-cols-[50%] gap-0 overflow-x-auto overscroll-x-contain snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-champagne"
+              className={isCarousel ? 'grid grid-flow-col auto-cols-[92%] md:auto-cols-[50%] gap-0 overflow-x-auto overscroll-x-contain snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-champagne' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-0'}
             >
               {projects.map(project => (
                 <button
@@ -227,7 +228,7 @@ export function PortfolioSection({ projects, dict, filmsHref }: PortfolioSection
                 </button>
               ))}
             </div>
-            {projects.length > 1 && (
+            {isCarousel && projects.length > 1 && (
               <button type="button" aria-label={dict.next} aria-controls={carouselId} onClick={() => scrollFilms(1)} className={`${arrowClass} -right-4 md:-right-6`}>
                 <ChevronRight size={24} aria-hidden="true" />
               </button>

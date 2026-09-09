@@ -35,7 +35,6 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
         start: 'top top',
         end: `+=${phrases.length * 100}vh`,
         pin: pinnedContainerRef.current,
-        refreshPriority: 1,
         scrub: 1,
         anticipatePin: 1,
       },
@@ -103,7 +102,7 @@ export function HeroPhilosophy({ phrases, children }: HeroPhilosophyProps) {
   }, { dependencies: [phrases], scope: wrapperRef, revertOnUpdate: true });
 
   return (
-    <div ref={wrapperRef} data-hero-scroll className="relative">
+    <div ref={wrapperRef} className="relative">
       <div ref={pinnedContainerRef} className="relative w-full">
         {/* Hero — video + content, untouched */}
         <div ref={heroContentRef}>

@@ -7,8 +7,3 @@ export function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
-
-// Travel stays within the media layer's 35% overscan, including on resize.
-export function getParallaxOffset(frameHeight: number): number {
-  return frameHeight * 0.3;
-}

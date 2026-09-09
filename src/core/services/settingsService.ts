@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { cache } from 'react';
+import type { AboutTextSettings } from '@/core/utils/aboutContent';
 
 export type GlobalSettings = {
   id: string; // usually '1'
@@ -45,7 +46,10 @@ export type GlobalSettings = {
   collage_text_6?: string | null;
   collage_signature?: string | null;
   updated_at: string;
-};
+  about_media_type?: 'image' | 'video';
+  about_image_url?: string | null;
+  about_video_url?: string | null;
+} & AboutTextSettings;
 
 // Fetch current settings
 // We use .limit(1).single() because it's a singleton table

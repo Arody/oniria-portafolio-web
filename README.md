@@ -75,8 +75,21 @@ Nginx publica `oniriaweddings.com`. Antes de activar una versión, ejecutar
 
 El MCP de Codex es exclusivo de este proyecto: [.codex/README.md](.codex/README.md).
 
-Versión activa después de esta revisión:
-`/var/www/oniria-releases/20260908-cms`. La instalación anterior permanece en
+Versión activa desde el despliegue del 8 de septiembre de 2026:
+`/var/www/oniria-releases/20260909-contact-en`.
+Incluye `main` (`f4f3ded`) y los cambios locales de About y Films.
+La versión anterior está en `/var/www/oniria-releases/20260908-2351`. La instalación anterior permanece en
 `/var/www/oniria-portafolio-web` como respaldo; ya no es el directorio activo de
 PM2. Para actualizar la versión activa, usar su directorio o preparar otra
 versión, compilarla y actualizar únicamente el proceso `oniria-weddings`.
+
+Para restaurar la versión anterior, ejecutar por SSH como `arody`:
+
+```sh
+pm2 delete oniria-weddings
+pm2 start /var/www/oniria-releases/20260908-2351/ecosystem.config.js --only oniria-weddings
+pm2 save
+```
+
+Despliegue verificado con lint, pruebas CMS, compilación y `test:films` contra
+HTTPS en producción. Nginx y `pm2-arody` tienen inicio automático habilitado.

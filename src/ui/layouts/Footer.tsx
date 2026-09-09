@@ -43,9 +43,12 @@ export async function Footer({ dict, locale, navDict }: FooterProps) {
             )}
           </div>
 
-          <div className="flex space-x-10 mb-8 lg:mb-0">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-4 mb-8 lg:mb-0">
             <Link href={`/${locale}`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
-              {navDict?.home || 'Inicio'}
+              {navDict?.home || 'Home'}
+            </Link>
+            <Link href={`/${locale}/about`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
+              {navDict?.about || 'About'}
             </Link>
             <Link href={`/${locale}/films`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
               {navDict?.our_work || 'Films'}
@@ -54,7 +57,7 @@ export async function Footer({ dict, locale, navDict }: FooterProps) {
               {navDict?.blog || 'Blog'}
             </Link>
             <Link href={`/${locale}/contact`} className="text-mist/50 hover:text-champagne uppercase text-[10px] tracking-[0.2em] font-sans transition-colors duration-400">
-              {navDict?.contact || 'Contacto'}
+              {navDict?.contact || 'Contact'}
             </Link>
           </div>
 

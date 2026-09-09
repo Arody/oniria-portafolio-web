@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -8,6 +9,7 @@ import { prefersReducedMotion } from '@/lib/motion';
 import { ParallaxMedia } from '@/ui/components/ParallaxMedia';
 
 gsap.registerPlugin(ScrollTrigger);
+const Vimeo = dynamic(() => import('@u-wave/react-vimeo'), { ssr: false });
 
 interface EditorialInterludeProps {
   /** The main large quote or phrase */
@@ -20,22 +22,9 @@ interface EditorialInterludeProps {
   mediaType?: 'image' | 'video';
   /** Which side the text appears on */
   textSide?: 'left' | 'right';
+  fullBleed?: boolean;
   /** Optional champagne accent word within the quote (will be highlighted) */
   accentWord?: string;
-}
-
-function buildVimeoEmbedUrl(raw: string): string {
-  const idMatch = raw.match(/(?:vimeo\.com\/(?:video\/)?)(\d+)/);
-  const videoId = idMatch?.[1];
-  if (!videoId) return raw;
-
-  const hashFromParam = raw.match(/[?&]h=([a-f0-9]+)/)?.[1];
-  const hashFromPath = raw.match(new RegExp(`${videoId}/([a-f0-9]+)`))?.[1];
-  const hash = hashFromParam || hashFromPath;
-
-  let url = `https://player.vimeo.com/video/${videoId}?background=1&autoplay=1&loop=1&byline=0&title=0&muted=1`;
-  if (hash) url += `&h=${hash}`;
-  return url;
 }
 
 export function EditorialInterlude({
@@ -44,8 +33,10 @@ export function EditorialInterlude({
   mediaUrl,
   mediaType = 'image',
   textSide = 'left',
+  fullBleed = false,
   accentWord,
 }: EditorialInterludeProps) {
+  const [videoRatio, setVideoRatio] = useState(16 / 9);
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const mediaWrapRef = useRef<HTMLDivElement>(null);
@@ -55,6 +46,16 @@ export function EditorialInterlude({
 
   useGSAP(() => {
     if (prefersReducedMotion()) return;
+
+    if (fullBleed) {
+      gsap.from(textRef.current, {
+        opacity: 0,
+        duration: 1.2,
+        ease: 'power1.out',
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 75%', once: true },
+      });
+      return;
+    }
 
     /* ── Text drift ── */
     if (textRef.current) {
@@ -156,7 +157,7 @@ export function EditorialInterlude({
         '-=0.4'
       );
     }
-  }, { scope: sectionRef });
+  }, { scope: sectionRef, dependencies: [fullBleed], revertOnUpdate: true });
 
   // Split the quote into masked words, keeping the accent highlight intact.
   // Punctuation stays attached to its word; only the word core is compared
@@ -193,7 +194,7 @@ export function EditorialInterlude({
   const textContent = (
     <div
       ref={textRef}
-      className="flex flex-col justify-center px-8 md:px-16 lg:px-24 py-20 md:py-0"
+      className={`flex flex-col justify-center px-8 md:px-16 lg:px-24 ${fullBleed ? 'relative z-10 items-center text-center min-h-[70vh] py-20 max-w-6xl mx-auto' : 'py-20 md:py-0'}`}
     >
       {/* Decorative line */}
       <div
@@ -211,7 +212,7 @@ export function EditorialInterlude({
       {subtitle && (
         <p
           ref={subtitleRefEl}
-          className="mt-8 text-xs font-sans uppercase tracking-[0.3em] text-mist/40"
+          className={`mt-8 text-xs font-sans uppercase tracking-[0.3em] ${fullBleed ? 'text-ivory' : 'text-mist/40'}`}
         >
           {subtitle}
         </p>
@@ -230,18 +231,26 @@ export function EditorialInterlude({
   const mediaContent = (
     <div
       ref={mediaWrapRef}
-      className="relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]"
+      className={fullBleed ? 'absolute inset-0 overflow-hidden' : 'relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]'}
     >
       <ParallaxMedia>
         {mediaType === 'video' ? (
           isVimeo ? (
             <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-              <iframe
-                src={buildVimeoEmbedUrl(mediaUrl)}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[max(100cqw,177.78cqh)] h-[max(100cqh,56.25cqw)]"
-                frameBorder="0"
-                allow="autoplay; fullscreen"
-              />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: `max(100cqw, ${videoRatio * 100}cqh)`, height: `max(100cqh, ${100 / videoRatio}cqw)` }}>
+                <Vimeo
+                  key={mediaUrl}
+                  video={mediaUrl}
+                  autoplay muted loop background controls={false}
+                  onReady={async player => {
+                    try {
+                      const [width, height] = await Promise.all([player.getVideoWidth(), player.getVideoHeight()]);
+                      if (width > 0 && height > 0) setVideoRatio(width / height);
+                    } catch { /* Keep the default framing if Vimeo metadata is unavailable. */ }
+                  }}
+                  className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full"
+                />
+              </div>
             </div>
           ) : (
             <video
@@ -263,6 +272,7 @@ export function EditorialInterlude({
         )}
       </ParallaxMedia>
 
+      {!fullBleed && <>
       {/* Strong gradient blend toward text side */}
       <div
         className={`absolute inset-0 pointer-events-none ${
@@ -274,6 +284,7 @@ export function EditorialInterlude({
 
       {/* Top/bottom cinematic fade */}
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-obsidian/60 via-transparent to-obsidian/60" />
+      </>}
     </div>
   );
 
@@ -282,6 +293,10 @@ export function EditorialInterlude({
       ref={sectionRef}
       className="relative w-full bg-obsidian overflow-hidden"
     >
+      {fullBleed ? <>
+        {mediaContent}
+        {textContent}
+      </> : <>
       <div className={`grid grid-cols-1 md:grid-cols-2 min-h-[70vh] ${
         textSide === 'right' ? 'md:[direction:rtl]' : ''
       }`}>
@@ -296,6 +311,7 @@ export function EditorialInterlude({
       {/* Subtle horizontal separator lines */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-graphite/40 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-graphite/40 to-transparent" />
+      </>}
     </section>
   );
 }

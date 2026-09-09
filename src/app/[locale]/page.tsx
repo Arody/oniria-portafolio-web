@@ -2,6 +2,7 @@ import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
 import { HeroSection } from "@/ui/views/HeroSection";
 import { PortfolioSection } from "@/ui/views/PortfolioSection";
+import { AboutSection } from "@/ui/views/AboutSection";
 import { EditorialCollage } from "@/ui/views/EditorialCollage";
 import { EditorialInterlude } from "@/ui/views/EditorialInterlude";
 import { SplashScreen } from "@/ui/components/SplashScreen";
@@ -61,11 +62,14 @@ export default async function Home({ params }: Props) {
             mediaUrl={settings.interlude_1_media_url || "/interludes/hands.png"}
             mediaType={settings.interlude_1_media_type || "image"}
             textSide="left"
+            fullBleed
             accentWord={settings.interlude_1_accent || dict.interludes['1_accent']}
           />
         )}
 
         <PortfolioSection projects={projects.slice(0, 6)} dict={dict.portfolio} filmsHref={`/${locale}/films`} />
+
+        <AboutSection dict={dict.about} locale={locale} settings={settings} />
 
         {/* Interlude 2 — Between Portfolio and Footer */}
         {settings.interlude_2_enabled !== false && (

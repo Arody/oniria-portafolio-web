@@ -8,6 +8,8 @@ import { Loader2, UploadCloud, X } from 'lucide-react';
 import type { GlobalSettings } from '@/core/services/settingsService';
 import { revalidateGlobalSettings } from '@/core/actions/settingsActions';
 import { EditorialCollage } from '@/ui/views/EditorialCollage';
+import { AboutSettings } from '@/ui/components/AboutSettings';
+import { ABOUT_TEXT_LIMITS, isAboutVimeoUrl, type AboutTextKey } from '@/core/utils/aboutContent';
 import es from '@/lib/dictionaries/es.json';
 import en from '@/lib/dictionaries/en.json';
 
@@ -16,6 +18,8 @@ export default function AdminSettingsPage() {
   const { locale } = useParams<{ locale: string }>();
   const collageDict = (locale === 'en' ? en : es).editorial_collage;
   const heroDict = (locale === 'en' ? en : es).hero.controls;
+  const aboutDict = (locale === 'en' ? en : es).about;
+  const aboutAdmin = (locale === 'en' ? en : es).about_admin;
   const supabase = createClient();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -41,11 +45,25 @@ export default function AdminSettingsPage() {
   const [collage2File, setCollage2File] = useState<File | null>(null);
   const [collage1Preview, setCollage1Preview] = useState<string | null>(null);
   const [collage2Preview, setCollage2Preview] = useState<string | null>(null);
+  const [aboutFile, setAboutFile] = useState<File | null>(null);
+  const [aboutPreview, setAboutPreview] = useState<string | null>(null);
+  useEffect(() => () => { if (aboutPreview) URL.revokeObjectURL(aboutPreview); }, [aboutPreview]);
+
+  const handleAboutImage = (file: File | undefined) => {
+    if (file && (!['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'].includes(file.type) || file.size > 10 * 1024 * 1024)) {
+      setError(collageDict.admin.invalid_image);
+      return;
+    }
+    setError(null);
+    setAboutFile(file ?? null);
+    setAboutPreview(file ? URL.createObjectURL(file) : null);
+  };
 
   useEffect(() => () => { if (collage1Preview) URL.revokeObjectURL(collage1Preview); }, [collage1Preview]);
   useEffect(() => () => { if (collage2Preview) URL.revokeObjectURL(collage2Preview); }, [collage2Preview]);
 
   useEffect(() => {
+    let active = true;
     async function loadSettings() {
       try {
         const { data, error } = await supabase
@@ -55,6 +73,7 @@ export default function AdminSettingsPage() {
           .limit(1)
           .single();
 
+        if (!active) return;
         if (error && error.code !== 'PGRST116') {
              throw error;
         }
@@ -106,13 +125,14 @@ export default function AdminSettingsPage() {
              });
         }
       } catch (err: unknown) {
-        setError('Error al cargar configuración: ' + (err instanceof Error ? err.message : 'No se pudo completar la operación'));
+        if (active) setError('Error al cargar configuración: ' + (err instanceof Error ? err.message : 'No se pudo completar la operación'));
       } finally {
-        setIsFetching(false);
+        if (active) setIsFetching(false);
       }
     }
 
     loadSettings();
+    return () => { active = false; };
   }, [supabase]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -192,6 +212,8 @@ export default function AdminSettingsPage() {
     setSuccessMsg(null);
 
     try {
+      const aboutVideoUrl = settings.about_video_url?.trim() || null;
+      if (settings.about_media_type === 'video' && (!aboutVideoUrl || !isAboutVimeoUrl(aboutVideoUrl))) throw new Error(aboutAdmin.invalid_video);
       let final_logo_url = settings.logo_image_url;
       let final_hero_bg_url = settings.hero_background_url;
       let final_interlude1_url = settings.interlude_1_media_url;
@@ -268,6 +290,10 @@ export default function AdminSettingsPage() {
       }
 
       const updatePayload = {
+          ...Object.fromEntries((Object.keys(ABOUT_TEXT_LIMITS) as AboutTextKey[]).map(key => [`about_${key}`, settings[`about_${key}`] ?? null])),
+          about_media_type: settings.about_media_type ?? 'image',
+          about_image_url: settings.about_image_url?.trim() || null,
+          about_video_url: aboutVideoUrl,
           site_title: settings.site_title,
           site_description: settings.site_description,
           logo_text: settings.logo_text,
@@ -312,6 +338,14 @@ export default function AdminSettingsPage() {
           updated_at: new Date().toISOString()
       };
 
+      if (aboutFile && settings.about_media_type !== 'video') {
+        const compressed = await compressImage(aboutFile);
+        const path = `settings/about-${crypto.randomUUID()}.${compressed.name.split('.').pop()?.toLowerCase() || 'jpg'}`;
+        const { error: uploadError } = await supabase.storage.from('oniria').upload(path, compressed, { contentType: compressed.type });
+        if (uploadError) throw uploadError;
+        updatePayload.about_image_url = supabase.storage.from('oniria').getPublicUrl(path).data.publicUrl;
+      }
+
       const { data: updatedRows, error: dbError } = await supabase
         .from('settings')
         .upsert({ ...updatePayload, ...(settings.id === 'default' ? {} : { id: settings.id }), is_singleton: true }, { onConflict: 'is_singleton' })
@@ -339,6 +373,8 @@ export default function AdminSettingsPage() {
       setCollage2File(null);
       setCollage1Preview(null);
       setCollage2Preview(null);
+      setAboutFile(null);
+      setAboutPreview(null);
 
       setSuccessMsg("Configuración global guardada y sincronizada en tiempo real.");
       router.refresh();
@@ -620,6 +656,10 @@ export default function AdminSettingsPage() {
           <h3 className={labelClass}>{collageDict.admin.preview}</h3>
           <EditorialCollage settings={{ ...settings, collage_image_1_url: collage1Preview ?? settings.collage_image_1_url, collage_image_2_url: collage2Preview ?? settings.collage_image_2_url }} dict={collageDict} />
         </section>
+
+        <AboutSettings settings={settings} onChange={setSettings} onImageFile={handleAboutImage}
+          onResetImage={() => { handleAboutImage(undefined); setSettings({ ...settings, about_image_url: null }); }}
+          imagePreview={aboutPreview} dict={aboutDict} admin={aboutAdmin} locale={locale === 'en' ? 'en' : 'es'} disabled={isLoading} />
 
         {/* INTERLUDIO 1 */}
         <section className="bg-charcoal border border-graphite p-8">

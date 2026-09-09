@@ -9,18 +9,17 @@ export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ locale: Locale }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  const { contact } = await getDictionary(locale);
+export async function generateMetadata(): Promise<Metadata> {
+  const { contact } = await getDictionary('en');
   return { title: `${contact.title} | ONIRIA`, description: contact.description };
 }
 
 export default async function ContactPage({ params }: Props) {
   const { locale } = await params;
-  const dict = await getDictionary(locale);
+  const dict = await getDictionary('en');
 
   return (
-    <div className="min-h-screen flex flex-col bg-obsidian">
+    <div lang="en" className="min-h-screen flex flex-col bg-obsidian">
       <Navbar dict={dict.navigation} locale={locale} />
       <main className="flex-grow pt-24">
         <ContactSection dict={dict.contact} />

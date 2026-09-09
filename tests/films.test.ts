@@ -55,13 +55,46 @@ test('home previews six films on every screen; Films preserves the full publishe
     assert.ok(all.length > 0, 'Use a database with published films for this integration check');
     assert.deepEqual(preview, all.slice(0, 6));
     assert.ok(!home.includes('hidden md:block'), 'Mobile visitors can scroll through all preview films');
-    for (const html of [home, films]) {
-      assert.match(html, /grid-flow-col/);
-      assert.match(html, /overflow-x-auto/);
-      assert.match(html, /snap-x/);
-      assert.match(html, /aria-controls=/);
-    }
+    assert.match(home, /grid-flow-col/);
+    assert.match(home, /overflow-x-auto/);
+    assert.match(home, /snap-x/);
+    assert.match(home, /aria-controls=/);
+    assert.match(films, /grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-0/);
+    assert.match(films, /aspect-video/);
+    assert.doesNotMatch(films, /grid-flow-col|aria-controls=/);
     assert.match(films, /<h1[^>]*aria-label="FILMS"/);
     assert.ok(home.includes(`href="/${locale}/films"`));
+    assert.match(home, /View all films/);
+    assert.match(home, /id="about"/);
+    const aboutResponse = await fetch(`${base}/${locale}/about`);
+    assert.equal(aboutResponse.status, 200);
+    const about = await aboutResponse.text();
+    for (const html of [home, films, about]) {
+      for (const label of ['HOME', 'ABOUT', 'FILMS', 'BLOG', 'CONTACT']) {
+        assert.match(html, new RegExp(`>${label}<`));
+      }
+      assert.ok(html.includes(`href="/${locale}/about"`));
+      assert.doesNotMatch(html, />INICIO<|>CONTACTO<|Ver todos los films/);
+    }
+    assert.match(about, /Our way of seeing\./);
+    assert.match(about, /Your story starts here\./);
+  }
+});
+
+test('contact uses English fields, hints and footer even for Spanish visitors', async () => {
+  const { readFileSync } = await import('node:fs');
+  const dict = JSON.parse(readFileSync(new URL('../src/lib/dictionaries/en.json', import.meta.url), 'utf8'));
+  for (const locale of ['es', 'en']) {
+    const response = await fetch(`${base}/${locale}/contact`, { headers: { 'Accept-Language': 'es-MX,es;q=0.9' } });
+    assert.equal(response.status, 200);
+    const html = (await response.text()).replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
+    const text = html.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"');
+    for (const field of ['name', 'date', 'planner', 'venue', 'guests', 'phone', 'email', 'otherContact', 'vision', 'highlights', 'answer_hint', 'submit']) {
+      assert.ok(text.includes(dict.contact.form[field]), `Missing English field: ${field} (${locale})`);
+    }
+    for (const key of ['subtitle', 'description', 'required_note', 'worldwide']) assert.ok(text.includes(dict.contact[key]));
+    assert.ok(text.includes(dict.footer.rights));
+    assert.match(html, /<div lang="en"/);
+    assert.ok(html.includes(`href="/${locale}/films"`), 'English copy must preserve locale-based navigation');
   }
 });
