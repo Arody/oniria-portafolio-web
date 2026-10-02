@@ -1,4 +1,4 @@
-import { pageMetadata } from '@/lib/metadata';
+import { getPageMetadata as pageMetadata } from '@/core/services/socialImageService';
 import { getSettings } from '@/core/services/settingsService';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n.config';
@@ -26,7 +26,7 @@ export default async function ContactPage({ params }: Props) {
     <div lang={locale} className="min-h-screen flex flex-col bg-obsidian">
       <Navbar dict={dict.navigation} locale={locale} />
       <main className="flex-grow pt-24">
-        <ContactSection dict={dict.contact} />
+        <ContactSection dict={dict.contact} locale={locale} />
       </main>
       <Footer dict={dict.footer} navDict={dict.navigation} locale={locale} />
     </div>

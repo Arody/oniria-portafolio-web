@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getSettings } from '@/core/services/settingsService';
 import { formatContactMessage, validateContact } from '@/core/utils/contactValidation';
 import { getDictionary } from '@/lib/dictionaries';
+import { contactEmails } from '@/core/utils/contactEmails';
 
 export async function submitContactMessage(input: unknown) {
   let data;
@@ -37,12 +38,16 @@ export async function submitContactMessage(input: unknown) {
     const settings = await getSettings();
     const from = process.env.RESEND_FROM_EMAIL;
     if (process.env.RESEND_API_KEY && from && settings.contact_email) {
-      const { error: emailError } = await new Resend(process.env.RESEND_API_KEY).emails.send({
-        from, to: settings.contact_email, replyTo: data.email,
-        subject: `Consulta ONIRIA: ${data.name}`,
-        text: `Nombre: ${data.name}\nEmail: ${data.email}\nTeléfono: ${data.phone}\nFecha: ${data.date}\n\n${message}`,
-      }, { idempotencyKey: `contact/${data.id}` });
-      if (emailError) console.error('Contact saved; email notification failed:', emailError.message);
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const copy = (await getDictionary(data.locale)).contact;
+      for (const { email, idempotencyKey } of contactEmails(data, message, from, settings.contact_email, copy)) {
+        try {
+          const { error: emailError } = await resend.emails.send(email, { idempotencyKey });
+          if (emailError) console.error('Contact saved; email failed:', idempotencyKey, emailError.message);
+        } catch (error) {
+          console.error('Contact saved; email unavailable:', idempotencyKey, error instanceof Error ? error.message : 'Unknown error');
+        }
+      }
     }
   } catch (error) {
     console.error('Contact saved; email notification unavailable:', error instanceof Error ? error.message : 'Unknown error');

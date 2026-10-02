@@ -1,18 +1,19 @@
-import { ogImages } from './ogImages.ts';
+import { defaultOgImage, isCustomOgImage } from '../core/utils/socialImages.ts';
 import type { Metadata } from 'next';
 
 export const SITE_URL = 'https://oniriaweddings.com';
 
-export function pageMetadata({ locale, path = '', title, description, image, publishedTime }: {
+export function pageMetadata({ locale, path = '', title, description, image, socialImage, publishedTime }: {
   locale: string;
   path?: string;
   title: string;
   description: string;
   image?: string | null;
+  socialImage?: string | null;
   publishedTime?: string;
 }): Metadata {
   const url = `${SITE_URL}/${locale}${path}`;
-  const localImage = ogImages[image || ''] || ogImages['/interludes/veil.png'];
+  const localImage = socialImage && isCustomOgImage(socialImage) ? socialImage : defaultOgImage(path, image);
   const images = [{ url: `${SITE_URL}${localImage}`, width: 1200, height: 630, type: 'image/jpeg', alt: title }];
   return {
     title,

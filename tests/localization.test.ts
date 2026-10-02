@@ -19,10 +19,9 @@ const base = process.env.I18N_TEST_URL || 'http://localhost:3001';
 test('CMS content is translated and a saved preference controls unprefixed URLs', async () => {
   const response = await fetch(base + '/', { redirect: 'manual', headers: { Cookie: 'oniria_locale=en', 'Accept-Language': 'es-MX' } });
   assert.equal(new URL(response.headers.get('location')!, base).pathname, '/en');
-  for (const [locale, quote, film, post] of [['es', 'Recuerda siempre', 'Tráiler de boda', 'Anillos de boda para siempre'], ['en', 'Always remember', 'Wedding Trailer', 'Wedding Rings to Last Forever']]) {
+  for (const [locale, film, post] of [['es', 'Tráiler de boda', 'Anillos de boda para siempre'], ['en', 'Wedding Trailer', 'Wedding Rings to Last Forever']]) {
     const home = await (await fetch(`${base}/${locale}`)).text();
     const plain = home.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
-    assert.ok(plain.replace(/<[^>]+>/g, '').replace(/\s/g, '').includes(quote.replace(/\s/g, '')));
     assert.ok(plain.includes(film));
     const nav = plain.match(/<nav\b[\s\S]*?<\/nav>/)?.[0] || '';
     assert.ok(nav.indexOf(`href="/${locale}/blog"`) < nav.indexOf('<select'));

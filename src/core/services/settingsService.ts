@@ -30,6 +30,7 @@ export type GlobalSettings = {
   interlude_1_accent?: string | null;
   interlude_1_media_type?: 'image' | 'video';
   interlude_1_media_url?: string | null;
+  interlude_1_video_urls?: string[] | null;
   interlude_2_enabled?: boolean;
   interlude_2_quote?: string | null;
   interlude_2_subtitle?: string | null;
@@ -105,16 +106,16 @@ export const getSettings = cache(async (locale?: string): Promise<GlobalSettings
   return localizeContent({
     ...data,
     interlude_1_enabled: data.interlude_1_enabled ?? true,
-    interlude_1_quote: data.interlude_1_quote || 'Cada historia de amor merece ser contada con la delicadeza de un susurro y la fuerza de lo eterno.',
-    interlude_1_subtitle: data.interlude_1_subtitle ?? '— Filosofía Oniria',
-    interlude_1_accent: data.interlude_1_accent || 'eterno',
+    interlude_1_quote: data.interlude_1_quote ?? '',
+    interlude_1_subtitle: data.interlude_1_subtitle ?? '',
+    interlude_1_accent: data.interlude_1_accent ?? '',
     interlude_1_media_type: data.interlude_1_media_type || 'image',
     interlude_1_media_url: data.interlude_1_media_url || '/interludes/hands.png',
     interlude_2_enabled: data.interlude_2_enabled ?? true,
-    interlude_2_quote: data.interlude_2_quote || 'No capturamos momentos. Creamos fragmentos de eternidad que respirarán por siempre.',
-    interlude_2_subtitle: data.interlude_2_subtitle ?? '— El Arte de Recordar',
-    interlude_2_accent: data.interlude_2_accent || 'eternidad',
+    interlude_2_quote: data.interlude_2_quote ?? '',
+    interlude_2_subtitle: data.interlude_2_subtitle ?? '',
+    interlude_2_accent: data.interlude_2_accent ?? '',
     interlude_2_media_type: data.interlude_2_media_type || 'image',
     interlude_2_media_url: data.interlude_2_media_url || '/interludes/veil.png',
-  } as GlobalSettings, locale, SETTINGS_TEXT_FIELDS);
+  } as GlobalSettings, locale, SETTINGS_TEXT_FIELDS, true);
 });

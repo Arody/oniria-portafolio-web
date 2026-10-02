@@ -1,6 +1,7 @@
 'use client';
 
 import { ContentTranslations } from '@/ui/components/ContentTranslations';
+import { interludeVideos } from '@/core/utils/interludeVideos';
 import { SETTINGS_TEXT_FIELDS } from '@/core/utils/localization';
 
 import { useState, useEffect } from 'react';
@@ -215,6 +216,10 @@ export default function AdminSettingsPage() {
     setSuccessMsg(null);
 
     try {
+      const videoUrls = (settings.interlude_1_video_urls ?? interludeVideos(null, settings.interlude_1_media_url)).map(url => url.trim()).filter(Boolean);
+      if (videoUrls.length > 5 || videoUrls.some(url => !isAboutVimeoUrl(url))) throw new Error('Usa hasta 5 enlaces válidos de Vimeo en la pausa editorial 1.');
+      if (settings.interlude_1_media_type === 'video' && !videoUrls.length) throw new Error('Agrega al menos un enlace de Vimeo en la pausa editorial 1.');
+      if (new Set(videoUrls).size !== videoUrls.length) throw new Error('Los enlaces de Vimeo deben ser distintos.');
       const aboutVideoUrl = settings.about_video_url?.trim() || null;
       if (settings.about_media_type === 'video' && (!aboutVideoUrl || !isAboutVimeoUrl(aboutVideoUrl))) throw new Error(aboutAdmin.invalid_video);
       let final_logo_url = settings.logo_image_url;
@@ -321,7 +326,8 @@ export default function AdminSettingsPage() {
           interlude_1_subtitle: settings.interlude_1_subtitle,
           interlude_1_accent: settings.interlude_1_accent,
           interlude_1_media_type: settings.interlude_1_media_type || 'image',
-          interlude_1_media_url: final_interlude1_url,
+          interlude_1_media_url: settings.interlude_1_media_type === 'video' ? videoUrls[0] : final_interlude1_url,
+          interlude_1_video_urls: videoUrls,
           interlude_2_enabled: settings.interlude_2_enabled ?? true,
           interlude_2_quote: settings.interlude_2_quote,
           interlude_2_subtitle: settings.interlude_2_subtitle,
@@ -688,6 +694,7 @@ export default function AdminSettingsPage() {
             </label>
           </div>
 
+          <p className="text-xs text-mist/50 mb-6">Deja la frase o la firma vacías para ocultarlas en ambos idiomas.</p>
           <div className={`space-y-6 transition-opacity duration-400 ${settings.interlude_1_enabled === false ? 'opacity-30 pointer-events-none' : ''}`}>
             <div>
               <label className={labelClass}>Frase Principal (Cita Editorial)</label>
@@ -791,16 +798,25 @@ export default function AdminSettingsPage() {
                 </div>
               ) : (
                 <div>
-                  <input
-                    type="url"
-                    name="interlude_1_media_url"
-                    value={settings.interlude_1_media_url || ''}
-                    onChange={handleInputChange}
-                    placeholder="Ej: https://vimeo.com/76979871"
-                    className={inputClass}
-                  />
-                  <p className="text-[10px] text-mist/25 mt-2 font-sans">
-                    Pega la URL del video de Vimeo. Se reproducirá en bucle, silenciado y con efecto parallax.
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <label key={index} className="block mb-4">
+                      <span className="block text-xs text-mist/60 mb-2">Video Vimeo {index + 1}</span>
+                      <input
+                        type="url"
+                        value={(settings.interlude_1_video_urls ?? interludeVideos(null, settings.interlude_1_media_url))[index] || ''}
+                        onChange={event => {
+                          const urls = [...(settings.interlude_1_video_urls ?? interludeVideos(null, settings.interlude_1_media_url))];
+                          while (urls.length < 5) urls.push('');
+                          urls[index] = event.target.value;
+                          setSettings({ ...settings, interlude_1_video_urls: urls });
+                        }}
+                        placeholder="https://vimeo.com/76979871"
+                        className={inputClass}
+                      />
+                    </label>
+                  ))}
+                  <p className="text-[10px] text-mist/50 mt-2 font-sans">
+                    Configura hasta 5 videos. En cada carga se elegirá uno al azar, sin repetir el anterior si hay varios. Se reproduce en bucle y sin sonido.
                   </p>
                 </div>
               )}
@@ -955,9 +971,9 @@ export default function AdminSettingsPage() {
         <section className="bg-charcoal border border-graphite p-8">
           <h2 className="text-sm font-serif text-champagne uppercase tracking-[0.15em] border-b border-graphite pb-4 mb-6">Contacto y Enrutamiento</h2>
             <div>
-            <label className={labelClass}>Email de Contacto (Opcional)</label>
-            <input type="email" name="contact_email" value={settings.contact_email || ''} onChange={handleInputChange} placeholder="hello@oniriaweddings.com" className={inputClass} />
-            <p className="text-[10px] text-mist/25 mt-2 font-sans">Si lo dejas vacío, las consultas se guardarán en Mensajes sin notificación por correo.</p>
+            <label className={labelClass}>Correo para recibir consultas y respuestas (Opcional)</label>
+            <input type="email" name="contact_email" value={settings.contact_email || ''} onChange={handleInputChange} placeholder="tu-cuenta@gmail.com" className={inputClass} />
+            <p className="text-[10px] text-mist/25 mt-2 font-sans">Recibirás aquí las consultas y las respuestas al acuse automático. El acuse se envía desde el remitente verificado en Resend. Si lo dejas vacío, solo se guardarán en Mensajes y no se enviarán correos.</p>
             </div>
         </section>
 

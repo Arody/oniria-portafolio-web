@@ -5,6 +5,7 @@ export function validateContact(input: unknown) {
   const data = input as Record<string, unknown>;
   const text = (key: string) => typeof data[key] === 'string' ? data[key].trim() : '';
   const result = {
+    locale: data.locale === 'en' ? 'en' as const : 'es' as const,
     id: text('id'), name: text('name'), email: text('email'), phone: text('phone'),
     date: text('date'), planner: text('planner'), venue: text('venue'), guests: text('guests'),
     otherContact: text('otherContact'), vision: text('vision'), highlights: text('highlights'), website: text('website'),

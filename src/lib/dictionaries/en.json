@@ -55,7 +55,7 @@
     "previous": "Previous films",
     "next": "Next films",
     "carousel": "Film gallery",
-    "loop_hint": "Scroll to explore · Keep going, the stories continue"
+    "scroll_hint": "Scroll to explore our films"
   },
   "blog": {
     "subtitle": "STORIES & INSPIRATION",
@@ -89,6 +89,8 @@
     },
     "success_title": "Message received!",
     "success_message": "Thank you for contacting us. Your inquiry has been saved and our team will reply soon.",
+    "receipt_subject": "We received your inquiry | ONIRIA Weddings",
+    "receipt_text": "Thank you for considering ONIRIA to tell your story.\n\nWe have received your inquiry, and our team will review your wedding details and get back to you personally.\n\nIf you would like to share anything else, simply reply to this email.\n\nWith love,\nThe ONIRIA Weddings team\nhttps://oniriaweddings.com/en",
     "invalid": "Check the required fields, email, wedding date and number of guests.",
     "error": "We could not save your message. Please try again.",
     "rate": "You have sent several inquiries. Please wait a few minutes before trying again.",
@@ -206,6 +208,71 @@
       "closing_text": "Closing text",
       "contact": "Contact button",
       "films": "Films button"
+    }
+  },
+  "testimonials": {
+    "eyebrow": "Their words, our memories",
+    "title": "Words from our couples",
+    "stars": "{count} out of 5 stars",
+    "admin": {
+      "title": "Reviews",
+      "description": "Manage the client reviews shown on the website.",
+      "new": "New review",
+      "name": "Client name",
+      "rating": "Star rating",
+      "comment": "Review",
+      "comment_en": "English review (optional)",
+      "translation_hint": "If left blank, the original review will also appear on the English site.",
+      "photo": "Client photo (optional)",
+      "photo_hint": "JPG, PNG, WebP, GIF or AVIF, up to 10 MB. An initial appears when no photo is provided.",
+      "remove_photo": "Remove photo",
+      "save": "Save and publish",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirm_delete": "Delete the review by {name}? This cannot be undone.",
+      "saved": "Review saved and published.",
+      "deleted": "Review deleted.",
+      "empty": "No reviews yet. Create the first review to show this section on the website.",
+      "invalid": "Enter a name (up to 120 characters), a review (up to 3000) and a rating from 1 to 5.",
+      "invalid_photo": "Select a JPG, PNG, WebP, GIF or AVIF image up to 10 MB.",
+      "upload_error": "Could not upload the photo. Please try again.",
+      "save_error": "Could not save the review. Please try again.",
+      "delete_error": "Could not delete the review. Please try again.",
+      "unauthorized": "An administrator account is required."
+    }
+  },
+  "social_images": {
+    "title": "Sharing images",
+    "description": "Choose the image shown when sharing each page or article on WhatsApp and social media. Use the same image in both languages or choose a different one for each.",
+    "page": "Page or article",
+    "language": "Apply to",
+    "both": "Spanish and English",
+    "current": "Current image",
+    "custom": "Custom",
+    "default": "Default",
+    "image": "New image",
+    "image_hint": "JPG, PNG or WebP, up to 5 MB. Resized to 1200 × 630 without cropping, with a black background where needed. Photos inside the page remain separate.",
+    "new_preview": "New image preview",
+    "save": "Save image",
+    "saving": "Saving…",
+    "restore": "Restore default",
+    "saved": "Image saved. It is now used for the selected links.",
+    "restored": "Default image restored.",
+    "invalid": "Select a valid page and language.",
+    "invalid_image": "Choose a valid JPG, PNG or WebP image up to 5 MB, without animation.",
+    "save_error": "Could not save the image. Please try again.",
+    "unauthorized": "An administrator account is required.",
+    "cache_hint": "WhatsApp and other platforms may keep an older preview for a while. Changes apply when the link is fetched again.",
+    "draft": "Draft",
+    "pages": {
+      "home": "Home",
+      "about": "About Us",
+      "films": "Films",
+      "blog": "Blog",
+      "contact": "Contact",
+      "article": "Article"
     }
   }
 }

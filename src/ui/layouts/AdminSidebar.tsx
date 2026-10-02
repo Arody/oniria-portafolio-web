@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Image as ImageIcon, FileText, MessageSquare, Settings } from 'lucide-react';
+import { LayoutDashboard, Image as ImageIcon, FileText, MessageSquare, Star, Share2, Settings } from 'lucide-react';
 
 import { LogoutButton } from '@/ui/components/LogoutButton';
 import type { AdminRole } from '@/lib/auth';
@@ -15,7 +15,9 @@ export function AdminSidebar({ role }: { role: AdminRole }) {
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Portafolio', href: '/admin/portfolio', icon: ImageIcon },
     { name: 'Blog', href: '/admin/blog', icon: FileText },
+    { name: 'Comentarios', href: '/admin/comments', icon: Star },
     { name: 'Mensajes', href: '/admin/messages', icon: MessageSquare },
+    { name: locale === 'es' ? 'Imágenes al compartir' : 'Sharing images', href: '/admin/social', icon: Share2 },
     { name: 'Configuración', href: '/admin/settings', icon: Settings },
   ].filter(link => role !== 'editor' || link.href === '/admin/blog').map(link => ({ ...link, href: `/${locale}${link.href}` }));
 

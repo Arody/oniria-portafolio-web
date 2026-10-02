@@ -3,10 +3,11 @@
 import { useState, useRef } from 'react';
 import { submitContactMessage } from '@/core/actions/emailActions';
 import type { Dictionary } from '@/lib/dictionaries';
+import type { Locale } from '@/i18n.config';
 
 const inputClass = 'mt-3 w-full min-w-0 rounded-none p-4 bg-charcoal border border-graphite text-ivory font-sans text-sm placeholder:text-mist/40 focus:outline-none focus:border-champagne transition-colors duration-400 disabled:opacity-50 [color-scheme:dark]';
 
-export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
+export function ContactSection({ dict, locale }: { dict: Dictionary['contact']; locale: Locale }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const submissionId = useRef<string | null>(null);
@@ -21,7 +22,7 @@ export function ContactSection({ dict }: { dict: Dictionary['contact'] }) {
 
     const form = e.currentTarget;
     submissionId.current ??= crypto.randomUUID();
-    const data = { ...Object.fromEntries(new FormData(form)), id: submissionId.current };
+    const data = { ...Object.fromEntries(new FormData(form)), id: submissionId.current, locale };
 
     try {
       const result = await submitContactMessage(data);

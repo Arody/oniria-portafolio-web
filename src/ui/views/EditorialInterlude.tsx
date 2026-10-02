@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { interludeVideos, chooseInterludeVideo } from '@/core/utils/interludeVideos';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -18,6 +19,7 @@ interface EditorialInterludeProps {
   subtitle?: string;
   /** URL of video or image for the parallax side */
   mediaUrl: string;
+  videoUrls?: string[] | null;
   /** Whether the media is a video (mp4) or an image */
   mediaType?: 'image' | 'video';
   /** Which side the text appears on */
@@ -30,12 +32,31 @@ interface EditorialInterludeProps {
 export function EditorialInterlude({
   quote,
   subtitle,
-  mediaUrl,
+  mediaUrl: originalMediaUrl,
+  videoUrls,
   mediaType = 'image',
   textSide = 'left',
   fullBleed = false,
   accentWord,
 }: EditorialInterludeProps) {
+  const hasText = Boolean(quote.trim() || subtitle?.trim());
+  const bleed = fullBleed || !hasText;
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const rotateVideos = mediaType === 'video' && videoUrls != null;
+  const mediaUrl = rotateVideos ? selectedVideo : originalMediaUrl;
+
+  useEffect(() => {
+    if (!rotateVideos) return;
+    const frame = requestAnimationFrame(() => {
+      let previous: string | null = null;
+      try { previous = sessionStorage.getItem('oniria-interlude-1-video'); } catch { /* Storage can be disabled. */ }
+      const selected = chooseInterludeVideo(interludeVideos(videoUrls), previous);
+      try { sessionStorage.setItem('oniria-interlude-1-video', selected); } catch { /* Playback still works without storage. */ }
+      setSelectedVideo(selected);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [rotateVideos, videoUrls]);
+
   const [videoRatio, setVideoRatio] = useState(16 / 9);
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -47,7 +68,8 @@ export function EditorialInterlude({
   useGSAP(() => {
     if (prefersReducedMotion()) return;
 
-    if (fullBleed) {
+    if (bleed) {
+      if (!hasText) return;
       gsap.from(textRef.current, {
         opacity: 0,
         duration: 1.2,
@@ -157,7 +179,7 @@ export function EditorialInterlude({
         '-=0.4'
       );
     }
-  }, { scope: sectionRef, dependencies: [fullBleed], revertOnUpdate: true });
+  }, { scope: sectionRef, dependencies: [bleed, hasText], revertOnUpdate: true });
 
   // Split the quote into masked words, keeping the accent highlight intact.
   // Punctuation stays attached to its word; only the word core is compared
@@ -191,10 +213,10 @@ export function EditorialInterlude({
     return words;
   };
 
-  const textContent = (
+  const textContent = hasText && (
     <div
       ref={textRef}
-      className={`flex flex-col justify-center px-8 md:px-16 lg:px-24 ${fullBleed ? 'relative z-10 items-center text-center min-h-[70vh] py-20 max-w-6xl mx-auto' : 'py-20 md:py-0'}`}
+      className={`flex flex-col justify-center px-8 md:px-16 lg:px-24 ${bleed ? 'relative z-10 items-center text-center min-h-[70vh] py-20 max-w-6xl mx-auto' : 'py-20 md:py-0'}`}
     >
       {/* Decorative line */}
       <div
@@ -204,15 +226,15 @@ export function EditorialInterlude({
       />
 
       {/* Quote */}
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-light leading-[1.2] tracking-[0.02em] text-ivory">
+      {quote.trim() && <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-light leading-[1.2] tracking-[0.02em] text-ivory">
         {renderQuote()}
-      </h2>
+      </h2>}
 
       {/* Subtitle */}
-      {subtitle && (
+      {subtitle?.trim() && (
         <p
           ref={subtitleRefEl}
-          className={`mt-8 text-xs font-sans uppercase tracking-[0.3em] ${fullBleed ? 'text-ivory' : 'text-mist/40'}`}
+          className={`mt-8 text-xs font-sans uppercase tracking-[0.3em] ${bleed ? 'text-ivory' : 'text-mist/40'}`}
         >
           {subtitle}
         </p>
@@ -226,12 +248,12 @@ export function EditorialInterlude({
     </div>
   );
 
-  const isVimeo = mediaType === 'video' && mediaUrl.includes('vimeo.com');
+  const isVimeo = mediaType === 'video' && mediaUrl?.includes('vimeo.com');
 
-  const mediaContent = (
+  const mediaContent = mediaUrl && (
     <div
       ref={mediaWrapRef}
-      className={fullBleed ? 'absolute inset-0 overflow-hidden' : 'relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]'}
+      className={bleed ? 'absolute inset-0 overflow-hidden' : 'relative overflow-hidden h-[50vh] md:h-full md:min-h-[70vh]'}
     >
       <ParallaxMedia>
         {mediaType === 'video' ? (
@@ -272,7 +294,7 @@ export function EditorialInterlude({
         )}
       </ParallaxMedia>
 
-      {!fullBleed && <>
+      {!bleed && <>
       {/* Strong gradient blend toward text side */}
       <div
         className={`absolute inset-0 pointer-events-none ${
@@ -291,9 +313,9 @@ export function EditorialInterlude({
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-obsidian overflow-hidden"
+      className={`relative w-full bg-obsidian overflow-hidden ${bleed ? 'min-h-[70vh]' : ''}`}
     >
-      {fullBleed ? <>
+      {bleed ? <>
         {mediaContent}
         {textContent}
       </> : <>

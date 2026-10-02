@@ -111,11 +111,11 @@ export function SplashScreen({ logoImageUrl, logoText, headingFont }: SplashScre
             <img
               src={logoImageUrl}
               alt={logoText}
-              className="h-16 sm:h-20 md:h-24 w-auto object-contain brightness-0 invert"
+              className="h-8 sm:h-10 md:h-12 w-auto object-contain brightness-0 invert"
             />
           ) : (
             <span
-              className="font-light uppercase text-ivory tracking-[0.3em] text-4xl sm:text-5xl md:text-6xl"
+              className="font-light uppercase text-ivory tracking-[0.3em] text-lg sm:text-2xl md:text-3xl"
               style={{ fontFamily: headingFont || 'inherit' }}
             >
               {logoText}

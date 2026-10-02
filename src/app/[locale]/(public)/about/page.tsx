@@ -1,4 +1,6 @@
-import { pageMetadata } from '@/lib/metadata';
+import { TestimonialsSection } from '@/ui/views/TestimonialsSection';
+import { getTestimonials } from '@/core/services/testimonialService';
+import { getPageMetadata as pageMetadata } from '@/core/services/socialImageService';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n.config';
 import { getDictionary } from '@/lib/dictionaries';
@@ -19,12 +21,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AboutPage({ params }: Props) {
   const { locale } = await params;
-  const [dict, settings] = await Promise.all([getDictionary(locale), getSettings(locale)]);
+  const [dict, settings, testimonials] = await Promise.all([getDictionary(locale), getSettings(locale), getTestimonials()]);
   return (
     <div className="min-h-screen flex flex-col bg-obsidian">
       <Navbar dict={dict.navigation} locale={locale} />
       <main className="flex-grow pt-24">
         <AboutSection dict={dict.about} locale={locale} settings={settings} fullPage />
+        <TestimonialsSection testimonials={testimonials} dict={dict.testimonials} locale={locale} />
       </main>
       <Footer dict={dict.footer} navDict={dict.navigation} locale={locale} />
     </div>

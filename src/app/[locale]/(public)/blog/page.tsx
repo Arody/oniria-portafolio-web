@@ -1,4 +1,4 @@
-import { pageMetadata } from '@/lib/metadata';
+import { getPageMetadata as pageMetadata } from '@/core/services/socialImageService';
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
 import { ScrollReveal } from "@/ui/components/ScrollReveal";

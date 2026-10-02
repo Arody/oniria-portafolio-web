@@ -75,10 +75,10 @@ Nginx publica `oniriaweddings.com`. Antes de activar una versión, ejecutar
 
 El MCP de Codex es exclusivo de este proyecto: [.codex/README.md](.codex/README.md).
 
-Versión activa desde el despliegue del 8 de septiembre de 2026:
-`/var/www/oniria-releases/20260909-language-codes`.
+Versión activa desde el despliegue del 1 de octubre de 2026:
+`/var/www/oniria-releases/20261002-contact-receipts`.
 Incluye imágenes OG JPG locales en `public/og`, de 1200 × 630, y el icono de ONIRIA.
-La versión anterior está en `/var/www/oniria-releases/20260909-bilingual`. La instalación anterior permanece en
+La versión anterior está en `/var/www/oniria-releases/20261002-splash-size`. La instalación anterior permanece en
 `/var/www/oniria-portafolio-web` como respaldo; ya no es el directorio activo de
 PM2. Para actualizar la versión activa, usar su directorio o preparar otra
 versión, compilarla y actualizar únicamente el proceso `oniria-weddings`.
@@ -87,7 +87,7 @@ Para restaurar la versión anterior, ejecutar por SSH como `arody`:
 
 ```sh
 pm2 delete oniria-weddings
-pm2 start /var/www/oniria-releases/20260909-bilingual/ecosystem.config.js --only oniria-weddings
+pm2 start /var/www/oniria-releases/20261002-splash-size/ecosystem.config.js --only oniria-weddings
 pm2 save
 ```
 
@@ -96,22 +96,40 @@ HTTPS en producción. Nginx y `pm2-arody` tienen inicio automático habilitado.
 
 ## Vistas previas al compartir
 
-Home, About, Films, Blog, Contact y los artículos publicados incluyen Open Graph,
-Twitter Cards y su URL canónica en ambos idiomas. Las imágenes se toman del CMS:
-Home usa la primera imagen del collage; About su imagen; Films la primera portada;
-Contact la segunda imagen del collage; Blog la portada de un artículo publicado.
-Cada artículo usa su propia portada y extracto, con imagen de respaldo cuando falta.
+Home, About, Films, Blog, Contact y cada artículo incluyen Open Graph,
+Twitter Cards y su URL canónica en ambos idiomas. La imagen predeterminada de
+Inicio es `public/og/oniria-logo-black-v1.jpg`: logotipo blanco sobre fondo negro.
 El icono cuadrado reutiliza el símbolo del logotipo original.
 
-Comprobar con `METADATA_TEST_URL=https://oniriaweddings.com npm run test:metadata`.
-Las redes pueden conservar vistas previas en caché; el diseño final depende de cada aplicación.
+En **Admin → Imágenes al compartir** (`/es/admin/social`) se puede elegir una página
+o artículo y subir una imagen para ES, EN o ambos. Restaurar predeterminada elimina
+la selección personalizada, sin cambiar las imágenes del contenido. Los artículos
+nuevos aparecen automáticamente en el selector. La tabla `oniria.social_images`
+guarda la selección por URL, con lectura pública y escritura solo para admins.
 
-Las imágenes OG se descargan del CMS únicamente al compilar (`prebuild` ejecuta
-`npm run sync:og`). Se guardan como JPG de 1200 × 630 en `public/og`, con nombres
-que cambian si cambia la imagen. Los rastreadores solo solicitan archivos estáticos
-a `oniriaweddings.com/og/`; nunca descargan las portadas de Supabase.
-Tras cambiar una portada en el CMS, recompilar y desplegar para actualizar su copia OG.
-Hasta entonces, una portada nueva utiliza la imagen local de respaldo.
+Las imágenes subidas se validan y convierten en JPEG de 1200 × 630 sin recortar,
+con fondo negro. Se sirven desde `/og/custom/<uuid>.jpg` sin autenticación ni acceso
+a Storage durante la descarga. `ONIRIA_OG_IMAGE_DIR` apunta en PM2 a
+`/var/www/oniria-shared/og`, fuera de los releases; incluir esta carpeta junto a la
+base de datos en los respaldos. En desarrollo se usa `.data/og` (ignorada por Git).
+Cada carga genera otra URL. Se conservan archivos anteriores porque las redes
+pueden seguir solicitándolos desde su caché. No hace falta recompilar al cambiarlos.
+
+Las imágenes predeterminadas de las otras páginas mantienen las copias locales
+anteriores: About usa su imagen; Films la primera portada; Contact la segunda
+imagen del collage; Blog la portada de un artículo publicado. Cada artículo usa
+su portada, con respaldo cuando falta. `npm run sync:og` actualiza esas copias en
+`public/og` y el manifiesto al compilar. Las selecciones del administrador tienen
+prioridad sobre estas imágenes predeterminadas.
+
+Comprobaciones:
+- `node --experimental-strip-types --test tests/social-images.test.ts`
+- `psql ... -f supabase/tests/social_images.sql` (transacción revertida)
+- `METADATA_TEST_URL=https://oniriaweddings.com npm run test:metadata`
+
+Nginx permite cuerpos de hasta 6 MB únicamente para ONIRIA; la carga admite
+imágenes JPEG, PNG o WebP de hasta 5 MB. Las redes pueden conservar vistas previas
+en caché; el diseño final depende de cada aplicación.
 
 ## Sitio bilingüe
 
@@ -128,3 +146,34 @@ su interfaz de edición actual. El contenido nuevo requiere su traducción en el
 
 Migración aplicada: `supabase/migrations/20260909033110_bilingual_content.sql`.
 Comprobación: `I18N_TEST_URL=https://oniriaweddings.com npm run test:i18n`.
+
+## Pausa editorial 1
+
+Configuración permite guardar hasta cinco enlaces Vimeo. Cada carga elige un video
+al azar; cuando hay varios, evita el anterior en la misma pestaña (sessionStorage).
+El video existente se conserva como primera opción. Borrar la frase o firma base
+las oculta en ambos idiomas, incluso si quedan traducciones guardadas. Una pausa
+sin textos conserva la imagen/video sin adornos ni una columna de texto vacía.
+
+Migración aplicada: `supabase/migrations/20261002013409_interlude_video_rotation.sql`.
+Pruebas de selección y textos vacíos: `npm test`.
+
+La página exclusiva de Films muestra cada video publicado una sola vez, en su orden,
+y termina en el último. Conserva la animación de entrada y usa el scroll normal de la página.
+
+## Comentarios de clientes
+
+`/es/admin/comments` permite crear, editar y eliminar comentarios sin un límite
+de registros impuesto por el CMS. Cada comentario incluye nombre, de 1 a 5 estrellas,
+texto y foto opcional (se muestra la inicial si no hay foto). La traducción inglesa
+es opcional; de faltar, se muestra el comentario original. Las fotos se comprimen
+y se almacenan en `oniria/testimonials/`; al reemplazarlas o eliminar un comentario
+se limpian las fotos sin referencias.
+
+Los comentarios aparecen al final de Home y About, antes del footer, del más nuevo
+al más antiguo. La sección no se muestra mientras esté vacía. Las operaciones requieren
+un administrador tanto en las acciones del servidor como mediante RLS en Supabase.
+
+Migración: `supabase/migrations/20261002014853_testimonials.sql`.
+Validación: `npm test`; CRUD y permisos: `tests/testimonials.sql` con psql como propietario
+de la base de datos (la prueba usa una transacción que siempre termina con rollback).

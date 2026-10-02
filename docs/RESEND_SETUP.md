@@ -19,13 +19,29 @@ También falta proporcionar `RESEND_API_KEY`. La clave anterior de Resend existe
 pero su valor completo no está disponible en la interfaz ni en los archivos de
 entorno del proyecto/VPS. Preferir una clave de envío limitada a este dominio.
 
-Remitente previsto: `Oniria Weddings <hello@oniriaweddings.com>`.
-Destinatario configurado en `oniria.settings.contact_email`: `hello@oniriaweddings.com`.
+Remitente: `Oniria Weddings <hello@oniriaweddings.com>` en `RESEND_FROM_EMAIL`.
+No se necesita un buzón para esta dirección: Resend envía desde el dominio verificado.
 
-La consulta DNS del dominio principal no devolvió registros MX. Antes de usar
-esa dirección como destinatario debe configurarse su recepción (un buzón de
-correo o recepción de Resend con el flujo correspondiente). Verificar el dominio
-para enviar no crea por sí solo una bandeja de correo convencional.
+En **Administrador → Ajustes → Contacto y Enrutamiento**, guardar el Gmail del
+equipo en `oniria.settings.contact_email` (pendiente de que el propietario lo indique).
+Actualmente sigue configurado `hello@oniriaweddings.com`, que no tiene recepción.
+El flujo implementado es:
 
-Hasta completar esos requisitos, las consultas se guardan en la bandeja del CMS.
+1. Guardar la consulta en Mensajes del CMS.
+2. Enviar al Gmail una notificación con los datos; «Responder» apunta al cliente.
+3. Enviar al cliente un acuse en el idioma del formulario (es/en), desde `hello`;
+   «Responder» apunta al Gmail. El Gmail será visible en la cabecera Reply-To.
+
+Los dos envíos tienen claves de idempotencia independientes. Un fallo de correo
+no elimina la consulta ni impide intentar el otro envío. No se reenvían automáticamente
+consultas históricas ni correos fallidos. Si el destinatario está vacío, solo se guarda
+la consulta. Sin clave y dominio verificado, no se puede confirmar entrega por correo.
+
+Para activarlo: verificar los registros que muestre Resend, configurar la clave de
+envío en el entorno del release activo, guardar el Gmail y reiniciar únicamente
+`oniria-weddings` con PM2. Probar con una dirección propia y comprobar ambos correos,
+sus direcciones de respuesta y la consulta en el administrador.
+
+Conservar los registros A, CNAME, NS y DMARC actuales. El MX de `send` sirve al envío
+y no crea recepción para `hello`; escribir directamente a `hello` requiere otro flujo.
 No se enviaron correos de prueba a clientes.

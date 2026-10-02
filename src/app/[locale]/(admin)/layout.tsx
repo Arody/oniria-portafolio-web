@@ -19,8 +19,8 @@ export default async function AdminLayout({
       <AdminSidebar role={admin.role} />
       <main className="flex-1 md:ml-64 flex flex-col">
         <nav className="md:hidden flex flex-wrap items-center gap-4 p-4 border-b border-graphite text-sm text-champagne">
-          {(admin.role === 'editor' ? ['blog'] : ['dashboard', 'portfolio', 'blog', 'messages', 'settings']).map(path =>
-            <Link key={path} href={`/${locale}/admin/${path}`}>{path}</Link>)}
+          {(admin.role === 'editor' ? ['blog'] : ['dashboard', 'portfolio', 'blog', 'comments', 'messages', 'social', 'settings']).map(path =>
+            <Link key={path} href={`/${locale}/admin/${path}`}>{path === 'comments' ? 'Comentarios' : path === 'social' ? (locale === 'es' ? 'Imágenes al compartir' : 'Sharing images') : path}</Link>)}
           <LogoutButton />
         </nav>
         {/* Top Header */}

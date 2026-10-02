@@ -1,4 +1,4 @@
-import { pageMetadata } from '@/lib/metadata';
+import { getPageMetadata as pageMetadata } from '@/core/services/socialImageService';
 import { sanitizeBlogHtml } from '@/core/utils/html';
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";

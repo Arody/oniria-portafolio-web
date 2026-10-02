@@ -5,10 +5,13 @@ export const SETTINGS_TEXT_FIELDS = ['site_title', 'site_description', 'hero_tit
 export const PROJECT_TEXT_FIELDS = ['title', 'description'];
 export const BLOG_TEXT_FIELDS = ['title', 'excerpt', 'content', 'category'];
 
-export function localizeContent<T extends { translations?: Translations }>(record: T, locale: string | undefined, fields: readonly string[]): T {
+export function localizeContent<T extends { translations?: Translations }>(record: T, locale: string | undefined, fields: readonly string[], preserveEmptySource = false): T {
   const translated = record.translations?.[locale as 'es' | 'en'];
   if (!translated) return record;
-  return { ...record, ...Object.fromEntries(fields.filter(key => typeof translated[key] === 'string').map(key => [key, translated[key]])) };
+  return { ...record, ...Object.fromEntries(fields.filter(key => {
+    const source = (record as Record<string, unknown>)[key];
+    return typeof translated[key] === 'string' && !(preserveEmptySource && typeof source === 'string' && !source.trim());
+  }).map(key => [key, translated[key]])) };
 }
 
 export function localizedHref(href: string, locale: 'es' | 'en') {

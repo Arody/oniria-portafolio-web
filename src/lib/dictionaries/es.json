@@ -55,7 +55,7 @@
     "previous": "Films anteriores",
     "next": "Siguientes films",
     "carousel": "Galería de films",
-    "loop_hint": "Desliza para explorar · Las historias continúan"
+    "scroll_hint": "Desliza para explorar nuestros films"
   },
   "blog": {
     "subtitle": "HISTORIAS E INSPIRACIÓN",
@@ -89,6 +89,8 @@
     },
     "success_title": "¡Mensaje recibido!",
     "success_message": "Gracias por contactarnos. Tu consulta quedó guardada y nuestro equipo te responderá pronto.",
+    "receipt_subject": "Recibimos tu solicitud | ONIRIA Weddings",
+    "receipt_text": "Gracias por pensar en ONIRIA para contar tu historia.\n\nHemos recibido tu solicitud y nuestro equipo revisará los detalles de tu boda para responderte personalmente.\n\nSi quieres compartir algo más, puedes responder a este correo.\n\nCon cariño,\nEl equipo de ONIRIA Weddings\nhttps://oniriaweddings.com/es",
     "invalid": "Revisa los campos obligatorios, el correo, la fecha y el número de invitados.",
     "error": "No pudimos guardar tu mensaje. Inténtalo de nuevo.",
     "rate": "Has enviado varias consultas. Espera unos minutos antes de intentarlo de nuevo.",
@@ -206,6 +208,71 @@
       "closing_text": "Texto del cierre",
       "contact": "Botón Contact",
       "films": "Botón Films"
+    }
+  },
+  "testimonials": {
+    "eyebrow": "Sus palabras, nuestros recuerdos",
+    "title": "Lo que dicen nuestras parejas",
+    "stars": "{count} de 5 estrellas",
+    "admin": {
+      "title": "Comentarios",
+      "description": "Gestiona los comentarios de clientes que aparecen en la web.",
+      "new": "Nuevo comentario",
+      "name": "Nombre del cliente",
+      "rating": "Número de estrellas",
+      "comment": "Comentario",
+      "comment_en": "Comentario en inglés (opcional)",
+      "translation_hint": "Si lo dejas vacío, se mostrará el comentario original en inglés también.",
+      "photo": "Foto del cliente (opcional)",
+      "photo_hint": "JPG, PNG, WebP, GIF o AVIF, hasta 10 MB. Sin foto se muestra la inicial.",
+      "remove_photo": "Quitar foto",
+      "save": "Guardar y publicar",
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirm_delete": "¿Eliminar el comentario de {name}? Esta acción no se puede deshacer.",
+      "saved": "Comentario guardado y publicado.",
+      "deleted": "Comentario eliminado.",
+      "empty": "Todavía no hay comentarios. Crea el primero para mostrar esta sección en la web.",
+      "invalid": "Completa el nombre (máximo 120 caracteres), el comentario (máximo 3000) y una valoración de 1 a 5 estrellas.",
+      "invalid_photo": "Selecciona una imagen JPG, PNG, WebP, GIF o AVIF de hasta 10 MB.",
+      "upload_error": "No se pudo subir la foto. Inténtalo de nuevo.",
+      "save_error": "No se pudo guardar el comentario. Inténtalo de nuevo.",
+      "delete_error": "No se pudo eliminar el comentario. Inténtalo de nuevo.",
+      "unauthorized": "Necesitas una cuenta de administrador."
+    }
+  },
+  "social_images": {
+    "title": "Imágenes al compartir",
+    "description": "Elige la imagen que aparece al compartir cada página o artículo en WhatsApp y redes sociales. Puedes usar la misma en ambos idiomas o una diferente para cada uno.",
+    "page": "Página o artículo",
+    "language": "Aplicar a",
+    "both": "Español e inglés",
+    "current": "Imagen actual",
+    "custom": "Personalizada",
+    "default": "Predeterminada",
+    "image": "Nueva imagen",
+    "image_hint": "JPG, PNG o WebP, hasta 5 MB. Se ajustará a 1200 × 630 sin recortar, con fondo negro si es necesario. No cambia las fotografías dentro de la página.",
+    "new_preview": "Vista previa de la nueva imagen",
+    "save": "Guardar imagen",
+    "saving": "Guardando…",
+    "restore": "Restaurar predeterminada",
+    "saved": "Imagen guardada. Ya se usa en los enlaces seleccionados.",
+    "restored": "Se restauró la imagen predeterminada.",
+    "invalid": "Selecciona una página y un idioma válidos.",
+    "invalid_image": "Selecciona una imagen JPG, PNG o WebP válida de hasta 5 MB, sin animación.",
+    "save_error": "No se pudo guardar la imagen. Inténtalo de nuevo.",
+    "unauthorized": "Necesitas una cuenta de administrador.",
+    "cache_hint": "WhatsApp y otras redes pueden conservar una vista previa anterior durante un tiempo. Los cambios se aplican a nuevas lecturas del enlace.",
+    "draft": "Borrador",
+    "pages": {
+      "home": "Inicio",
+      "about": "About Us",
+      "films": "Films",
+      "blog": "Blog",
+      "contact": "Contacto",
+      "article": "Artículo"
     }
   }
 }

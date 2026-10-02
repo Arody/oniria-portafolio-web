@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# Persistent local uploads (shared directory on the VPS)
+/.data/

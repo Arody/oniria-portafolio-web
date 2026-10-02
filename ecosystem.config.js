@@ -6,6 +6,6 @@ module.exports = {
     args: 'start --hostname 127.0.0.1',
     instances: 1,
     exec_mode: 'fork',
-    env: { PORT: 3017, NODE_ENV: 'production' },
+    env: { PORT: 3017, NODE_ENV: 'production', ONIRIA_OG_IMAGE_DIR: '/var/www/oniria-shared/og' },
   }],
 };

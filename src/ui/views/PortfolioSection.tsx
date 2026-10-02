@@ -11,7 +11,7 @@ import type { PortfolioProject } from '@/core/services/portfolioService';
 import type { Dictionary } from '@/lib/dictionaries';
 import { prefersReducedMotion } from '@/lib/motion';
 import { getFilmScrollTarget } from '@/core/utils/filmScroll';
-import { InfiniteFilmGrid } from '@/ui/components/InfiniteFilmGrid';
+import { FilmGrid } from '@/ui/components/FilmGrid';
 import { createFilmPreview } from '@/core/utils/filmPreview';
 
 // Register GSAP plugins
@@ -86,14 +86,12 @@ export function PortfolioSection({ projects, dict, filmsHref, locale = "es" }: P
     });
   }, { scope: sectionRef });
 
-  const renderFilm = (project: PortfolioProject, index: number, duplicate = false) => {
-    const Card = duplicate ? 'div' : 'button';
+  const renderFilm = (project: PortfolioProject, index: number) => {
     return (
-      <Card
-        type={duplicate ? undefined : "button"}
+      <button
+        type="button"
         key={index}
-        aria-hidden={duplicate || undefined}
-        aria-label={duplicate ? undefined : `${dict.view_story}: ${project.couple_name} — ${project.title}`}
+        aria-label={`${dict.view_story}: ${project.couple_name} — ${project.title}`}
         className="block relative group w-full min-w-0 aspect-video snap-start bg-charcoal cursor-pointer overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-champagne"
         onPointerEnter={event => {
           if (event.pointerType !== 'touch' && project.video_url && !activeProjectData) filmPreview.start(String(index));
@@ -181,7 +179,7 @@ export function PortfolioSection({ projects, dict, filmsHref, locale = "es" }: P
             </div>
           )}
         </div>
-      </Card>
+      </button>
     );
   };
 
@@ -211,11 +209,11 @@ export function PortfolioSection({ projects, dict, filmsHref, locale = "es" }: P
           />
         </div>
 
-        {/* Homepage carousel; vertically looping gallery on the Films page. */}
+        {/* Homepage carousel; finite gallery on the Films page. */}
         {projects.length > 0 ? (!isCarousel ? (
-          <InfiniteFilmGrid count={projects.length} label={dict.carousel} hint={dict.loop_hint}>
-            {(index, duplicate) => renderFilm(projects[index % projects.length], index, duplicate)}
-          </InfiniteFilmGrid>
+          <FilmGrid count={projects.length} label={dict.carousel} hint={dict.scroll_hint}>
+            {index => renderFilm(projects[index], index)}
+          </FilmGrid>
         ) : (
           <div className="relative">
             {isCarousel && projects.length > 1 && (

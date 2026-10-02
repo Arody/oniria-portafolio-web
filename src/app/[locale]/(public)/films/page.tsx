@@ -1,4 +1,4 @@
-import { pageMetadata } from '@/lib/metadata';
+import { getPageMetadata as pageMetadata } from '@/core/services/socialImageService';
 import type { Metadata } from 'next';
 import type { Locale } from '@/i18n.config';
 import { getDictionary } from '@/lib/dictionaries';

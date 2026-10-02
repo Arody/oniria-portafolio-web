@@ -1,4 +1,6 @@
-import { pageMetadata } from '@/lib/metadata';
+import { TestimonialsSection } from '@/ui/views/TestimonialsSection';
+import { getTestimonials } from '@/core/services/testimonialService';
+import { getPageMetadata as pageMetadata } from '@/core/services/socialImageService';
 import { Navbar } from "@/ui/layouts/Navbar";
 import { Footer } from "@/ui/layouts/Footer";
 import { HeroSection } from "@/ui/views/HeroSection";
@@ -31,9 +33,10 @@ export default async function Home({ params }: Props) {
   const { locale } = await params;
   const dict = await getDictionary(locale);
   
-  const [projects, settings] = await Promise.all([
+  const [projects, settings, testimonials] = await Promise.all([
     getPublishedProjects(locale),
     getSettings(locale),
+    getTestimonials(),
   ]);
 
   return (
@@ -64,13 +67,14 @@ export default async function Home({ params }: Props) {
         {/* Interlude 1 — Between Hero and Portfolio */}
         {settings.interlude_1_enabled !== false && (
           <EditorialInterlude
-            quote={settings.interlude_1_quote || dict.interludes['1_quote']}
-            subtitle={settings.interlude_1_subtitle ?? dict.interludes['1_signature']}
+            quote={settings.interlude_1_quote ?? ''}
+            subtitle={settings.interlude_1_subtitle ?? ''}
             mediaUrl={settings.interlude_1_media_url || "/interludes/hands.png"}
             mediaType={settings.interlude_1_media_type || "image"}
             textSide="left"
             fullBleed
-            accentWord={settings.interlude_1_accent || dict.interludes['1_accent']}
+            videoUrls={settings.interlude_1_video_urls}
+            accentWord={settings.interlude_1_accent ?? ''}
           />
         )}
 
@@ -81,15 +85,16 @@ export default async function Home({ params }: Props) {
         {/* Interlude 2 — Between Portfolio and Footer */}
         {settings.interlude_2_enabled !== false && (
           <EditorialInterlude
-            quote={settings.interlude_2_quote || dict.interludes['2_quote']}
-            subtitle={settings.interlude_2_subtitle ?? dict.interludes['2_signature']}
+            quote={settings.interlude_2_quote ?? ''}
+            subtitle={settings.interlude_2_subtitle ?? ''}
             mediaUrl={settings.interlude_2_media_url || "/interludes/veil.png"}
             mediaType={settings.interlude_2_media_type || "image"}
             textSide="right"
-            accentWord={settings.interlude_2_accent || dict.interludes['2_accent']}
+            accentWord={settings.interlude_2_accent ?? ''}
           />
         )}
 
+        <TestimonialsSection testimonials={testimonials} dict={dict.testimonials} locale={locale} />
       </main>
       <Footer dict={dict.footer} navDict={dict.navigation} locale={locale} />
     </div>
